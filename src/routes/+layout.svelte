@@ -2,6 +2,13 @@
 	import AuthCheck from '$lib/components/AuthCheck.svelte'
 	import '../app.css'
 	import TopNav from './_components/TopNav.svelte'
+	import { dbUser } from '$lib/firestore'
+	import { goto } from '$app/navigation'
+
+	if (!dbUser) {
+		console.log(`LOG..+layout: no user`)
+		goto('/')
+	}
 </script>
 
 <TopNav />
