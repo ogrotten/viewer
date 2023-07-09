@@ -22,6 +22,12 @@ function userStore() {
 
 	const { subscribe } = writable(auth?.currentUser ?? null, (set) => {
 		unsubscribe = onAuthStateChanged(auth, async (user) => {
+			if (!user) {
+				set(null)
+				console.log(`LOG..firestore: NULL?`,)
+				return
+			}
+
 			user.id = user.uid
 			set(user)
 

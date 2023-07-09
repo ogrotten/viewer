@@ -1,5 +1,8 @@
 <script lang="ts">
-	import { dbUser } from '$lib/firestore';
+	import { goto } from '$app/navigation'
+	import { dbUser } from '$lib/firestore'
+
+	if (!dbUser) goto('/login')
 </script>
 
 {#if $dbUser}

@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { dbUser } from '$lib/firestore';
+	import AuthCheck from '$lib/components/AuthCheck.svelte'
+	import { dbUser } from '$lib/firestore'
 
-	$: console.log(`LOG..+page: user`, $dbUser);
+	$: console.log(`LOG..+page: user`, $dbUser)
 </script>
 
 <h1>Welcome to SvelteKit</h1>
