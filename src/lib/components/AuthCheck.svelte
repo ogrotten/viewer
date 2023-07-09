@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { user } from '$lib/firestore';
+	import { dbUser } from '$lib/firestore';
 </script>
 
-{#if $user}
+{#if $dbUser}
 	<slot />
 {:else}
 	<p class="text-error">

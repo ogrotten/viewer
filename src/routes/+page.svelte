@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { user } from '$lib/firestore';
+	import { dbUser } from '$lib/firestore';
 
-	$: console.log(`LOG..+page: user`, $user);
+	$: console.log(`LOG..+page: user`, $dbUser);
 </script>
 
 <h1>Welcome to SvelteKit</h1>
