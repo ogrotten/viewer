@@ -9,20 +9,13 @@
 	import type { PageData } from './$types'
 	export let data: PageData
 
-	const viewersRef = doc(db, `viewers/${$dbUser?.id}`)
+	const viewersRef = doc(db, `viewers/${$dbUser?.uid}`)
 
-	let {
-		viewer,
-		viewer: { images },
-	} = data
+	let { viewer } = data
+	let images = viewer?.images || []
 
 	let newurl = '',
 		urlValid = false
-
-	const addOne = (incoming: string) => {
-		//
-		updateDoc(viewersRef, { images: [...viewer.images, incoming] })
-	}
 
 	function handleInputChange(e: KeyboardEvent) {
 		const regex = new RegExp(
@@ -38,7 +31,7 @@
 
 		if (e.code === 'Enter') {
 			// enter
-			addOne(item)
+			imageAdd(item)
 			newurl = ''
 		}
 
@@ -48,11 +41,23 @@
 		}
 	}
 
+	const imageAdd = async (incoming: string) => {
+		await updateDoc(viewersRef, { images: [...viewer.images, incoming] })
+			.then(() => {
+				images = [...viewer.images, incoming]
+			})
+			.catch(err => console.error(err, { $dbUser, viewer }))
+	}
+
 	const imageDelete = (image: string) => {
+		console.log(`LOG..+page: image`, image)
 		const remv = images.indexOf(image)
 		const newimages = images.splice(remv, 1)
 		updateDoc(viewersRef, { images: newimages })
-		images = newimages
+			.then(() => {
+				images = newimages
+			})
+			.catch(err => console.error(err, { $dbUser, viewer }))
 	}
 
 	$: images = images
@@ -65,7 +70,7 @@
 	// 	return { viewer }
 	// })
 
-	$: console.log(`LOG..+page: viewer`, viewer, viewer?.images)
+	$: console.log(`LOG..+page: viewer`, images)
 </script>
 
 <div class="flex flex-col gap-10">
@@ -84,12 +89,12 @@
 				<!-- <Icon src={Check} class="mr-2 text-green-400" /> -->
 				<kbd class="kbd kbd-sm min-w-min">Enter</kbd>
 				<!-- </span> -->
-			{:else if newurl && !urlValid}{/if}
+			{/if}
 		</div>
 	</div>
 	<div class="flex flex-row gap-6">
-		{#if viewer?.images}
-			{#each viewer.images as image}
+		{#if images}
+			{#each images as image}
 				<!-- <Icon src={XMark} class="w-4 h-4 mr-2 font-bold text-red-600" /> -->
 				<!-- svelte-ignore a11y-img-redundant-alt -->
 				<span class="flex flex-col">

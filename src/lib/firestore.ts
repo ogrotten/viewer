@@ -16,40 +16,50 @@ function userStore() {
 	if (!auth || !globalThis.window) {
 		console.warn('Auth is not initialized or not in browser')
 		const { subscribe } = writable<User | null>(null)
+
+		console.log(`LOG..firestore: AUTH `, [auth, globalThis.window])
+
 		return {
 			subscribe,
 		}
 	}
 
 	const { subscribe } = writable(auth?.currentUser ?? null, (set) => {
-		unsubscribe = onAuthStateChanged(auth, async (user) => {
-			if (!user) {
-				set(null)
-				goto('/')
-				return
-			}
+		// unsubscribe = onAuthStateChanged(auth, async (user) => {
+		// 	if (!user) {
+		// 		set(null)
+		// 		goto('/')
+		// 		return
+		// 	}
 
-			user.id = user.uid
+		// 	user.id = user.uid
+		// 	set(user)
+		// 	console.log(`LOG..firestore: user`, user)
+
+		// 	const userRef = doc(db, `users/${user.uid}`)
+		// 	const viewRef = doc(db, `viewers/${user.uid}`)
+		// 	if (user) {
+		// 		await getDoc(userRef).then((doc) => {
+		// 			if (!doc.exists()) {
+		// 				console.log('Creating user')
+		// 				setDoc(userRef, {
+		// 					name: user.displayName,
+		// 					email: user.email,
+		// 					photoURL: user.photoURL,
+		// 					id: user.uid,
+		// 				})
+		// 				setDoc(viewRef, {
+		// 					images: [],
+		// 				})
+		// 			}
+		// 		})
+		// 	}
+		// })
+
+		console.log(`LOG..firestore: user`, auth.currentUser)
+		unsubscribe = onAuthStateChanged(auth, (user) => {
+			console.log(`LOG..firestore: user`, user)
 			set(user)
-
-			const userRef = doc(db, `users/${user.uid}`)
-			const viewRef = doc(db, `viewers/${user.uid}`)
-			if (user) {
-				await getDoc(userRef).then((doc) => {
-					if (!doc.exists()) {
-						console.log('Creating user')
-						setDoc(userRef, {
-							name: user.displayName,
-							email: user.email,
-							photoURL: user.photoURL,
-							id: user.uid,
-						})
-						setDoc(viewRef, {
-							images: [],
-						})
-					}
-				})
-			}
 		})
 
 		return () => unsubscribe()
@@ -59,6 +69,8 @@ function userStore() {
 		subscribe,
 	}
 }
+
+export const dbUser = userStore()
 
 export function docStore<T>(
 	path: string,
@@ -81,5 +93,3 @@ export function docStore<T>(
 		id: docRef.id,
 	}
 }
-
-export const dbUser = userStore()
