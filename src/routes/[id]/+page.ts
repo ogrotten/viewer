@@ -5,8 +5,12 @@ import { dbUser } from '$lib/firestore';
 
 export const load = (async ({ params }) => {
 	const viewRef = doc(db, `viewers/${params.id}`);
-	const viewer = getDoc(viewRef)
-		.then((doc) => ({ ...doc.data(), id: doc.id }))
+	const viewer: Viewer = getDoc(viewRef)
+		.then((doc) => {
+			return {
+				...doc.data(), id: doc.id
+			}
+		})
 		.catch((err) => console.error(err, JSON.stringify(err)));
 	return { viewer };
 }) satisfies PageLoad;
