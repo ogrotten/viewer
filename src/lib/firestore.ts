@@ -10,7 +10,7 @@ import { goto } from '$app/navigation'
 /**
  * @returns a store with the current firebase user
  */
-function userStore() {
+async function userStore() {
 	let unsubscribe: () => void
 
 	if (!auth || !globalThis.window) {
@@ -25,36 +25,36 @@ function userStore() {
 	}
 
 	const { subscribe } = writable(auth?.currentUser ?? null, (set) => {
-		// unsubscribe = onAuthStateChanged(auth, async (user) => {
-		// 	if (!user) {
-		// 		set(null)
-		// 		goto('/')
-		// 		return
-		// 	}
+		unsubscribe = onAuthStateChanged(auth, async (user) => {
+			if (!user) {
+				set(null)
+				goto('/')
+				return
+			}
 
-		// 	user.id = user.uid
-		// 	set(user)
-		// 	console.log(`LOG..firestore: user`, user)
+			user.id = user.uid
+			set(user)
+			console.log(`LOG..firestore: user`, user)
 
-		// 	const userRef = doc(db, `users/${user.uid}`)
-		// 	const viewRef = doc(db, `viewers/${user.uid}`)
-		// 	if (user) {
-		// 		await getDoc(userRef).then((doc) => {
-		// 			if (!doc.exists()) {
-		// 				console.log('Creating user')
-		// 				setDoc(userRef, {
-		// 					name: user.displayName,
-		// 					email: user.email,
-		// 					photoURL: user.photoURL,
-		// 					id: user.uid,
-		// 				})
-		// 				setDoc(viewRef, {
-		// 					images: [],
-		// 				})
-		// 			}
-		// 		})
-		// 	}
-		// })
+			const userRef = doc(db, `users/${user.uid}`)
+			const viewRef = doc(db, `viewers/${user.uid}`)
+			if (user) {
+				await getDoc(userRef).then((doc) => {
+					if (!doc.exists()) {
+						console.log('Creating user')
+						setDoc(userRef, {
+							name: user.displayName,
+							email: user.email,
+							photoURL: user.photoURL,
+							id: user.uid,
+						})
+						setDoc(viewRef, {
+							images: [],
+						})
+					}
+				})
+			}
+		})
 
 		console.log(`LOG..firestore: user`, auth.currentUser)
 		unsubscribe = onAuthStateChanged(auth, (user) => {
