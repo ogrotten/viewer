@@ -13,7 +13,7 @@
 		<!-- <a class="text-xl normal-case btn btn-ghost">daisyUI</a> -->
 		<ul class="px-1 menu menu-horizontal">
 			{#if $dbUser}
-				<li><a href="/manage">Manage</a></li>
+				<li><a href={`${$dbUser.id}`}>Manage</a></li>
 				<li><a href="/show">Show</a></li>
 				<!-- <li><a>Link</a></li>
 			<li><a>Link</a></li> -->
@@ -23,7 +23,7 @@
 	<div class="flex-none">
 		<ul class="px-1 menu menu-horizontal">
 			{#if $dbUser}
-				<li><a href="/profile">Profile</a></li>
+				<!-- <li><a href="/profile">Profile</a></li> -->
 				<li><a href="/logout">Logout</a></li>
 			{:else}
 				<li><a href="/login">Login</a></li>

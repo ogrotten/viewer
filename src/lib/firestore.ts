@@ -5,6 +5,7 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { db } from '$lib/firebase'
 
 import type { User } from 'firebase/auth'
+import { goto } from '$app/navigation'
 
 /**
  * @returns a store with the current firebase user
@@ -24,7 +25,7 @@ function userStore() {
 		unsubscribe = onAuthStateChanged(auth, async (user) => {
 			if (!user) {
 				set(null)
-				console.log(`LOG..firestore: NULL?`,)
+				goto('/')
 				return
 			}
 
@@ -32,6 +33,7 @@ function userStore() {
 			set(user)
 
 			const userRef = doc(db, `users/${user.uid}`)
+			const viewRef = doc(db, `viewers/${user.uid}`)
 			if (user) {
 				await getDoc(userRef).then((doc) => {
 					if (!doc.exists()) {
@@ -40,6 +42,10 @@ function userStore() {
 							name: user.displayName,
 							email: user.email,
 							photoURL: user.photoURL,
+							id: user.uid,
+						})
+						setDoc(viewRef, {
+							images: [],
 						})
 					}
 				})
