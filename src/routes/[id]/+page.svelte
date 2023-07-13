@@ -7,14 +7,13 @@
 	import { dbUser } from '$lib/firestore'
 
 	import type { PageData } from './$types'
-	export let data: PageData
+	// export let data: PageData
 
 	const viewersRef = doc(db, `viewers/${$dbUser?.id}`)
 
-	let {
-		viewer,
-		viewer: { images },
-	} = data
+	let viewer = {
+		images: [],
+	}
 
 	let newurl = '',
 		urlValid = false
@@ -55,15 +54,11 @@
 		images = newimages
 	}
 
-	$: images = images
+	getDoc(viewersRef).then(doc => {
+		viewer = doc.data()
+	})
 
-	// onMount(async () => {
-	// 	const viewRef = doc(db, `viewers/${dbUser.id}`)
-	// 	viewer = await getDoc(viewRef)
-	// 		.then(doc => ({ ...doc.data(), id: doc.id }))
-	// 		.catch(err => console.error(err, JSON.stringify(err)))
-	// 	return { viewer }
-	// })
+	onMount(async () => {})
 
 	$: console.log(`LOG..+page: viewer`, viewer, viewer?.images)
 </script>
@@ -94,13 +89,24 @@
 				<!-- svelte-ignore a11y-img-redundant-alt -->
 				<span class="flex flex-col">
 					<div class="flex justify-between">
+						<br />
 						<a href={''} on:click={() => imageDelete(image)}>❌</a>
 					</div>
 					<img
 						src={image}
 						alt="image"
-						class="object-cover object-top w-24 h-24 rounded-2xl"
+						class="object-cover object-top w-36 h-36 rounded-2xl"
 					/>
+					<div class="">
+						<label class="cursor-pointer label">
+							<input
+								type="checkbox"
+								class="toggle toggle-xs toggle-secondary"
+								checked
+							/>
+							<span class="label-text">Carousel?</span>
+						</label>
+					</div>
 				</span>
 			{/each}
 		{/if}
