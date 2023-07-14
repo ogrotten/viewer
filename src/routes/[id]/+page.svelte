@@ -21,9 +21,9 @@
 		},
 		urlValid = false
 
-	const addOne = async (incoming: {}) => {
+	const addOne = async (incoming: Image) => {
 		// Add a new document with a generated id.
-		console.log(`LOG..+page: $dbUser.id`, $dbUser)
+		console.log(`LOG..+page: addOne`, incoming)
 		const docRef = await addDoc(collection(db, `viewers/${$dbUser?.uid}/images`), incoming)
 	}
 
@@ -75,7 +75,9 @@
 			on:change={handleInputChange}
 		/>
 
-		<button class="btn btn-primary btn-sm" disabled={!urlValid} on:click={addOne}> Add </button>
+		<button class="btn btn-primary btn-sm" disabled={!urlValid} on:click={() => addOne(newImg)}>
+			Add
+		</button>
 	</div>
 	<div class="flex flex-row gap-6">
 		{#if viewer?.images}
