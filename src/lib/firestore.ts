@@ -12,14 +12,17 @@ import { goto } from '$app/navigation'
  */
 function userStore() {
 	let unsubscribe: () => void
+	console.log(`LOG..firestore: auth.currentUser`, auth.currentUser)
 
 	if (!auth || !globalThis.window) {
 		console.warn('Auth is not initialized or not in browser')
+		debugger
 		const { subscribe } = writable(null)
 		return {
 			subscribe,
 		}
 	}
+
 
 	const { subscribe } = writable(auth?.currentUser ?? null, (set) => {
 
@@ -45,9 +48,9 @@ function userStore() {
 							photoURL: user.photoURL,
 							id: user.uid,
 						})
-						setDoc(viewRef, {
-							images: [],
-						})
+						// setDoc(viewRef, {
+						// 	images: [],
+						// })
 					}
 				})
 			}
