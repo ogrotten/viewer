@@ -1,66 +1,70 @@
 <script lang="ts">
-	import { Icon } from '@steeze-ui/svelte-icon'
-	import { Check, XMark } from '@steeze-ui/heroicons'
-	import { onMount } from 'svelte'
-	import { doc, getDoc, updateDoc } from 'firebase/firestore'
-	import { db } from '$lib/firebase'
-	import { dbUser } from '$lib/firestore'
+	import { Icon } from '@steeze-ui/svelte-icon';
+	import { Check, XMark } from '@steeze-ui/heroicons';
+	import { onMount } from 'svelte';
+	import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
+	import { db } from '$lib/firebase';
+	import { dbUser } from '$lib/firestore';
 
-	import type { PageData } from './$types'
-	// export let data: PageData
-
-	const viewersRef = doc(db, `viewers/${$dbUser?.id}`)
+	const viewersRef = doc(db, `viewers/${$dbUser?.id}`);
 
 	let viewer = {
-		images: [],
-	}
+		images: []
+	};
 
 	let newurl = '',
-		urlValid = false
+		urlValid = false;
 
-	const addOne = (incoming: string) => {
-		//
-		updateDoc(viewersRef, { images: [...viewer.images, incoming] })
-	}
+	const addOne = async (incoming: {}) => {
+		// Add a new document with a generated id.
+		console.log(`LOG..+page: $dbUser.id`, $dbUser);
+		const docRef = await addDoc(collection(db, `viewers/${$dbUser?.uid}/images`), incoming);
+	};
 
-	function handleInputChange(e: KeyboardEvent) {
+	function handleInputChange(e: Event & { target: HTMLInputElement; code: string }) {
 		const regex = new RegExp(
-			/^(ftp|http|https|chrome|:\/\/|\.|@){2,}(localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|\S*:\w*@)*([a-zA-Z]|(\d{1,3}|\.){7}){1,}(\w|\.{2,}|\.[a-zA-Z]{2,3}|\/|\?|&|:\d|@|=|\/|\(.*\)|#|-|%)*$/gmu,
-		)
-		let item = e.target!.value
+			/^(ftp|http|https|chrome|:\/\/|\.|@){2,}(localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|\S*:\w*@)*([a-zA-Z]|(\d{1,3}|\.){7}){1,}(\w|\.{2,}|\.[a-zA-Z]{2,3}|\/|\?|&|:\d|@|=|\/|\(.*\)|#|-|%)*$/gmu
+		);
+		let item: Image = {
+			url: e.target.value,
+			carousel: false,
+			gallery: false,
+			now: false,
+			title: ''
+		};
 
-		if (regex.test(item)) {
-			urlValid = true
+		if (regex.test(item.url)) {
+			urlValid = true;
 		} else {
-			urlValid = false
+			urlValid = false;
 		}
 
 		if (e.code === 'Enter') {
 			// enter
-			addOne(item)
-			newurl = ''
+			addOne(item);
+			newurl = '';
 		}
 
 		if (e.code === 'Escape') {
 			// esc
-			newurl = ''
+			newurl = '';
 		}
 	}
 
 	const imageDelete = (image: string) => {
-		const remv = images.indexOf(image)
-		const newimages = images.splice(remv, 1)
-		updateDoc(viewersRef, { images: newimages })
-		images = newimages
-	}
+		const remv = images.indexOf(image);
+		const newimages = images.splice(remv, 1);
+		updateDoc(viewersRef, { images: newimages });
+		images = newimages;
+	};
 
-	getDoc(viewersRef).then(doc => {
-		viewer = doc.data()
-	})
+	getDoc(viewersRef).then((doc) => {
+		viewer = doc.data();
+	});
 
-	onMount(async () => {})
+	onMount(async () => {});
 
-	$: console.log(`LOG..+page: viewer`, viewer, viewer?.images)
+	$: console.log(`LOG..+page: WATCH`, $dbUser?.id);
 </script>
 
 <div class="flex flex-col gap-10">
@@ -92,18 +96,10 @@
 						<br />
 						<a href={''} on:click={() => imageDelete(image)}>❌</a>
 					</div>
-					<img
-						src={image}
-						alt="image"
-						class="object-cover object-top w-36 h-36 rounded-2xl"
-					/>
+					<img src={image} alt="image" class="object-cover object-top w-36 h-36 rounded-2xl" />
 					<div class="">
 						<label class="cursor-pointer label">
-							<input
-								type="checkbox"
-								class="toggle toggle-xs toggle-secondary"
-								checked
-							/>
+							<input type="checkbox" class="toggle toggle-xs toggle-secondary" checked />
 							<span class="label-text">Carousel?</span>
 						</label>
 					</div>
