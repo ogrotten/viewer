@@ -21,12 +21,12 @@ let auth = {}
 Promise.all([
 	app = initializeApp(firebaseConfig),
 ]).then(() => {
-	console.log(`LOG..firebase: run auth`, app.options)
+	console.log(`LOG..firebase: run auth`, app.name)
 	auth = getAuth(app)
 	// db = getFirestore(app)
 	return auth
 }).then(() => {
-	console.log(`LOG..firebase: run db`, app.options)
+	console.log(`LOG..firebase: run db`, app.name)
 	db = getFirestore(app)
 }).catch((error) => console.log(`LOG..firebase: error`, error))
 

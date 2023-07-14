@@ -2,15 +2,11 @@
 	import { Icon } from '@steeze-ui/svelte-icon'
 	import { Check, XMark } from '@steeze-ui/heroicons'
 	import { onMount } from 'svelte'
-	import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore'
+	import { addDoc, collection, doc, query, onSnapshot, getDocs } from 'firebase/firestore'
 	import { db } from '$lib/firebase'
 	import { dbUser } from '$lib/firestore'
 
-	const viewersRef = doc(db, `viewers/${$dbUser?.id}`)
-
-	let viewer = {
-		images: [],
-	}
+	let images: Image[]
 
 	let newImg: Image = {
 			url: '',
@@ -25,6 +21,7 @@
 		// Add a new document with a generated id.
 		console.log(`LOG..+page: addOne`, incoming)
 		const docRef = await addDoc(collection(db, `viewers/${$dbUser?.uid}/images`), incoming)
+		images = [...images, incoming]
 	}
 
 	function handleInputChange(e: Event & { target: HTMLInputElement; code: string }) {
@@ -42,21 +39,23 @@
 		urlValid = regex.test(item.url)
 	}
 
-	const imageDelete = (image: {}) => {
-		const remv = viewer.images.indexOf(image)
-		const newimages = viewer.images.splice(remv, 1)
-		updateDoc(viewersRef, { images: newimages })
-		images = newimages
+	const imageDelete = (image: {}) => {}
+
+	$: if ($dbUser?.id) {
+		const querySnapshot = getDocs(collection(db, 'viewers', $dbUser?.uid, 'images')).then(
+			querySnapshot => {
+				console.log(`LOG..+page: begin`, querySnapshot)
+
+				images = [...querySnapshot.docs.map(doc => doc.data())]
+			},
+		)
 	}
 
-	getDoc(viewersRef).then(doc => {
-		let M = doc.data()
-		console.log(`LOG..+page: M`, M)
-	})
+	// console.log(`LOG..+page: querySnapshot`, querySnapshot)
 
 	onMount(async () => {})
 
-	$: console.log(`LOG..+page: WATCH`, $dbUser?.id)
+	$: console.log(`LOG..+page: WATCH`, images)
 </script>
 
 <div class="flex flex-col gap-10">
@@ -80,27 +79,23 @@
 		</button>
 	</div>
 	<div class="flex flex-row gap-6">
-		{#if viewer?.images}
-			{#each viewer.images as image}
+		{#if images?.length > 0}
+			{#each images as image}
 				<!-- <Icon src={XMark} class="w-4 h-4 mr-2 font-bold text-red-600" /> -->
 				<!-- svelte-ignore a11y-img-redundant-alt -->
 				<span class="flex flex-col">
 					<div class="flex justify-between">
-						<br />
 						<a href={''} on:click={() => imageDelete(image)}>❌</a>
 					</div>
 					<img
-						src={image}
+						src={image.url}
 						alt="image"
 						class="object-cover object-top w-36 h-36 rounded-2xl"
 					/>
-					<div class="">
+					<div class="flex flex-col">
+						<p class="h-8">{image.title || ''}</p>
 						<label class="cursor-pointer label">
-							<input
-								type="checkbox"
-								class="toggle toggle-xs toggle-secondary"
-								checked
-							/>
+							<input type="checkbox" checked={image.carousel} />
 							<span class="label-text">Carousel?</span>
 						</label>
 					</div>

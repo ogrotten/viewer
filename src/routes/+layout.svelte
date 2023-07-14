@@ -5,10 +5,10 @@
 	import { dbUser } from '$lib/firestore'
 	import { goto } from '$app/navigation'
 
-	// if (!dbUser) {
-	// 	console.log(`LOG..+layout: no user`)
-	// 	goto('/')
-	// }
+	if (!dbUser) {
+		console.log(`LOG..+layout: no user`)
+		goto('/')
+	}
 </script>
 
 <TopNav />
