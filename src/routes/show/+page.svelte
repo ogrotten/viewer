@@ -33,15 +33,21 @@
 
 	$: if ($dbUser?.id) getGallery()
 
-	$: console.log(`LOG..+page: gallery`, gallery)
+	$: console.log(`LOG..+page: gallery`, gallery[0])
 </script>
 
-<div id="show" class="flex flex-wrap w-full h-full overflow-hidden" class:bg-yellow-800={debug}>
+<!-- <div
+	id="show"
+	class="grid grid-cols{gallery.length} w-full h-full overflow-hidden"
+	class:bg-yellow-800={debug}
+>
 	{#each gallery as img}
-		<img
-			src={img.url}
-			alt={img.title}
-			class="object-contain w-1/{gallery.length} h-screen flex-shrink"
-		/>
-	{/each}
-</div>
+		<img src={img.url} alt={img.title} class="w-1/{gallery.length} h-screen" />
+		<div class="bg-[url({img.url})] w-1/{gallery.length} h-screen" />
+		{/each}
+	</div> -->
+
+<div
+	class="w-1/4 h-screen bg-center bg-no-repeat bg-cover"
+	style="background-image: url({gallery[0]?.url})"
+/>
