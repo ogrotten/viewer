@@ -26,7 +26,7 @@
 		urlValid = false,
 		disableNow = false
 
-	let show = { gallery: false, now: false }
+	let show = { gallery: false, now: false, carousel: false }
 
 	const resetImage = () => {
 		newImg = {
@@ -120,6 +120,15 @@
 			on:click={updateShow}
 		>
 			Now
+		</button>
+		<button
+			name="carousel"
+			id="carousel"
+			class:btn-outline={!show.carousel}
+			class="h-full w-60 btn btn-outline btn-info"
+			on:click={updateShow}
+		>
+			Carousel
 		</button>
 	</div>
 	<div class="flex items-center justify-start gap-2">

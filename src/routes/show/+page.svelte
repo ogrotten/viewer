@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import fadeScale from '$lib/svelte-transitions-fade-scale.js'
-	import { cubicInOut, cubicOut, cubicIn } from 'svelte/easing'
+	import { crossfade } from 'svelte/transition'
+	import { cubicInOut, cubicOut, cubicIn, linear } from 'svelte/easing'
 	import {
 		addDoc,
 		collection,
@@ -30,6 +31,10 @@
 		unsubGallery,
 		unsubNow
 
+	let carousel: Image[] = [],
+		unsubCarousel,
+		showCarousel = false
+
 	let nowCount = 0
 
 	async function setup() {
@@ -37,6 +42,15 @@
 			viewer = doc.data()
 			showGallery = viewer.gallery
 			showNow = viewer.now
+			showCarousel = viewer.carousel
+		})
+
+		const c = query(
+			collection(db, 'viewers', $dbUser?.uid, 'images'),
+			where('carousel', '==', true),
+		)
+		unsubGallery = onSnapshot(c, snap => {
+			carousel = [...snap.docs].map(doc => ({ id: doc.id, ...doc.data() }))
 		})
 
 		const g = query(
@@ -52,6 +66,40 @@
 		unsubNow = onSnapshot(n, snap => {
 			now = [...snap.docs].map(doc => ({ id: doc.id, ...doc.data() }))
 		})
+
+		runBg()
+	}
+
+	const [send, receive] = crossfade({
+		duration: d => Math.sqrt(d * 2000),
+
+		fallback(node, params) {
+			const style = getComputedStyle(node)
+			const transform = style.transform === 'none' ? '' : style.transform
+
+			return {
+				duration: 2000,
+				easing: linear,
+				css: t => `
+					transform: ${transform} scale(${t});
+					opacity: ${t}
+				`,
+			}
+		},
+	})
+
+	let bgimg = {}
+	let carCount = 1
+	function runBg() {
+		const intervalId = setInterval(() => {
+			carCount++
+			carCount = carCount >= carousel.length ? 0 : carCount
+			console.log(`LOG..+page: carCount`, carousel[carCount].url)
+			bgimg = {
+				url: carousel[carCount].url,
+				title: carousel[carCount].title,
+			}
+		}, 2000)
 	}
 
 	$: if ($dbUser?.id) setup()
@@ -60,6 +108,8 @@
 		showGallery = viewer.gallery
 		showNow = viewer.now
 	}
+
+	$: console.log(`LOG..+page: carousel`, carousel)
 </script>
 
 {#if showGallery}
@@ -106,4 +156,24 @@
 			baseScale: 0.85,
 		}}
 	/>
+{:else if showCarousel}
+	<!-- {#each carousel as img, idx}
+		{#if idx % 2 === 0} -->
+	<img
+		alt={bgimg?.title}
+		src={bgimg?.url}
+		class="object-contain w-screen h-screen transition-all duration-1000"
+	/>
+	<!-- in:receive={{ key: img.id }}
+		out:send={{ key: img.id }} -->
+	<!-- {:else}
+			<img
+				alt={now?.[0]?.title}
+				src={now?.[0]?.url}
+				class="object-contain w-screen h-screen transition-all duration-1000"
+				in:receive={{ key: img.id }}
+				out:send={{ key: img.id }}
+			/>
+		{/if}
+	{/each} -->
 {/if}

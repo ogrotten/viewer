@@ -51,6 +51,7 @@ function userStore() {
 						setDoc(viewRef, {
 							gallery: false,
 							now: false,
+							carousel: false,
 						})
 					}
 				})
