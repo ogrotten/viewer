@@ -11,7 +11,7 @@
 		goto('/')
 	}
 
-	const debug = true
+	const debug = false
 </script>
 
 {#if $page.url.pathname !== '/show'}

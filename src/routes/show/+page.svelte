@@ -38,12 +38,12 @@
 	$: console.log(`LOG..+page: gallery`, gallery[0])
 </script>
 
-<div id="show" class="flex flex-row">
+<div id="show" class="box-border flex flex-row w-full h-full">
 	{#each gallery as img}
 		<div
 			transition:fadeScale={{
 				delay: 0,
-				duration: 200,
+				duration: 500,
 				easing: cubicInOut,
 				baseScale: 0.85,
 			}}
