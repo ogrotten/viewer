@@ -13,6 +13,8 @@
 
 	const show = $page.url.pathname === '/show'
 	const debug = false
+
+	$: console.log(`LOG..+layout: $page.url.pathname`, $page.url.pathname)
 </script>
 
 {#if !show}
