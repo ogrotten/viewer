@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { Icon } from '@steeze-ui/svelte-icon'
-	import { Check, XMark } from '@steeze-ui/heroicons'
 	import { onMount } from 'svelte'
 	import {
 		addDoc,
@@ -25,7 +23,8 @@
 			title: '',
 			id: '',
 		},
-		urlValid = false
+		urlValid = false,
+		disableNow = false
 
 	const resetImage = () => {
 		newImg = {
@@ -36,6 +35,12 @@
 			title: '',
 		}
 		urlValid = false
+	}
+
+	async function getImages() {
+		const querySnapshot = await getDocs(collection(db, 'viewers', $dbUser?.uid, 'images'))
+		images = [...querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))]
+		resetImage()
 	}
 
 	const addOne = async (incoming: Image) => {
@@ -69,15 +74,18 @@
 
 	async function parameter(image: Image) {
 		console.log(`LOG..+page: parameter`, image.carousel)
+		if (image.now) {
+			const { id } = image
+			images.forEach((img, idx) => {
+				if (img.now && img.id !== id) {
+					img.now = false
+					updateDoc(doc(db, 'viewers', $dbUser?.uid, 'images', img.id), img)
+				}
+			})
+		}
 		updateDoc(doc(db, 'viewers', $dbUser?.uid, 'images', image.id), image).then(() => {
 			getImages()
 		})
-	}
-
-	async function getImages() {
-		const querySnapshot = await getDocs(collection(db, 'viewers', $dbUser?.uid, 'images'))
-		images = [...querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))]
-		resetImage()
 	}
 
 	onMount(async () => {})
@@ -146,7 +154,7 @@
 							class:selected={image.now}
 							on:click={() => parameter({ ...image, now: !image.now })}
 						>
-							<span class="label-text">Show Now</span>
+							<span class="label-text">Now</span>
 						</button>
 					</div>
 				</span>
