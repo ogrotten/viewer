@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
+	import fadeScale from '$lib/svelte-transitions-fade-scale.js'
+	import { cubicInOut } from 'svelte/easing'
 	import {
 		addDoc,
 		collection,
@@ -39,7 +41,13 @@
 <div id="show" class="flex flex-row">
 	{#each gallery as img}
 		<div
-			class="h-screen transition-all bg-center bg-no-repeat bg-cover"
+			transition:fadeScale={{
+				delay: 0,
+				duration: 200,
+				easing: cubicInOut,
+				baseScale: 0.85,
+			}}
+			class="h-screen transition-all duration-1000 bg-center bg-no-repeat bg-cover"
 			style="width: {100 / gallery.length}%; background-image: url({img.url})"
 		/>
 	{/each}
