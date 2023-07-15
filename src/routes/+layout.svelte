@@ -10,12 +10,17 @@
 		console.log(`LOG..+layout: no user`)
 		goto('/')
 	}
+
+	const debug = true
 </script>
 
 {#if $page.url.pathname !== '/show'}
 	<TopNav />
 {/if}
 
-<div class="p-6 m-4 mt-0 border-t-2 border-gray-700">
+<div
+	class="w-full h-full min-h-screen p-6 m-4 mt-0 overflow-hidden border-t-2 border-gray-700"
+	class:bg-red-800={debug}
+>
 	<slot />
 </div>
