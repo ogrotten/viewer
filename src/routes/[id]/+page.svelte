@@ -1,110 +1,165 @@
 <script lang="ts">
-	import { Icon } from '@steeze-ui/svelte-icon';
-	import { Check, XMark } from '@steeze-ui/heroicons';
-	import { onMount } from 'svelte';
-	import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
-	import { db } from '$lib/firebase';
-	import { dbUser } from '$lib/firestore';
+	import { Icon } from '@steeze-ui/svelte-icon'
+	import { Check, XMark } from '@steeze-ui/heroicons'
+	import { onMount } from 'svelte'
+	import {
+		addDoc,
+		collection,
+		doc,
+		query,
+		onSnapshot,
+		getDocs,
+		deleteDoc,
+		updateDoc,
+	} from 'firebase/firestore'
+	import { db } from '$lib/firebase'
+	import { dbUser } from '$lib/firestore'
 
-	const viewersRef = doc(db, `viewers/${$dbUser?.id}`);
+	let images: Image[]
 
-	let viewer = {
-		images: []
-	};
+	let newImg: Image = {
+			url: '',
+			carousel: false,
+			gallery: false,
+			now: false,
+			title: '',
+			id: '',
+		},
+		urlValid = false
 
-	let newurl = '',
-		urlValid = false;
+	const resetImage = () => {
+		newImg = {
+			url: '',
+			carousel: false,
+			gallery: false,
+			now: false,
+			title: '',
+		}
+		urlValid = false
+	}
 
-	const addOne = async (incoming: {}) => {
+	const addOne = async (incoming: Image) => {
 		// Add a new document with a generated id.
-		console.log(`LOG..+page: $dbUser.id`, $dbUser);
-		const docRef = await addDoc(collection(db, `viewers/${$dbUser?.uid}/images`), incoming);
-	};
+		console.log(`LOG..+page: addOne`, incoming)
+		const docRef = await addDoc(collection(db, `viewers/${$dbUser?.uid}/images`), incoming)
+		getImages()
+	}
 
 	function handleInputChange(e: Event & { target: HTMLInputElement; code: string }) {
 		const regex = new RegExp(
-			/^(ftp|http|https|chrome|:\/\/|\.|@){2,}(localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|\S*:\w*@)*([a-zA-Z]|(\d{1,3}|\.){7}){1,}(\w|\.{2,}|\.[a-zA-Z]{2,3}|\/|\?|&|:\d|@|=|\/|\(.*\)|#|-|%)*$/gmu
-		);
+			/^(ftp|http|https|chrome|:\/\/|\.|@){2,}(localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|\S*:\w*@)*([a-zA-Z]|(\d{1,3}|\.){7}){1,}(\w|\.{2,}|\.[a-zA-Z]{2,3}|\/|\?|&|:\d|@|=|\/|\(.*\)|#|-|%)*$/gmu,
+		)
 		let item: Image = {
 			url: e.target.value,
 			carousel: false,
 			gallery: false,
 			now: false,
-			title: ''
-		};
-
-		if (regex.test(item.url)) {
-			urlValid = true;
-		} else {
-			urlValid = false;
+			title: '',
 		}
 
-		if (e.code === 'Enter') {
-			// enter
-			addOne(item);
-			newurl = '';
-		}
-
-		if (e.code === 'Escape') {
-			// esc
-			newurl = '';
-		}
+		urlValid = regex.test(item.url)
 	}
 
-	const imageDelete = (image: string) => {
-		const remv = images.indexOf(image);
-		const newimages = images.splice(remv, 1);
-		updateDoc(viewersRef, { images: newimages });
-		images = newimages;
-	};
+	async function imageDelete<T>(image, idx) {
+		await deleteDoc(doc(db, 'viewers', $dbUser?.uid, 'images', image.id)).then(() => {
+			console.log(`LOG..+page: deleted`)
+			getImages()
+		})
+	}
 
-	getDoc(viewersRef).then((doc) => {
-		viewer = doc.data();
-	});
+	async function parameter(image: Image) {
+		console.log(`LOG..+page: parameter`, image.carousel)
+		updateDoc(doc(db, 'viewers', $dbUser?.uid, 'images', image.id), image).then(() => {
+			getImages()
+		})
+	}
 
-	onMount(async () => {});
+	async function getImages() {
+		const querySnapshot = await getDocs(collection(db, 'viewers', $dbUser?.uid, 'images'))
+		images = [...querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))]
+		resetImage()
+	}
 
-	$: console.log(`LOG..+page: WATCH`, $dbUser?.id);
+	onMount(async () => {})
+
+	$: if ($dbUser?.id) getImages()
 </script>
 
 <div class="flex flex-col gap-10">
 	<div class="flex items-center justify-start gap-2">
 		<input
+			type="title"
+			placeholder="Title (optional)"
+			class="w-full max-w-xs input-sm input input-bordered input-primary"
+			bind:value={newImg.title}
+		/>
+		<input
 			type="url"
 			placeholder="Image URL"
 			class="w-full max-w-xs input-sm input input-bordered input-primary"
-			bind:value={newurl}
-			on:keyup={handleInputChange}
+			bind:value={newImg.url}
+			on:change={handleInputChange}
 		/>
 
-		<div class="justify-start w-8 text-sm">
-			{#if newurl && urlValid}
-				<!-- <span class="flex w-min"> -->
-				<!-- <Icon src={Check} class="mr-2 text-green-400" /> -->
-				<kbd class="kbd kbd-sm min-w-min">Enter</kbd>
-				<!-- </span> -->
-			{:else if newurl && !urlValid}{/if}
-		</div>
+		<button class="btn btn-primary btn-sm" disabled={!urlValid} on:click={() => addOne(newImg)}>
+			Add
+		</button>
 	</div>
 	<div class="flex flex-row gap-6">
-		{#if viewer?.images}
-			{#each viewer.images as image}
+		{#if images?.length > 0}
+			{#each images as image, idx (image.id)}
 				<!-- <Icon src={XMark} class="w-4 h-4 mr-2 font-bold text-red-600" /> -->
 				<!-- svelte-ignore a11y-img-redundant-alt -->
 				<span class="flex flex-col">
 					<div class="flex justify-between">
 						<br />
-						<a href={''} on:click={() => imageDelete(image)}>❌</a>
+						<a href={''} on:click={() => imageDelete(image, idx)}>❌</a>
 					</div>
-					<img src={image} alt="image" class="object-cover object-top w-36 h-36 rounded-2xl" />
-					<div class="">
-						<label class="cursor-pointer label">
-							<input type="checkbox" class="toggle toggle-xs toggle-secondary" checked />
-							<span class="label-text">Carousel?</span>
-						</label>
+					<a href={image.url} class="" target="_blank">
+						<img
+							src={image.url}
+							alt="image"
+							class="object-cover object-top w-36 h-36 rounded-2xl"
+						/>
+					</a>
+					<div class="flex flex-col gap-2">
+						<p class=" min-h-8">{image.title || ''}</p>
+
+						<button
+							class:unselected={!image.carousel}
+							class:selected={image.carousel}
+							on:click={() => parameter({ ...image, carousel: !image.carousel })}
+						>
+							<span class="label-text">Carousel</span>
+						</button>
+
+						<button
+							class:unselected={!image.gallery}
+							class:selected={image.gallery}
+							on:click={() => parameter({ ...image, gallery: !image.gallery })}
+						>
+							<span class="label-text">Gallery</span>
+						</button>
+
+						<button
+							class:unselected={!image.now}
+							class:selected={image.now}
+							on:click={() => parameter({ ...image, now: !image.now })}
+						>
+							<span class="label-text">Show Now</span>
+						</button>
 					</div>
 				</span>
 			{/each}
 		{/if}
 	</div>
 </div>
+
+<style>
+	.selected {
+		@apply btn-secondary text-gray-800;
+	}
+	.unselected {
+		@apply btn-neutral text-gray-200;
+	}
+</style>

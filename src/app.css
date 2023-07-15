@@ -3,5 +3,9 @@
 @tailwind utilities;
 
 a {
-	@apply text-yellow-500 font-bold;
+	@apply font-bold text-primary;
+}
+
+button {
+	@apply font-bold rounded-lg;
 }

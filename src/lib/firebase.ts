@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app"
+import { initializeApp, type FirebaseApp } from "firebase/app"
 // import { getAnalytics } from "firebase/analytics"
 import { getFirestore } from "firebase/firestore"
 import { getAuth } from "firebase/auth"
@@ -14,10 +14,29 @@ const firebaseConfig = {
 	appId: "1:565427240686:web:7d6c7651abc02298e57dff"
 }
 
-// Initialize Firebase
-export const app = initializeApp(firebaseConfig)
-// const analytics = getAnalytics(app)
-export const db = getFirestore(app)
-export const auth = getAuth(app)
+let app: FirebaseApp
+let db
+let auth = {}
+
+Promise.all([
+	app = initializeApp(firebaseConfig),
+]).then(() => {
+	console.log(`LOG..firebase: run auth`, app.name)
+	auth = getAuth(app)
+	// db = getFirestore(app)
+	return auth
+}).then(() => {
+	console.log(`LOG..firebase: run db`, app.name)
+	db = getFirestore(app)
+}).catch((error) => console.log(`LOG..firebase: error`, error))
+
+// try {
+// 	app = initializeApp(firebaseConfig)
+// 	auth = getAuth(app)
+// 	db = getFirestore(app)
+// } catch (error) {
+// 	console.log(`LOG..firebase: error`, error)
+// }
 
 
+export { auth, app, db, }
