@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import fadeScale from '$lib/svelte-transitions-fade-scale.js'
-	import { crossfade } from 'svelte/transition'
+	import { crossfade, fade } from 'svelte/transition'
 	import { cubicInOut, cubicOut, cubicIn, linear } from 'svelte/easing'
 	import {
 		addDoc,
@@ -87,9 +87,7 @@
 	})
 
 	let bgimg = {}
-	let firstIndex = 0,
-		secondIndex = 1,
-		showFirst = true,
+	let carIndex = 0,
 		carCount = 1,
 		intervalId
 
@@ -103,18 +101,11 @@
 			// 	title: carousel[carCount].title,
 			// }
 			nextImg()
-		}, 2000)
+		}, 10000)
 	}
 
 	function nextImg() {
-		showFirst = !showFirst
-		setTimeout(() => {
-			if (showFirst) {
-				secondIndex = (secondIndex + 1) % carousel.length
-			} else {
-				firstIndex = (firstIndex + 1) % carousel.length
-			}
-		}, 500)
+		carIndex = (carIndex + 1) % carousel.length
 	}
 
 	$: if (showCarousel) runBg()
@@ -127,7 +118,7 @@
 		showNow = viewer.now
 	}
 
-	$: console.log(`LOG..+page: carousel`, firstIndex, secondIndex)
+	$: console.log(`LOG..+page: carousel`, carousel?.[carIndex]?.url)
 </script>
 
 {#if showNow && now?.[0]?.url}
@@ -178,8 +169,28 @@
 {:else if showCarousel}
 	<!-- {#each carousel as img, idx}
 		{#if idx % 2 === 0} -->
-	<div id="carousel" class="">
-		<img
+	<div
+		id="carousel"
+		class=""
+		transition:fade={{
+			delay: 0,
+			duration: 3000,
+			easing: cubicInOut,
+		}}
+	>
+		{#each [carousel[carIndex]] as img (carIndex)}
+			<img
+				alt={img?.title}
+				src={img?.url}
+				class="object-contain w-screen h-screen transition-all duration-1000"
+				transition:fade={{
+					delay: 0,
+					duration: 3000,
+					easing: cubicInOut,
+				}}
+			/>
+		{/each}
+		<!-- <img
 			src={carousel?.[firstIndex]?.url}
 			alt={carousel?.[firstIndex]?.title}
 			class="object-contain w-screen h-screen transition-all duration-1000"
@@ -190,7 +201,7 @@
 			alt={carousel?.[secondIndex]?.title}
 			class="object-contain w-screen h-screen transition-all duration-1000"
 			class:visible={!showFirst}
-		/>
+		/> -->
 	</div>
 	<!-- in:receive={{ key: img.id }}
 		out:send={{ key: img.id }} -->
@@ -209,10 +220,5 @@
 <style>
 	img {
 		position: absolute;
-		opacity: 0;
-		transition: opacity 0.5s;
-	}
-	.visible {
-		opacity: 1;
 	}
 </style>
