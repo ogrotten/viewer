@@ -110,35 +110,44 @@
 							class="object-cover object-top w-36 h-36 rounded-2xl"
 						/>
 					</a>
-					<div class="flex flex-col">
-						<p class="h-8">{image.title || ''}</p>
-						<label class="cursor-pointer label">
-							<input
-								type="checkbox"
-								checked={image.carousel}
-								on:change={() => parameter({ ...image, carousel: !image.carousel })}
-							/>
+					<div class="flex flex-col gap-2">
+						<p class=" min-h-8">{image.title || ''}</p>
+
+						<button
+							class:unselected={!image.carousel}
+							class:selected={image.carousel}
+							on:click={() => parameter({ ...image, carousel: !image.carousel })}
+						>
 							<span class="label-text">Carousel</span>
-						</label>
-						<label class="cursor-pointer label">
-							<input
-								type="checkbox"
-								checked={image.gallery}
-								on:change={() => parameter({ ...image, gallery: !image.gallery })}
-							/>
+						</button>
+
+						<button
+							class:unselected={!image.gallery}
+							class:selected={image.gallery}
+							on:click={() => parameter({ ...image, gallery: !image.gallery })}
+						>
 							<span class="label-text">Gallery</span>
-						</label>
-						<label class="cursor-pointer label">
-							<input
-								type="checkbox"
-								checked={image.now}
-								on:change={() => parameter({ ...image, now: !image.now })}
-							/>
-							<span class="label-text">Now</span>
-						</label>
+						</button>
+
+						<button
+							class:unselected={!image.now}
+							class:selected={image.now}
+							on:click={() => parameter({ ...image, now: !image.now })}
+						>
+							<span class="label-text">Show Now</span>
+						</button>
 					</div>
 				</span>
 			{/each}
 		{/if}
 	</div>
 </div>
+
+<style>
+	.selected {
+		@apply btn-secondary text-gray-800;
+	}
+	.unselected {
+		@apply btn-neutral text-gray-200;
+	}
+</style>

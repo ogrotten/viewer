@@ -5,3 +5,7 @@
 a {
 	@apply font-bold text-primary;
 }
+
+button {
+	@apply font-bold rounded-lg;
+}
