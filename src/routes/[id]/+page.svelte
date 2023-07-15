@@ -10,6 +10,7 @@
 		onSnapshot,
 		getDocs,
 		deleteDoc,
+		updateDoc,
 	} from 'firebase/firestore'
 	import { db } from '$lib/firebase'
 	import { dbUser } from '$lib/firestore'
@@ -60,13 +61,16 @@
 		images = [...querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))]
 	}
 
-	$: if ($dbUser?.id) getImages()
-
-	// console.log(`LOG..+page: querySnapshot`, querySnapshot)
+	async function parameter(image: Image) {
+		console.log(`LOG..+page: parameter`, image.carousel)
+		updateDoc(doc(db, 'viewers', $dbUser?.uid, 'images', image.id), image).then(() => {
+			getImages()
+		})
+	}
 
 	onMount(async () => {})
 
-	$: console.log(`LOG..+page: WATCH`, images)
+	$: if ($dbUser?.id) getImages()
 </script>
 
 <div class="flex flex-col gap-10">
@@ -109,8 +113,28 @@
 					<div class="flex flex-col">
 						<p class="h-8">{image.title || ''}</p>
 						<label class="cursor-pointer label">
-							<input type="checkbox" checked={image.carousel} />
-							<span class="label-text">Carousel?</span>
+							<input
+								type="checkbox"
+								checked={image.carousel}
+								on:change={() => parameter({ ...image, carousel: !image.carousel })}
+							/>
+							<span class="label-text">Carousel</span>
+						</label>
+						<label class="cursor-pointer label">
+							<input
+								type="checkbox"
+								checked={image.gallery}
+								on:change={() => parameter({ ...image, gallery: !image.gallery })}
+							/>
+							<span class="label-text">Gallery</span>
+						</label>
+						<label class="cursor-pointer label">
+							<input
+								type="checkbox"
+								checked={image.now}
+								on:change={() => parameter({ ...image, now: !image.now })}
+							/>
+							<span class="label-text">Now</span>
 						</label>
 					</div>
 				</span>
