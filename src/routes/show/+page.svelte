@@ -66,8 +66,6 @@
 		unsubNow = onSnapshot(n, snap => {
 			now = [...snap.docs].map(doc => ({ id: doc.id, ...doc.data() }))
 		})
-
-		runBg()
 	}
 
 	const [send, receive] = crossfade({
@@ -89,18 +87,38 @@
 	})
 
 	let bgimg = {}
-	let carCount = 1
+	let firstIndex = 0,
+		secondIndex = 1,
+		showFirst = true,
+		carCount = 1,
+		intervalId
+
 	function runBg() {
-		const intervalId = setInterval(() => {
-			carCount++
-			carCount = carCount >= carousel.length ? 0 : carCount
-			console.log(`LOG..+page: carCount`, carousel[carCount].url)
-			bgimg = {
-				url: carousel[carCount].url,
-				title: carousel[carCount].title,
-			}
+		intervalId = setInterval(() => {
+			// carCount++
+			// carCount = carCount >= carousel.length ? 0 : carCount
+			// console.log(`LOG..+page: carCount`, carousel[carCount].url)
+			// bgimg = {
+			// 	url: carousel[carCount].url,
+			// 	title: carousel[carCount].title,
+			// }
+			nextImg()
 		}, 2000)
 	}
+
+	function nextImg() {
+		showFirst = !showFirst
+		setTimeout(() => {
+			if (showFirst) {
+				secondIndex = (secondIndex + 1) % carousel.length
+			} else {
+				firstIndex = (firstIndex + 1) % carousel.length
+			}
+		}, 500)
+	}
+
+	$: if (showCarousel) runBg()
+	else clearInterval(intervalId)
 
 	$: if ($dbUser?.id) setup()
 
@@ -109,37 +127,12 @@
 		showNow = viewer.now
 	}
 
-	$: console.log(`LOG..+page: carousel`, carousel)
+	$: console.log(`LOG..+page: carousel`, firstIndex, secondIndex)
 </script>
 
-{#if showGallery}
-	<div
-		id="show"
-		class="box-border flex flex-row w-full h-full"
-		transition:fadeScale={{
-			delay: 0,
-			duration: 500,
-			easing: cubicInOut,
-			baseScale: 0.85,
-		}}
-	>
-		{#each gallery as img}
-			<div
-				transition:fadeScale={{
-					delay: 0,
-					duration: 500,
-					easing: cubicInOut,
-					baseScale: 0.85,
-				}}
-				class="h-screen transition-all duration-500 bg-center bg-no-repeat hover:ring-[24px] ring-inset ring-slate-500/50 scale-100 hover:scale-105 origin-top"
-				class:bg-contain={gallery.length === 1}
-				class:bg-cover={gallery.length > 1}
-				style="width: {100 / gallery.length}%; background-image: url({img.url})"
-			/>
-		{/each}
-	</div>
-{:else if showNow && now?.[0]?.url}
+{#if showNow && now?.[0]?.url}
 	<img
+		id="now"
 		alt={now[0].title}
 		src={now[0].url}
 		class="object-contain w-screen h-screen transition-all duration-1000"
@@ -156,14 +149,49 @@
 			baseScale: 0.85,
 		}}
 	/>
+{:else if showGallery}
+	<div
+		id="gallery"
+		class="box-border flex flex-row w-full h-full"
+		transition:fadeScale={{
+			delay: 0,
+			duration: 500,
+			easing: cubicInOut,
+			baseScale: 0.85,
+		}}
+	>
+		{#each gallery as img}
+			<div
+				transition:fadeScale={{
+					delay: 0,
+					duration: 500,
+					easing: cubicInOut,
+					baseScale: 0.85,
+				}}
+				class="h-screen transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat hover:scale-105"
+				class:bg-contain={gallery.length === 1}
+				class:bg-cover={gallery.length > 1}
+				style="width: {100 / gallery.length}%; background-image: url({img.url})"
+			/>
+		{/each}
+	</div>
 {:else if showCarousel}
 	<!-- {#each carousel as img, idx}
 		{#if idx % 2 === 0} -->
-	<img
-		alt={bgimg?.title}
-		src={bgimg?.url}
-		class="object-contain w-screen h-screen transition-all duration-1000"
-	/>
+	<div id="carousel" class="">
+		<img
+			src={carousel?.[firstIndex]?.url}
+			alt={carousel?.[firstIndex]?.title}
+			class="object-contain w-screen h-screen transition-all duration-1000"
+			class:visible={showFirst}
+		/>
+		<img
+			src={carousel?.[secondIndex]?.url}
+			alt={carousel?.[secondIndex]?.title}
+			class="object-contain w-screen h-screen transition-all duration-1000"
+			class:visible={!showFirst}
+		/>
+	</div>
 	<!-- in:receive={{ key: img.id }}
 		out:send={{ key: img.id }} -->
 	<!-- {:else}
@@ -177,3 +205,14 @@
 		{/if}
 	{/each} -->
 {/if}
+
+<style>
+	img {
+		position: absolute;
+		opacity: 0;
+		transition: opacity 0.5s;
+	}
+	.visible {
+		opacity: 1;
+	}
+</style>

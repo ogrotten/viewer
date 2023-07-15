@@ -101,7 +101,7 @@
 	$: if ($dbUser?.id) getImages()
 </script>
 
-<div class="flex flex-col gap-10 p-10">
+<div class="flex flex-col gap-10">
 	<div class="flex flex-row justify-around w-full h-16 gap-16 my-10">
 		<button
 			name="gallery"

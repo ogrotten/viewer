@@ -11,13 +11,14 @@
 		goto('/')
 	}
 
+	const show = $page.url.pathname === '/show'
 	const debug = false
 </script>
 
-{#if $page.url.pathname !== '/show'}
+{#if !show}
 	<TopNav />
 {/if}
 
-<div class="w-full h-full min-h-screen overflow-hidden" class:bg-red-800={debug}>
+<div class="w-full h-full min-h-screen overflow-hidden" class:bg-red-800={debug} class:p-10={!show}>
 	<slot />
 </div>

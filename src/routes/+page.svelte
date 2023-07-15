@@ -6,10 +6,12 @@
 	$: console.log(`LOG..+page: user`, $dbUser)
 </script>
 
-<h1>Welcome</h1>
+<div class="">
+	<h1>Welcome</h1>
 
-{#if $dbUser}
-	<p>Logged in as {$dbUser.email}</p>
-{:else}
-	<p>Go <a href="/login">login</a></p>
-{/if}
+	{#if $dbUser}
+		<p>Logged in as {$dbUser.email}</p>
+	{:else}
+		<p>Go <a href="/login">login</a></p>
+	{/if}
+</div>
