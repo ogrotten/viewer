@@ -11,4 +11,5 @@ interface Image {
 	gallery: boolean;
 	now: boolean;
 	title: string;
+	id: string;
 }
