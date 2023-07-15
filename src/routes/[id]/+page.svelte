@@ -26,6 +26,8 @@
 		urlValid = false,
 		disableNow = false
 
+	let show = { gallery: false, now: false }
+
 	const resetImage = () => {
 		newImg = {
 			url: '',
@@ -88,23 +90,49 @@
 		})
 	}
 
+	function updateShow(e: Event & { target: HTMLButtonElement }) {
+		const { name } = e.target
+		show[name] = !show[name]
+		updateDoc(doc(db, 'viewers', $dbUser?.uid), { [name]: show[name] })
+	}
+
 	onMount(async () => {})
 
 	$: if ($dbUser?.id) getImages()
 </script>
 
-<div class="flex flex-col gap-10">
+<div class="flex flex-col gap-10 p-10">
+	<div class="flex flex-row justify-around w-full h-16 gap-16 my-10">
+		<button
+			name="gallery"
+			id="gallery"
+			class:btn-outline={!show.gallery}
+			class="h-full w-60 btn btn-outline btn-secondary"
+			on:click={updateShow}
+		>
+			Gallery
+		</button>
+		<button
+			name="now"
+			id="now"
+			class:btn-outline={!show.now}
+			class="h-full w-60 btn btn-outline btn-accent"
+			on:click={updateShow}
+		>
+			Now
+		</button>
+	</div>
 	<div class="flex items-center justify-start gap-2">
 		<input
 			type="title"
 			placeholder="Title (optional)"
-			class="w-full max-w-xs input-sm input input-bordered input-primary"
+			class="w-full max-w-xs input-sm input input-bordered input-neutral"
 			bind:value={newImg.title}
 		/>
 		<input
 			type="url"
 			placeholder="Image URL"
-			class="w-full max-w-xs input-sm input input-bordered input-primary"
+			class="w-full max-w-xs input-sm input input-bordered input-neutral"
 			bind:value={newImg.url}
 			on:change={handleInputChange}
 		/>
@@ -113,15 +141,18 @@
 			Add
 		</button>
 	</div>
-	<div class="flex flex-row gap-6">
+	<div class="flex flex-row flex-wrap gap-6">
 		{#if images?.length > 0}
 			{#each images as image, idx (image.id)}
 				<!-- <Icon src={XMark} class="w-4 h-4 mr-2 font-bold text-red-600" /> -->
 				<!-- svelte-ignore a11y-img-redundant-alt -->
-				<span class="flex flex-col">
+				<span class="flex flex-col p-4 border bg-stone-800 border-stone-600">
 					<div class="flex justify-between">
 						<br />
-						<a href={''} on:click={() => imageDelete(image, idx)}>❌</a>
+						<button
+							class="p-1 transition-all hover:bg-red-900"
+							on:click={() => imageDelete(image, idx)}>❌</button
+						>
 					</div>
 					<a href={image.url} class="" target="_blank">
 						<img
@@ -134,24 +165,27 @@
 						<p class=" min-h-8">{image.title || ''}</p>
 
 						<button
+							class="text-gray-800 btn btn-sm"
 							class:unselected={!image.carousel}
-							class:selected={image.carousel}
+							class:btn-primary={image.carousel}
 							on:click={() => parameter({ ...image, carousel: !image.carousel })}
 						>
 							<span class="label-text">Carousel</span>
 						</button>
 
 						<button
+							class="text-gray-800 btn btn-sm"
 							class:unselected={!image.gallery}
-							class:selected={image.gallery}
+							class:btn-secondary={image.gallery}
 							on:click={() => parameter({ ...image, gallery: !image.gallery })}
 						>
 							<span class="label-text">Gallery</span>
 						</button>
 
 						<button
+							class="text-gray-800 btn btn-sm"
 							class:unselected={!image.now}
-							class:selected={image.now}
+							class:btn-accent={image.now}
 							on:click={() => parameter({ ...image, now: !image.now })}
 						>
 							<span class="label-text">Now</span>
@@ -164,8 +198,8 @@
 </div>
 
 <style>
-	.selected {
-		@apply btn-secondary text-gray-800;
+	button {
+		@apply text-gray-800;
 	}
 	.unselected {
 		@apply btn-neutral text-gray-200;

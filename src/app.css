@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 a {
-	@apply font-bold text-primary;
+	@apply font-bold text-accent;
 }
 
 button {

@@ -48,9 +48,10 @@ function userStore() {
 							photoURL: user.photoURL,
 							id: user.uid,
 						})
-						// setDoc(viewRef, {
-						// 	images: [],
-						// })
+						setDoc(viewRef, {
+							gallery: false,
+							now: false,
+						})
 					}
 				})
 			}
