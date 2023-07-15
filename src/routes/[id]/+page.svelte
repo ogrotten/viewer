@@ -14,7 +14,6 @@
 	} from 'firebase/firestore'
 	import { db } from '$lib/firebase'
 	import { dbUser } from '$lib/firestore'
-	import { get } from 'svelte/store'
 
 	let images: Image[]
 
@@ -24,8 +23,20 @@
 			gallery: false,
 			now: false,
 			title: '',
+			id: '',
 		},
 		urlValid = false
+
+	const resetImage = () => {
+		newImg = {
+			url: '',
+			carousel: false,
+			gallery: false,
+			now: false,
+			title: '',
+		}
+		urlValid = false
+	}
 
 	const addOne = async (incoming: Image) => {
 		// Add a new document with a generated id.
@@ -56,16 +67,17 @@
 		})
 	}
 
-	async function getImages() {
-		const querySnapshot = await getDocs(collection(db, 'viewers', $dbUser?.uid, 'images'))
-		images = [...querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))]
-	}
-
 	async function parameter(image: Image) {
 		console.log(`LOG..+page: parameter`, image.carousel)
 		updateDoc(doc(db, 'viewers', $dbUser?.uid, 'images', image.id), image).then(() => {
 			getImages()
 		})
+	}
+
+	async function getImages() {
+		const querySnapshot = await getDocs(collection(db, 'viewers', $dbUser?.uid, 'images'))
+		images = [...querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))]
+		resetImage()
 	}
 
 	onMount(async () => {})
