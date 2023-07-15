@@ -48,6 +48,6 @@
 	</div> -->
 
 <div
-	class="w-1/4 h-screen bg-center bg-no-repeat bg-cover"
-	style="background-image: url({gallery[0]?.url})"
+	class="h-screen transition-all bg-center bg-no-repeat bg-cover"
+	style="width: {100 / gallery.length}%; background-image: url({gallery[0]?.url})"
 />
