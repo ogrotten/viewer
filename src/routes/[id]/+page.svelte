@@ -9,6 +9,7 @@
 		getDocs,
 		deleteDoc,
 		updateDoc,
+		getDoc,
 	} from 'firebase/firestore'
 	import { db } from '$lib/firebase'
 	import { dbUser } from '$lib/firestore'
@@ -37,6 +38,13 @@
 			title: '',
 		}
 		urlValid = false
+	}
+
+	function setup() {
+		getImages()
+		getDoc(doc(db, 'viewers', $dbUser?.uid)).then(doc => {
+			show = doc.data()
+		})
 	}
 
 	async function getImages() {
@@ -98,7 +106,9 @@
 
 	onMount(async () => {})
 
-	$: if ($dbUser?.id) getImages()
+	$: if ($dbUser?.id) setup()
+
+	// $: console.log(`LOG..+page: show`, show)
 </script>
 
 <div class="flex flex-col gap-10">
