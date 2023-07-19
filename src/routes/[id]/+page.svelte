@@ -27,7 +27,9 @@
 		urlValid = false,
 		disableNow = false
 
-	let show = { gallery: false, now: false, carousel: false }
+	let show = { gallery: false, now: false, carousel: false },
+		tiles = false,
+		tab = 0
 
 	const resetImage = () => {
 		newImg = {
@@ -114,6 +116,15 @@
 <div class="flex flex-col gap-10">
 	<div class="flex flex-row justify-around w-full h-16 gap-16 my-10">
 		<button
+			name="carousel"
+			id="carousel"
+			class:btn-outline={!show.carousel}
+			class="h-full w-60 btn btn-outline btn-info"
+			on:click={updateShow}
+		>
+			Carousel
+		</button>
+		<button
 			name="gallery"
 			id="gallery"
 			class:btn-outline={!show.gallery}
@@ -131,15 +142,69 @@
 		>
 			Now
 		</button>
-		<button
-			name="carousel"
-			id="carousel"
-			class:btn-outline={!show.carousel}
-			class="h-full w-60 btn btn-outline btn-info"
-			on:click={updateShow}
-		>
-			Carousel
-		</button>
+	</div>
+
+	<div class="">
+		<div class="tabs">
+			<p class="mb-1 mr-4 font-bold">Add . . .</p>
+			<a
+				class="tab tab-bordered"
+				class:tab-active={tab === 0}
+				on:click={() => (tab = 0)}
+				href={''}
+			>
+				Just One
+			</a>
+			<a
+				class="tab tab-bordered"
+				class:tab-active={tab === 1}
+				on:click={() => (tab = 1)}
+				href={''}
+			>
+				Many
+			</a>
+			<a
+				class="tab tab-bordered"
+				class:tab-active={tab === 2}
+				on:click={() => (tab = 2)}
+				href={''}
+			>
+				from Google Drive
+			</a>
+		</div>
+		<div class="w-full rounded-t-none shadow-xl card bg-neutral">
+			<div class="card-body">
+				{#if tab === 0}
+					<div class="flex items-center justify-start gap-2">
+						<input
+							type="title"
+							placeholder="Title (optional)"
+							class="w-full max-w-xs input-sm input input-bordered input-neutral"
+							bind:value={newImg.title}
+						/>
+						<input
+							type="url"
+							placeholder="Image URL"
+							class="w-full max-w-xs input-sm input input-bordered input-neutral"
+							bind:value={newImg.url}
+							on:change={handleInputChange}
+						/>
+
+						<button
+							class="btn btn-primary btn-sm"
+							disabled={!urlValid}
+							on:click={() => addOne(newImg)}
+						>
+							Add
+						</button>
+					</div>
+				{:else if tab === 1}
+					<!--  -->
+				{:else if tab === 2}
+					<!--  -->
+				{/if}
+			</div>
+		</div>
 	</div>
 	<div class="flex items-center justify-start gap-2">
 		<input
@@ -160,58 +225,124 @@
 			Add
 		</button>
 	</div>
+	<div class="flex justify-start">
+		<div class="form-control">
+			<label class="items-center gap-2 cursor-pointer label">
+				<input type="checkbox" class="toggle toggle-primary" bind:checked={tiles} />
+				<span class="label-text">Show {tiles ? 'Thumbs' : 'List'}</span>
+			</label>
+		</div>
+	</div>
 	<div class="flex flex-row flex-wrap gap-6">
 		{#if images?.length > 0}
-			{#each images as image, idx (image.id)}
-				<!-- <Icon src={XMark} class="w-4 h-4 mr-2 font-bold text-red-600" /> -->
-				<!-- svelte-ignore a11y-img-redundant-alt -->
-				<span class="flex flex-col p-4 border bg-stone-800 border-stone-600">
-					<div class="flex justify-between">
-						<br />
-						<button
-							class="p-1 transition-all hover:bg-red-900"
-							on:click={() => imageDelete(image, idx)}>❌</button
-						>
-					</div>
-					<a href={image.url} class="" target="_blank">
-						<img
-							src={image.url}
-							alt="image"
-							class="object-cover object-top w-36 h-36 rounded-2xl"
-						/>
-					</a>
-					<div class="flex flex-col gap-2">
-						<p class=" min-h-8">{image.title || ''}</p>
+			{#if tiles}
+				{#each images as image, idx (image.id)}
+					<!-- <Icon src={XMark} class="w-4 h-4 mr-2 font-bold text-red-600" /> -->
+					<!-- svelte-ignore a11y-img-redundant-alt -->
+					<span class="flex flex-col p-4 border bg-stone-800 border-stone-600">
+						<div class="flex justify-between">
+							<br />
+							<button
+								class="p-1 transition-all hover:bg-red-900"
+								on:click={() => imageDelete(image, idx)}>❌</button
+							>
+						</div>
+						<a href={image.url} class="" target="_blank">
+							<img
+								src={image.url}
+								alt="image"
+								class="object-cover object-top w-36 h-36 rounded-2xl"
+							/>
+						</a>
+						<div class="flex flex-col gap-2">
+							<p class=" min-h-8">{image.title || ''}</p>
 
-						<button
-							class="text-gray-800 btn btn-sm"
-							class:unselected={!image.carousel}
-							class:btn-primary={image.carousel}
-							on:click={() => parameter({ ...image, carousel: !image.carousel })}
-						>
-							<span class="label-text">Carousel</span>
-						</button>
+							<button
+								class="text-gray-800 btn btn-sm"
+								class:unselected={!image.carousel}
+								class:btn-primary={image.carousel}
+								on:click={() => parameter({ ...image, carousel: !image.carousel })}
+							>
+								<span class="label-text">Carousel</span>
+							</button>
 
-						<button
-							class="text-gray-800 btn btn-sm"
-							class:unselected={!image.gallery}
-							class:btn-secondary={image.gallery}
-							on:click={() => parameter({ ...image, gallery: !image.gallery })}
-						>
-							<span class="label-text">Gallery</span>
-						</button>
+							<button
+								class="text-gray-800 btn btn-sm"
+								class:unselected={!image.gallery}
+								class:btn-secondary={image.gallery}
+								on:click={() => parameter({ ...image, gallery: !image.gallery })}
+							>
+								<span class="label-text">Gallery</span>
+							</button>
 
-						<button
-							class="text-gray-800 btn btn-sm"
-							class:unselected={!image.now}
-							class:btn-accent={image.now}
-							on:click={() => parameter({ ...image, now: !image.now })}
-						>
-							<span class="label-text">Now</span>
-						</button>
-					</div>
-				</span>
-			{/each}
+							<button
+								class="text-gray-800 btn btn-sm"
+								class:unselected={!image.now}
+								class:btn-accent={image.now}
+								on:click={() => parameter({ ...image, now: !image.now })}
+							>
+								<span class="label-text">Now</span>
+							</button>
+						</div>
+					</span>
+				{/each}
+			{:else}
+				<ul class="divide-y divide-stone-700">
+					{#each images as image, idx (image.id)}
+						<!-- <Icon src={XMark} class="w-4 h-4 mr-2 font-bold text-red-600" /> -->
+						<!-- svelte-ignore a11y-img-redundant-alt -->
+						<li class="flex flex-row items-center gap-12 p-2">
+							<a
+								href={image.url}
+								class="flex flex-row items-center gap-2"
+								target="_blank"
+							>
+								<img
+									src={image.url}
+									alt="image"
+									class="object-cover object-top w-12 h-12 rounded-2xl"
+								/>
+								<p class="w-28 font-md">{image.title || ''}</p>
+							</a>
+							<!-- <div class="flex flex-col gap-2"> -->
+
+							<button
+								class="text-gray-800 btn btn-sm"
+								class:unselected={!image.carousel}
+								class:btn-primary={image.carousel}
+								on:click={() => parameter({ ...image, carousel: !image.carousel })}
+							>
+								<span class="label-text">Carousel</span>
+							</button>
+
+							<button
+								class="text-gray-800 btn btn-sm"
+								class:unselected={!image.gallery}
+								class:btn-secondary={image.gallery}
+								on:click={() => parameter({ ...image, gallery: !image.gallery })}
+							>
+								<span class="label-text">Gallery</span>
+							</button>
+
+							<button
+								class="text-gray-800 btn btn-sm"
+								class:unselected={!image.now}
+								class:btn-accent={image.now}
+								on:click={() => parameter({ ...image, now: !image.now })}
+							>
+								<span class="label-text">Now</span>
+							</button>
+							<!-- </div> -->
+							<div class="flex justify-between">
+								<button
+									class="p-1 transition-all hover:bg-red-900"
+									on:click={() => imageDelete(image, idx)}>❌</button
+								>
+							</div>
+						</li>
+					{/each}
+				</ul>
+			{/if}
 		{/if}
 	</div>
 </div>
