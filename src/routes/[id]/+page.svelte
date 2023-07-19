@@ -15,7 +15,12 @@
 	import { db } from '$lib/firebase'
 	import { dbUser } from '$lib/firestore'
 
-	let images: Image[]
+	let images: Image[],
+		pref = {
+			carouselTime: 0,
+			carouselTransition: 0,
+			tiles: false,
+		}
 
 	let newImg: Image = {
 			url: '',
@@ -31,7 +36,6 @@
 		google = ''
 
 	let show = { gallery: false, now: false, carousel: false },
-		tiles = false,
 		tab = 1,
 		disableNow = false
 
@@ -70,6 +74,8 @@
 			await addDoc(collection(db, `viewers/${$dbUser?.uid}/images`), image)
 		})
 		getImages()
+		manyFiltered = []
+		many = ''
 	}
 
 	async function imageDelete<T>(image, idx) {
@@ -169,30 +175,13 @@
 	</div>
 
 	<div class="">
-		<div class="tabs">
+		<div class="px-8 pt-2 pb-0 rounded-t-xl tabs bg-neutral-focus">
 			<p class="mb-1 mr-4 font-bold">Add . . .</p>
-			<a
-				class="tab tab-bordered"
-				class:tab-active={tab === 0}
-				on:click={() => (tab = 0)}
-				href={''}
-			>
+			<a class="tab" class:active={tab === 0} on:click={() => (tab = 0)} href={''}>
 				Just One
 			</a>
-			<a
-				class="tab tab-bordered"
-				class:tab-active={tab === 1}
-				on:click={() => (tab = 1)}
-				href={''}
-			>
-				Many
-			</a>
-			<a
-				class="tab tab-bordered"
-				class:tab-active={tab === 2}
-				on:click={() => (tab = 2)}
-				href={''}
-			>
+			<a class="tab" class:active={tab === 1} on:click={() => (tab = 1)} href={''}> Many </a>
+			<a class="tab" class:active={tab === 2} on:click={() => (tab = 2)} href={''}>
 				from Google Drive
 			</a>
 		</div>
@@ -244,18 +233,49 @@ URL, Title (optional)"
 			</div>
 		</div>
 	</div>
-	<div class="flex justify-start">
-		<div class="form-control">
-			<label class="items-center gap-2 cursor-pointer label">
-				<span class="label-text"> List</span>
-				<input type="checkbox" class="toggle toggle-primary" bind:checked={tiles} />
-				<span class="label-text">Thumbs</span>
-			</label>
+	<div class="shadow-xl card bg-neutral">
+		<div class="card-body">
+			<div class="flex items-center justify-start gap-8">
+				<div class="form-control">
+					<label class="items-center gap-2 cursor-pointer label">
+						<span class="label-text"> List</span>
+						<input
+							type="checkbox"
+							class="toggle toggle-primary"
+							bind:checked={pref.tiles}
+						/>
+						<span class="label-text">Thumbs</span>
+					</label>
+				</div>
+
+				<span class="">
+					<span class="pl-1 label-text">Carousel time</span>
+					<div class="w-20 form-control">
+						<input
+							type="number"
+							placeholder="Image URL"
+							class="w-full max-w-xs input-sm input input-bordered input-neutral"
+							bind:value={pref.carouselTransition}
+						/>
+					</div>
+				</span>
+				<span class="">
+					<span class="pl-1 label-text">Transition</span>
+					<div class="w-20 form-control">
+						<input
+							type="number"
+							placeholder="Image URL"
+							class="w-full max-w-xs input-sm input input-bordered input-neutral"
+							bind:value={pref.carouselTransition}
+						/>
+					</div>
+				</span>
+			</div>
 		</div>
 	</div>
 	<div class="flex flex-row flex-wrap gap-6">
 		{#if images?.length > 0}
-			{#if tiles}
+			{#if pref.tiles}
 				{#each images as image, idx (image.id)}
 					<!-- <Icon src={XMark} class="w-4 h-4 mr-2 font-bold text-red-600" /> -->
 					<!-- svelte-ignore a11y-img-redundant-alt -->
@@ -373,5 +393,8 @@ URL, Title (optional)"
 	}
 	.unselected {
 		@apply btn-neutral text-gray-200;
+	}
+	.active {
+		@apply bg-neutral tab-active rounded-t-lg;
 	}
 </style>
