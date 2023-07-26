@@ -35,10 +35,13 @@
 		unsubCarousel,
 		showCarousel = false
 
-	let nowCount = 0
+	let connected = false,
+		connect = '',
+		attach = ''
 
-	async function setup() {
-		unsubViewer = onSnapshot(doc(db, 'viewers', $dbUser?.uid), doc => {
+	async function setup(incoming: string) {
+		console.log(`LOG..+page: incoming`, incoming)
+		unsubViewer = onSnapshot(doc(db, 'viewers', incoming), doc => {
 			viewer = doc.data()
 			showGallery = viewer.gallery
 			showNow = viewer.now
@@ -46,22 +49,19 @@
 		})
 
 		const c = query(
-			collection(db, 'viewers', $dbUser?.uid, 'images'),
+			collection(db, 'viewers', incoming, 'images'),
 			where('carousel', '==', true),
 		)
 		unsubGallery = onSnapshot(c, snap => {
 			carousel = [...snap.docs].map(doc => ({ id: doc.id, ...doc.data() }))
 		})
 
-		const g = query(
-			collection(db, 'viewers', $dbUser?.uid, 'images'),
-			where('gallery', '==', true),
-		)
+		const g = query(collection(db, 'viewers', incoming, 'images'), where('gallery', '==', true))
 		unsubGallery = onSnapshot(g, snap => {
 			gallery = [...snap.docs].map(doc => ({ id: doc.id, ...doc.data() }))
 		})
 
-		const n = query(collection(db, 'viewers', $dbUser?.uid, 'images'), where('now', '==', true))
+		const n = query(collection(db, 'viewers', incoming, 'images'), where('now', '==', true))
 
 		unsubNow = onSnapshot(n, snap => {
 			now = [...snap.docs].map(doc => ({ id: doc.id, ...doc.data() }))
@@ -108,20 +108,50 @@
 		carIndex = (carIndex + 1) % carousel.length
 	}
 
+	onMount(() => {
+		// setup()
+	})
+
 	$: if (showCarousel) runBg()
 	else clearInterval(intervalId)
 
-	$: if ($dbUser?.id) setup()
+	// $: if ($dbUser?.id) setup()
 
 	$: {
 		showGallery = viewer.gallery
 		showNow = viewer.now
 	}
 
+	$: if (attach.length > 25) {
+		getDoc(doc(db, 'viewers', attach)).then(doc => {
+			if (doc.exists()) {
+				console.log(`LOG..+page: cool`)
+				connected = true
+				connect = attach
+				setup(attach)
+			} else {
+				console.log(`LOG..+page: not cool`)
+				connected = false
+				connect = ''
+			}
+		})
+	}
+
 	$: console.log(`LOG..+page: carousel`, carousel?.[carIndex]?.url)
 </script>
 
-{#if showNow && now?.[0]?.url}
+{#if !connected}
+	<div class="flex items-center justify-center w-screen h-screen">
+		<span class="w-fit">
+			<input
+				type="attach"
+				placeholder="Connect to..."
+				class="max-w-xs w-80 input-sm input input-bordered input-neutral"
+				bind:value={attach}
+			/>
+		</span>
+	</div>
+{:else if showNow && now?.[0]?.url}
 	<img
 		id="now"
 		alt={now[0].title}

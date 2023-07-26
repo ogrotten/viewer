@@ -144,6 +144,10 @@
 </script>
 
 <div class="flex flex-col gap-10">
+	<div class="justify-center w-full">
+		Your Connect Code: <span class="font-bold">{$dbUser?.id}</span>
+		<p class="text-sm">Give this url to people that you want to see the live show.</p>
+	</div>
 	<div class="flex flex-row justify-around w-full h-16 gap-16 my-10">
 		<button
 			name="carousel"
