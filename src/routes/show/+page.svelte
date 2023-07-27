@@ -19,7 +19,7 @@
 	import { db } from '$lib/firebase'
 	import { dbUser } from '$lib/firestore'
 
-	const debug = true
+	const debug = false
 
 	let viewer: DocumentData = {},
 		unsubViewer,
@@ -38,6 +38,12 @@
 	let connected = false,
 		connect = '',
 		attach = ''
+
+	if (debug) {
+		connected = true
+		connect = ''
+		attach = 'kMXSlsmOsUgwQ71cRXCd6CE05KN2'
+	}
 
 	async function setup(incoming: string) {
 		console.log(`LOG..+page: incoming`, incoming)
@@ -125,19 +131,19 @@
 	$: if (attach.length > 25) {
 		getDoc(doc(db, 'viewers', attach)).then(doc => {
 			if (doc.exists()) {
-				console.log(`LOG..+page: cool`)
+				// console.log(`LOG..+page: cool`)
 				connected = true
 				connect = attach
 				setup(attach)
 			} else {
-				console.log(`LOG..+page: not cool`)
+				// console.log(`LOG..+page: not cool`)
 				connected = false
 				connect = ''
 			}
 		})
 	}
 
-	$: console.log(`LOG..+page: carousel`, carousel?.[carIndex]?.url)
+	// $: console.log(`LOG..+page: carousel`, carousel?.[carIndex]?.url)
 </script>
 
 {#if !connected}
@@ -171,7 +177,7 @@
 		}}
 	/>
 {:else if showGallery}
-	<div
+	<!-- <div
 		id="gallery"
 		class="box-border flex flex-row w-full h-full"
 		transition:fadeScale={{
@@ -180,7 +186,8 @@
 			easing: cubicInOut,
 			baseScale: 0.85,
 		}}
-	>
+	> -->
+	<div class="flex flex-wrap justify-center w-screen h-screen">
 		{#each gallery as img}
 			<div
 				transition:fadeScale={{
@@ -189,10 +196,8 @@
 					easing: cubicInOut,
 					baseScale: 0.85,
 				}}
-				class="h-screen transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat hover:scale-105"
-				class:bg-contain={gallery.length === 1}
-				class:bg-cover={gallery.length > 1}
-				style="width: {100 / gallery.length}%; background-image: url({img.url})"
+				class="w-1/4 transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat bg-contain h-1/3 hover:scale-105"
+				style="background-image: url({img.url})"
 			/>
 		{/each}
 	</div>
@@ -218,6 +223,7 @@
 					duration: 3000,
 					easing: cubicInOut,
 				}}
+				style="position: absolute;"
 			/>
 		{/each}
 		<!-- <img
@@ -248,7 +254,4 @@
 {/if}
 
 <style>
-	img {
-		position: absolute;
-	}
 </style>
