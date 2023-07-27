@@ -39,6 +39,12 @@
 		connect = '',
 		attach = ''
 
+	if (debug) {
+		connected = true
+		connect = ''
+		attach = 'kMXSlsmOsUgwQ71cRXCd6CE05KN2'
+	}
+
 	async function setup(incoming: string) {
 		console.log(`LOG..+page: incoming`, incoming)
 		unsubViewer = onSnapshot(doc(db, 'viewers', incoming), doc => {
@@ -125,19 +131,19 @@
 	$: if (attach.length > 25) {
 		getDoc(doc(db, 'viewers', attach)).then(doc => {
 			if (doc.exists()) {
-				console.log(`LOG..+page: cool`)
+				// console.log(`LOG..+page: cool`)
 				connected = true
 				connect = attach
 				setup(attach)
 			} else {
-				console.log(`LOG..+page: not cool`)
+				// console.log(`LOG..+page: not cool`)
 				connected = false
 				connect = ''
 			}
 		})
 	}
 
-	$: console.log(`LOG..+page: carousel`, carousel?.[carIndex]?.url)
+	// $: console.log(`LOG..+page: carousel`, carousel?.[carIndex]?.url)
 </script>
 
 {#if !connected}
@@ -171,7 +177,7 @@
 		}}
 	/>
 {:else if showGallery}
-	<div
+	<!-- <div
 		id="gallery"
 		class="box-border flex flex-row w-full h-full"
 		transition:fadeScale={{
@@ -180,9 +186,23 @@
 			easing: cubicInOut,
 			baseScale: 0.85,
 		}}
-	>
+	> -->
+	<div class="grid w-screen h-screen grid-cols-2 gap-4 md:grid-cols-3">
 		{#each gallery as img}
+			<!-- <div class=""> -->
 			<div
+				transition:fadeScale={{
+					delay: 0,
+					duration: 500,
+					easing: cubicInOut,
+					baseScale: 0.85,
+				}}
+				class="transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat bg-contain hover:scale-105"
+				style="background-image: url({img.url})"
+			/>
+			<!-- </div> -->
+
+			<!-- <div
 				transition:fadeScale={{
 					delay: 0,
 					duration: 500,
@@ -193,7 +213,7 @@
 				class:bg-contain={gallery.length === 1}
 				class:bg-cover={gallery.length > 1}
 				style="width: {100 / gallery.length}%; background-image: url({img.url})"
-			/>
+			/> -->
 		{/each}
 	</div>
 {:else if showCarousel}
@@ -218,6 +238,7 @@
 					duration: 3000,
 					easing: cubicInOut,
 				}}
+				style="position: absolute;"
 			/>
 		{/each}
 		<!-- <img
@@ -248,7 +269,4 @@
 {/if}
 
 <style>
-	img {
-		position: absolute;
-	}
 </style>
