@@ -187,9 +187,8 @@
 			baseScale: 0.85,
 		}}
 	> -->
-	<div class="grid w-screen h-screen grid-cols-2 gap-4 md:grid-cols-3">
+	<div class="flex flex-wrap justify-center w-screen h-screen gap-4">
 		{#each gallery as img}
-			<!-- <div class=""> -->
 			<div
 				transition:fadeScale={{
 					delay: 0,
@@ -197,23 +196,9 @@
 					easing: cubicInOut,
 					baseScale: 0.85,
 				}}
-				class="transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat bg-contain hover:scale-105"
+				class="w-1/4 transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat bg-contain h-1/3 hover:scale-105"
 				style="background-image: url({img.url})"
 			/>
-			<!-- </div> -->
-
-			<!-- <div
-				transition:fadeScale={{
-					delay: 0,
-					duration: 500,
-					easing: cubicInOut,
-					baseScale: 0.85,
-				}}
-				class="h-screen transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat hover:scale-105"
-				class:bg-contain={gallery.length === 1}
-				class:bg-cover={gallery.length > 1}
-				style="width: {100 / gallery.length}%; background-image: url({img.url})"
-			/> -->
 		{/each}
 	</div>
 {:else if showCarousel}
