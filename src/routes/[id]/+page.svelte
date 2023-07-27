@@ -140,14 +140,62 @@
 			})
 	}
 
-	// $: console.log(`LOG..+page: show`, show)
+	let copied = false
+	$: {
+		if (copied) {
+			setTimeout(() => {
+				copied = false
+			}, 1500)
+		}
+	}
+
+	let connectUrl = ''
+	$: connectUrl = `https://viewer-bice.vercel.app/show/${$dbUser?.id}`
 </script>
 
 <div class="flex flex-col gap-10">
-	<div class="justify-center w-full">
-		Your Connect Code: <span class="font-bold">{$dbUser?.id}</span>
-		<p class="text-sm">Give this url to people that you want to see the live show.</p>
-	</div>
+	<span class="">
+		<div class="flex items-center justify-start w-full gap-2">
+			<p class="">Copy Your Connect ID:</p>
+			<span class="">
+				{#if $dbUser?.id}
+					<button
+						class="z-50 h-full border w-fit border-warning btn-outline btn-warning btn-xs"
+						on:click={() => {
+							navigator.clipboard.writeText($dbUser?.id).then(() => {
+								console.log('Content copied to clipboard')
+							})
+							copied = true
+						}}
+					>
+						{$dbUser?.id}
+					</button>
+					{#if copied}
+						<button
+							class="z-0 h-full font-bold transition duration-200 border pointer-events-none w-fit border-success btn-outline btn-success btn-xs"
+							transition:fly={{ x: 20 }}
+						>
+							👍 Copied!
+						</button>
+					{/if}
+				{:else}
+					<div />
+				{/if}
+			</span>
+			<!-- <button
+				name="carousel"
+				id="carousel"
+				class="h-full font-semibold transition-all border w-fit border-warning btn-outline btn-warning btn-xs"
+				on:click={() =>
+					navigator.clipboard.writeText(connectUrl).then(() => {
+						console.log('Content copied to clipboard')
+					})}
+			>
+				{connectUrl}
+			</button> -->
+		</div>
+		<p class="pt-2 text-sm">Give it to people that you want to see the live show.</p>
+	</span>
 	<div class="flex flex-row justify-around w-full h-16 gap-16 my-10">
 		<button
 			name="carousel"
