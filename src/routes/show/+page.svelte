@@ -187,7 +187,7 @@
 			baseScale: 0.85,
 		}}
 	> -->
-	<div class="flex flex-wrap justify-center w-screen h-screen gap-4">
+	<div class="flex flex-wrap justify-center w-screen h-screen">
 		{#each gallery as img}
 			<div
 				transition:fadeScale={{
