@@ -35,7 +35,7 @@
 		manyFiltered: Image[],
 		google = ''
 
-	let show = { gallery: false, now: false, carousel: false },
+	let show = { gallery: false, now: false, carousel: false, galleryTile: false },
 		tab = 1,
 		disableNow = false
 
@@ -196,30 +196,45 @@
 		</div>
 		<p class="pt-2 text-sm">Give it to people that you want to see the live show.</p>
 	</span>
-	<div class="flex flex-row justify-around w-full h-16 gap-16 my-10">
+	<div class="flex flex-row items-start justify-around w-full h-16 gap-16 my-10">
 		<button
 			name="carousel"
 			id="carousel"
 			class:btn-outline={!show.carousel}
-			class="h-full w-60 btn btn-outline btn-info"
+			class="h-12 w-60 btn btn-outline btn-info"
 			on:click={updateShow}
 		>
 			Carousel
 		</button>
-		<button
-			name="gallery"
-			id="gallery"
-			class:btn-outline={!show.gallery}
-			class="h-full w-60 btn btn-outline btn-secondary"
-			on:click={updateShow}
-		>
-			Gallery
-		</button>
+		<span class="">
+			<button
+				name="gallery"
+				id="gallery"
+				class:btn-outline={!show.gallery}
+				class="h-12 w-60 btn btn-outline btn-secondary"
+				on:click={updateShow}
+			>
+				Gallery
+			</button>
+			<div class="form-control">
+				<label class="flex items-center justify-center gap-2 cursor-pointer label">
+					<input
+						name="galleryTile"
+						id="galleryTile"
+						type="checkbox"
+						class="bg-primary checkbox checkbox-success checkbox-sm"
+						bind:checked={show.galleryTile}
+						on:click={updateShow}
+					/>
+					<span class="font-semibold">Tile</span>
+				</label>
+			</div>
+		</span>
 		<button
 			name="now"
 			id="now"
 			class:btn-outline={!show.now}
-			class="h-full w-60 btn btn-outline btn-accent"
+			class="h-12 w-60 btn btn-outline btn-accent"
 			on:click={updateShow}
 		>
 			Now
@@ -267,8 +282,8 @@
 						<textarea
 							rows="5"
 							class="textarea textarea-bordered"
-							placeholder="Enter a list, one per line.
-URL, Title (optional)"
+							placeholder="Enter a list, one per line: 
+										URL, Title (optional)"
 							bind:value={many}
 						/>
 						<button
