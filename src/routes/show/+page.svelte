@@ -19,7 +19,7 @@
 	import { db } from '$lib/firebase'
 	import { dbUser } from '$lib/firestore'
 
-	const debug = false
+	const debug = true
 
 	let viewer: DocumentData = {},
 		unsubViewer,
@@ -164,7 +164,7 @@
 		id="now"
 		alt={now[0].title}
 		src={now[0].url}
-		class="object-contain w-screen h-screen transition-all duration-1000"
+		class="absolute object-contain w-screen h-screen transition-all duration-1000"
 		in:fadeScale={{
 			delay: 0,
 			duration: 2000,
@@ -179,56 +179,66 @@
 		}}
 	/>
 {:else if showGallery}
-	{#if galleryTile}
-		<div
-			class="absolute flex flex-wrap justify-center w-screen h-screen"
-			transition:fadeScale={{
-				delay: 0,
-				duration: 500,
-				easing: cubicInOut,
-				baseScale: 0.85,
-			}}
-		>
-			{#each gallery as img}
-				<div
-					transition:fadeScale={{
-						delay: 0,
-						duration: 500,
-						easing: cubicInOut,
-						baseScale: 0.85,
-					}}
-					class="w-1/4 transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat bg-contain h-1/3 hover:scale-105"
-					style="background-image: url({img.url})"
-				/>
-			{/each}
-		</div>
-	{:else}
-		<div
-			id="gallery"
-			class="box-border absolute flex flex-row w-full h-full overflow-clip"
-			transition:fadeScale={{
-				delay: 0,
-				duration: 500,
-				easing: cubicInOut,
-				baseScale: 0.85,
-			}}
-		>
-			{#each gallery as img}
-				<div
-					transition:fadeScale={{
-						delay: 0,
-						duration: 500,
-						easing: cubicInOut,
-						baseScale: 0.85,
-					}}
-					class="h-screen transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat hover:scale-105"
-					class:bg-contain={gallery.length === 1}
-					class:bg-cover={gallery.length > 1}
-					style="width: {100 / gallery.length}%; background-image: url({img.url})"
-				/>
-			{/each}
-		</div>
-	{/if}
+	<div
+		class=""
+		transition:fadeScale={{
+			delay: 0,
+			duration: 500,
+			easing: cubicInOut,
+			baseScale: 0.85,
+		}}
+	>
+		{#if galleryTile}
+			<div
+				class="absolute flex flex-wrap justify-center w-screen h-screen"
+				transition:fadeScale={{
+					delay: 0,
+					duration: 500,
+					easing: cubicInOut,
+					baseScale: 0.85,
+				}}
+			>
+				{#each gallery as img}
+					<div
+						transition:fadeScale={{
+							delay: 0,
+							duration: 500,
+							easing: cubicInOut,
+							baseScale: 0.85,
+						}}
+						class="w-1/4 transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat bg-contain h-1/3 hover:scale-105"
+						style="background-image: url({img.url})"
+					/>
+				{/each}
+			</div>
+		{:else}
+			<div
+				id="gallery"
+				class="box-border absolute flex flex-row w-full h-full"
+				transition:fadeScale={{
+					delay: 0,
+					duration: 500,
+					easing: cubicInOut,
+					baseScale: 0.85,
+				}}
+			>
+				{#each gallery as img}
+					<div
+						transition:fadeScale={{
+							delay: 0,
+							duration: 500,
+							easing: cubicInOut,
+							baseScale: 0.85,
+						}}
+						class="h-screen transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat hover:scale-105"
+						class:bg-contain={gallery.length === 1}
+						class:bg-cover={gallery.length > 1}
+						style="width: {100 / gallery.length}%; background-image: url({img.url})"
+					/>
+				{/each}
+			</div>
+		{/if}
+	</div>
 {:else if showCarousel}
 	<!-- {#each carousel as img, idx}
 		{#if idx % 2 === 0} -->
