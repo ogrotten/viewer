@@ -206,7 +206,7 @@
 							easing: cubicInOut,
 							baseScale: 0.85,
 						}}
-						class="w-1/4 transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat bg-contain h-1/3 hover:scale-105"
+						class="w-1/4 transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat bg-contain h-1/3"
 						style="background-image: url({img.url})"
 					/>
 				{/each}
@@ -230,7 +230,7 @@
 							easing: cubicInOut,
 							baseScale: 0.85,
 						}}
-						class="h-screen transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat hover:scale-105"
+						class="h-screen transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat"
 						class:bg-contain={gallery.length === 1}
 						class:bg-cover={gallery.length > 1}
 						style="width: {100 / gallery.length}%; background-image: url({img.url})"
