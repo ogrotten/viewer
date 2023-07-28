@@ -19,7 +19,7 @@
 	import { db } from '$lib/firebase'
 	import { dbUser } from '$lib/firestore'
 
-	const debug = true
+	const debug = false
 
 	let viewer: DocumentData = {},
 		unsubViewer,
