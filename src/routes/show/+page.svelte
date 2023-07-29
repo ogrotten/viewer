@@ -18,6 +18,7 @@
 	} from 'firebase/firestore'
 	import { db } from '$lib/firebase'
 	import { dbUser } from '$lib/firestore'
+	import Masonry from 'svelte-bricks'
 
 	const debug = true
 
@@ -145,7 +146,7 @@
 		})
 	}
 
-	// $: console.log(`LOG..+page: carousel`, carousel?.[carIndex]?.url)
+	$: console.log(`LOG..+page: gallery`, gallery)
 </script>
 
 {#if !connected}
@@ -188,29 +189,14 @@
 			baseScale: 0.85,
 		}}
 	>
-		{#if galleryTile}
-			<div
-				class="absolute flex flex-wrap justify-center w-screen h-screen"
-				transition:fadeScale={{
-					delay: 0,
-					duration: 500,
-					easing: cubicInOut,
-					baseScale: 0.85,
-				}}
-			>
-				{#each gallery as img}
-					<div
-						transition:fadeScale={{
-							delay: 0,
-							duration: 500,
-							easing: cubicInOut,
-							baseScale: 0.85,
-						}}
-						class="w-1/4 transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat bg-contain h-1/3"
-						style="background-image: url({img.url})"
-					/>
-				{/each}
-			</div>
+		{#if galleryTile && gallery.length > 1}
+			<Masonry items={gallery} let:item gap={0}>
+				<!-- {item?.url} -->
+				<!-- {@const { url } = img} -->
+				<!-- class="w-1/4 transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat bg-contain h-1/3" -->
+				<!-- <div style="background-image: url({item?.url})" /> -->
+				<img src={item?.url} alt={item?.title} />
+			</Masonry>
 		{:else}
 			<div
 				id="gallery"
@@ -292,4 +278,7 @@
 {/if}
 
 <style>
+	.brick-col {
+		@apply w-1/4 min-w-max;
+	}
 </style>
