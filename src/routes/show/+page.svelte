@@ -20,7 +20,7 @@
 	import { dbUser } from '$lib/firestore'
 	import Masonry from 'svelte-bricks'
 
-	const debug = true
+	const debug = false
 
 	let viewer: DocumentData = {},
 		unsubViewer,
