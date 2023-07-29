@@ -33,6 +33,9 @@
 		unsubGallery,
 		unsubNow
 
+	let localNow: Image[] = [],
+		localShowNow = false
+
 	let carousel: Image[] = [],
 		unsubCarousel,
 		showCarousel = false
@@ -95,6 +98,10 @@
 		},
 	})
 
+	$: if (showNow) {
+		localShowNow = false
+	}
+
 	let bgimg = {}
 	let carIndex = 0,
 		carCount = 1,
@@ -154,8 +161,6 @@
 		WD = 0,
 		SHT = 0,
 		SWD = 0
-
-	$: console.log(`LOG..+page: showNow`, showNow)
 </script>
 
 {#if !connected}
@@ -170,10 +175,12 @@
 		</span>
 	</div>
 {:else if showNow && now?.[0]?.url}
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 	<img
 		id="now"
-		alt={now[0].title}
-		src={now[0].url}
+		alt={now?.[0]?.title}
+		src={now?.[0]?.url}
 		class="absolute object-contain w-screen h-screen transition-all duration-1000"
 		in:fadeScale={{
 			delay: 0,
@@ -187,7 +194,28 @@
 			easing: cubicIn,
 			baseScale: 0.85,
 		}}
-		on:click={() => (showNow = false)}
+	/>
+{:else if localShowNow && localNow?.[0]?.url}
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+	<img
+		id="now"
+		alt={localNow?.[0]?.title}
+		src={localNow?.[0]?.url}
+		class="absolute object-contain w-screen h-screen transition-all duration-1000"
+		in:fadeScale={{
+			delay: 0,
+			duration: 2000,
+			easing: cubicOut,
+			baseScale: 0.85,
+		}}
+		out:fadeScale={{
+			delay: 0,
+			duration: 2000,
+			easing: cubicIn,
+			baseScale: 0.85,
+		}}
+		on:click={() => (localShowNow = false)}
 	/>
 {:else if showGallery}
 	<div
@@ -226,7 +254,7 @@
 						src={item?.url}
 						alt={item?.title}
 						on:click={() => {
-							now[0] = item
+							localNow[0] = item
 							showNow = true
 						}}
 						class="transition-all duration-500 origin-center scale-100 hover:scale-95"
@@ -259,8 +287,8 @@
 						class:bg-cover={gallery.length > 2}
 						style="width: {100 / gallery.length}%; background-image: url({img.url})"
 						on:click={() => {
-							now[0] = img
-							showNow = true
+							localNow[0] = img
+							localShowNow = true
 						}}
 					/>
 				{/each}
