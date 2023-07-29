@@ -18,6 +18,7 @@
 	} from 'firebase/firestore'
 	import { db } from '$lib/firebase'
 	import { dbUser } from '$lib/firestore'
+	import Masonry from 'svelte-bricks'
 
 	const debug = true
 
@@ -118,6 +119,10 @@
 
 	onMount(() => {
 		// setup()
+		HT = window.innerHeight / 1.75
+		WD = window.innerWidth / 3.5
+		SHT = screen.height / 2
+		SWD = screen.width / 4
 	})
 
 	$: if (showCarousel) runBg()
@@ -145,7 +150,12 @@
 		})
 	}
 
-	// $: console.log(`LOG..+page: carousel`, carousel?.[carIndex]?.url)
+	let HT = 0,
+		WD = 0,
+		SHT = 0,
+		SWD = 0
+
+	$: console.log(`LOG..+page: {window, screen}`, { window, screen })
 </script>
 
 {#if !connected}
@@ -180,6 +190,7 @@
 	/>
 {:else if showGallery}
 	<div
+		id={'svelte-bricks'}
 		class=""
 		transition:fadeScale={{
 			delay: 0,
@@ -188,9 +199,9 @@
 			baseScale: 0.85,
 		}}
 	>
-		{#if galleryTile}
+		{#if galleryTile && gallery.length > 1}
 			<div
-				class="absolute flex flex-wrap justify-center w-screen h-screen"
+				class="absolute w-full h-full p-10"
 				transition:fadeScale={{
 					delay: 0,
 					duration: 500,
@@ -198,18 +209,17 @@
 					baseScale: 0.85,
 				}}
 			>
-				{#each gallery as img}
-					<div
-						transition:fadeScale={{
-							delay: 0,
-							duration: 500,
-							easing: cubicInOut,
-							baseScale: 0.85,
-						}}
-						class="w-1/4 transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat bg-contain h-1/3"
-						style="background-image: url({img.url})"
-					/>
-				{/each}
+				<Masonry
+					items={gallery}
+					let:item
+					gap={24}
+					minColWidth={WD - 200}
+					maxColWidth={WD}
+					animate={true}
+					columnClass={'brickcol'}
+				>
+					<img id="brickitem" src={item?.url} alt={item?.title} />
+				</Masonry>
 			</div>
 		{:else}
 			<div
@@ -292,4 +302,11 @@
 {/if}
 
 <style>
+	#brickitem {
+		@apply w-full h-full object-contain;
+		@apply max-h-[800px] origin-top rounded-md;
+	}
+	.brickcol {
+		@apply box-border m-8;
+	}
 </style>
