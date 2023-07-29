@@ -105,6 +105,17 @@
 		updateDoc(doc(db, 'viewers', $dbUser?.uid), { [name]: show[name] })
 	}
 
+	const clear = (incoming: string) => {
+		const filteredImages = images
+			.filter(image => image[incoming])
+			.forEach(image => {
+				parameter({ ...image, [incoming]: false })
+				show[incoming] = false
+				updateDoc(doc(db, 'viewers', $dbUser?.uid), { [incoming]: false })
+			})
+		console.log(`LOG..+page: filteredImages`, filteredImages)
+	}
+
 	onMount(async () => {})
 
 	$: if ($dbUser?.id) setup()
@@ -339,6 +350,25 @@
 				</span>
 			</div>
 		</div>
+	</div>
+	<div class="flex flex-row items-center justify-start gap-4">
+		<p class="">Clear all:</p>
+		<button
+			class="text-gray-800 btn btn-xs btn-neutral"
+			on:click={() => {
+				clear('carousel')
+			}}
+		>
+			<span class="label-text">Carousel</span>
+		</button>
+
+		<button class="text-gray-800 btn btn-xs btn-neutral" on:click={() => clear('gallery')}>
+			<span class="label-text">Gallery</span>
+		</button>
+
+		<button class="text-gray-800 btn btn-xs btn-neutral" on:click={() => {}}>
+			<span class="label-text">Now</span>
+		</button>
 	</div>
 	<div class="flex flex-row flex-wrap gap-6">
 		{#if images?.length > 0}

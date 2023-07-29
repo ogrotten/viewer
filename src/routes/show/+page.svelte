@@ -155,7 +155,7 @@
 		SHT = 0,
 		SWD = 0
 
-	$: console.log(`LOG..+page: {window, screen}`, { window, screen })
+	$: console.log(`LOG..+page: showNow`, showNow)
 </script>
 
 {#if !connected}
@@ -187,6 +187,7 @@
 			easing: cubicIn,
 			baseScale: 0.85,
 		}}
+		on:click={() => (showNow = false)}
 	/>
 {:else if showGallery}
 	<div
@@ -218,7 +219,18 @@
 					animate={true}
 					columnClass={'brickcol'}
 				>
-					<img id="brickitem" src={item?.url} alt={item?.title} />
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
+					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+					<img
+						id="brickitem"
+						src={item?.url}
+						alt={item?.title}
+						on:click={() => {
+							now[0] = item
+							showNow = true
+						}}
+						class="transition-all duration-500 origin-center scale-100 hover:scale-95"
+					/>
 				</Masonry>
 			</div>
 		{:else}
@@ -233,6 +245,8 @@
 				}}
 			>
 				{#each gallery as img}
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
+					<!-- svelte-ignore a11y-no-static-element-interactions -->
 					<div
 						transition:fadeScale={{
 							delay: 0,
@@ -240,18 +254,20 @@
 							easing: cubicInOut,
 							baseScale: 0.85,
 						}}
-						class="h-screen transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat"
-						class:bg-contain={gallery.length === 1}
-						class:bg-cover={gallery.length > 1}
+						class="h-screen transition-all duration-500 origin-center scale-100 bg-center bg-no-repeat hover:scale-95"
+						class:bg-contain={gallery.length <= 2}
+						class:bg-cover={gallery.length > 2}
 						style="width: {100 / gallery.length}%; background-image: url({img.url})"
+						on:click={() => {
+							now[0] = img
+							showNow = true
+						}}
 					/>
 				{/each}
 			</div>
 		{/if}
 	</div>
 {:else if showCarousel}
-	<!-- {#each carousel as img, idx}
-		{#if idx % 2 === 0} -->
 	<div
 		id="carousel"
 		class=""
@@ -274,37 +290,21 @@
 				style="position: absolute;"
 			/>
 		{/each}
-		<!-- <img
-			src={carousel?.[firstIndex]?.url}
-			alt={carousel?.[firstIndex]?.title}
-			class="object-contain w-screen h-screen transition-all duration-1000"
-			class:visible={showFirst}
-		/>
-		<img
-			src={carousel?.[secondIndex]?.url}
-			alt={carousel?.[secondIndex]?.title}
-			class="object-contain w-screen h-screen transition-all duration-1000"
-			class:visible={!showFirst}
-		/> -->
 	</div>
-	<!-- in:receive={{ key: img.id }}
-		out:send={{ key: img.id }} -->
-	<!-- {:else}
-			<img
-				alt={now?.[0]?.title}
-				src={now?.[0]?.url}
-				class="object-contain w-screen h-screen transition-all duration-1000"
-				in:receive={{ key: img.id }}
-				out:send={{ key: img.id }}
-			/>
-		{/if}
-	{/each} -->
+{:else}
+	<div class="flex items-center justify-center w-screen h-screen">
+		<span class="w-fit">
+			<!-- <p style="font-size: 400px" class="invert opacity-20 grayscale">🎥</p> -->
+			<p style="font-size: 400px" class="invert opacity-20 grayscale">🎦</p>
+			<!-- <p style="font-size: 400px" class="opacity-20 grayscale">📸</p> -->
+		</span>
+	</div>
 {/if}
 
 <style>
 	#brickitem {
 		@apply w-full h-full object-contain;
-		@apply max-h-[800px] origin-top rounded-md;
+		@apply max-h-[800px] rounded-md;
 	}
 	.brickcol {
 		@apply box-border m-8;
