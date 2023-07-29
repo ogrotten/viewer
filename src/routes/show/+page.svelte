@@ -98,10 +98,6 @@
 		},
 	})
 
-	$: if (showNow) {
-		localShowNow = false
-	}
-
 	let bgimg = {}
 	let carIndex = 0,
 		carCount = 1,
@@ -125,7 +121,6 @@
 	}
 
 	onMount(() => {
-		// setup()
 		HT = window.innerHeight / 1.75
 		WD = window.innerWidth / 3.5
 		SHT = screen.height / 2
@@ -135,7 +130,13 @@
 	$: if (showCarousel) runBg()
 	else clearInterval(intervalId)
 
-	// $: if ($dbUser?.id) setup()
+	$: if (!showGallery && !showNow && !galleryTile && !showCarousel) {
+		localShowNow = false
+	}
+
+	$: if (showNow) {
+		localShowNow = false
+	}
 
 	$: {
 		showGallery = viewer.gallery
@@ -177,46 +178,60 @@
 {:else if showNow && now?.[0]?.url}
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-	<img
-		id="now"
-		alt={now?.[0]?.title}
-		src={now?.[0]?.url}
-		class="absolute object-contain w-screen h-screen transition-all duration-1000"
-		in:fadeScale={{
-			delay: 0,
-			duration: 2000,
-			easing: cubicOut,
-			baseScale: 0.85,
-		}}
-		out:fadeScale={{
-			delay: 0,
-			duration: 2000,
-			easing: cubicIn,
-			baseScale: 0.85,
-		}}
-	/>
+	<span class="">
+		<img
+			id="now"
+			alt={now?.[0]?.title}
+			src={now?.[0]?.url}
+			class="absolute object-contain w-screen h-screen transition-all duration-1000"
+			in:fadeScale={{
+				delay: 0,
+				duration: 2000,
+				easing: cubicOut,
+				baseScale: 0.85,
+			}}
+			out:fadeScale={{
+				delay: 0,
+				duration: 2000,
+				easing: cubicIn,
+				baseScale: 0.85,
+			}}
+		/>
+		<p
+			class="absolute bottom-0 left-0 w-full p-2 py-2 text-2xl font-bold text-center transition-all bg-black bg-opacity-50 group-hover:bg-opacity-100 group-hover:bg-cyan-950 group-hover:text-white"
+		>
+			{now?.[0]?.title}
+		</p>
+	</span>
 {:else if localShowNow && localNow?.[0]?.url}
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-	<img
-		id="now"
-		alt={localNow?.[0]?.title}
-		src={localNow?.[0]?.url}
-		class="absolute object-contain w-screen h-screen transition-all duration-1000"
-		in:fadeScale={{
-			delay: 0,
-			duration: 2000,
-			easing: cubicOut,
-			baseScale: 0.85,
-		}}
-		out:fadeScale={{
-			delay: 0,
-			duration: 2000,
-			easing: cubicIn,
-			baseScale: 0.85,
-		}}
-		on:click={() => (localShowNow = false)}
-	/>
+	<span class="">
+		<img
+			id="now"
+			alt={localNow?.[0]?.title}
+			src={localNow?.[0]?.url}
+			class="absolute object-contain w-screen h-screen transition-all duration-1000"
+			in:fadeScale={{
+				delay: 0,
+				duration: 2000,
+				easing: cubicOut,
+				baseScale: 0.85,
+			}}
+			out:fadeScale={{
+				delay: 0,
+				duration: 2000,
+				easing: cubicIn,
+				baseScale: 0.85,
+			}}
+			on:click={() => (localShowNow = false)}
+		/>
+		<p
+			class="absolute bottom-0 left-0 w-full p-2 py-2 text-2xl font-bold text-center transition-all bg-black bg-opacity-50 group-hover:bg-opacity-100 group-hover:bg-cyan-950 group-hover:text-white"
+		>
+			{localNow?.[0]?.title}
+		</p>
+	</span>
 {:else if showGallery}
 	<div
 		id={'svelte-bricks'}
@@ -241,7 +256,7 @@
 				<Masonry
 					items={gallery}
 					let:item
-					gap={24}
+					gap={0}
 					minColWidth={WD - 200}
 					maxColWidth={WD}
 					animate={true}
@@ -249,16 +264,24 @@
 				>
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-					<img
-						id="brickitem"
-						src={item?.url}
-						alt={item?.title}
-						on:click={() => {
-							localNow[0] = item
-							showNow = true
-						}}
-						class="transition-all duration-500 origin-center scale-100 hover:scale-95"
-					/>
+					<span class="p-8 group">
+						<img
+							id="brickitem"
+							src={item?.url}
+							alt={item?.title}
+							on:click={() => {
+								localNow[0] = item
+								localShowNow = true
+							}}
+							title={item?.title}
+							class="transition-all duration-500 origin-center scale-100 hover:scale-95"
+						/>
+						<p
+							class="w-full p-2 py-2 text-2xl font-bold text-center transition-all group-hover:text-white"
+						>
+							{item.title}
+						</p>
+					</span>
 				</Masonry>
 			</div>
 		{:else}
@@ -293,7 +316,7 @@
 					>
 						{#if img.title}
 							<p
-								class="absolute bottom-0 left-0 w-full p-2 py-2 text-xs text-2xl font-bold text-center transition-all bg-black bg-opacity-50 group-hover:bg-opacity-100 group-hover:bg-cyan-950 group-hover:text-white"
+								class="absolute bottom-0 left-0 w-full p-2 py-2 text-2xl font-bold text-center transition-all duration-500 bg-black bg-opacity-50 group-hover:bg-opacity-100 group-hover:bg-cyan-950 group-hover:text-white"
 							>
 								{img.title}
 							</p>
@@ -331,7 +354,12 @@
 	<div class="flex items-center justify-center w-screen h-screen">
 		<span class="w-fit">
 			<!-- <p style="font-size: 400px" class="invert opacity-20 grayscale">🎥</p> -->
-			<p style="font-size: 400px" class="invert opacity-20 grayscale">🎦</p>
+			<p
+				style="font-size: 85px"
+				class="absolute invert opacity-20 grayscale bottom-10 left-10"
+			>
+				🎦
+			</p>
 			<!-- <p style="font-size: 400px" class="opacity-20 grayscale">📸</p> -->
 		</span>
 	</div>

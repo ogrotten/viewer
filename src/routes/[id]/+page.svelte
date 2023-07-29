@@ -116,6 +116,16 @@
 		console.log(`LOG..+page: filteredImages`, filteredImages)
 	}
 
+	const resetShowStates = () => {
+		show = { gallery: false, now: false, carousel: false, galleryTile: false }
+		updateDoc(doc(db, 'viewers', $dbUser?.uid), {
+			carousel: false,
+			gallery: false,
+			now: false,
+			galleryTile: false,
+		})
+	}
+
 	onMount(async () => {})
 
 	$: if ($dbUser?.id) setup()
@@ -251,7 +261,12 @@
 			Now
 		</button>
 	</div>
-
+	<div class="">
+		<button class="btn btn-error btn-outline btn-xs" on:click={resetShowStates}>wtf...</button>
+		<p class="text-xs">
+			Click to reset if it's being stupid. Won't reset image selections below.
+		</p>
+	</div>
 	<div class="">
 		<div class="px-8 pt-2 pb-0 rounded-t-xl tabs bg-neutral-focus">
 			<p class="mb-1 mr-4 font-bold">Add . . .</p>
