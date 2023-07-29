@@ -282,7 +282,7 @@
 							easing: cubicInOut,
 							baseScale: 0.85,
 						}}
-						class="h-screen transition-all duration-500 origin-center scale-100 bg-center bg-no-repeat hover:scale-95"
+						class="h-screen transition-all duration-500 origin-center scale-100 bg-center bg-no-repeat hover:scale-95 group"
 						class:bg-contain={gallery.length <= 2}
 						class:bg-cover={gallery.length > 2}
 						style="width: {100 / gallery.length}%; background-image: url({img.url})"
@@ -290,7 +290,15 @@
 							localNow[0] = img
 							localShowNow = true
 						}}
-					/>
+					>
+						{#if img.title}
+							<p
+								class="absolute bottom-0 left-0 w-full p-2 py-2 text-xs text-2xl font-bold text-center transition-all bg-black bg-opacity-50 group-hover:bg-opacity-100 group-hover:bg-cyan-950 group-hover:text-white"
+							>
+								{img.title}
+							</p>
+						{/if}
+					</div>
 				{/each}
 			</div>
 		{/if}
