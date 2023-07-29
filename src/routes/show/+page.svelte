@@ -105,15 +105,8 @@
 
 	function runBg() {
 		intervalId = setInterval(() => {
-			// carCount++
-			// carCount = carCount >= carousel.length ? 0 : carCount
-			// console.log(`LOG..+page: carCount`, carousel[carCount].url)
-			// bgimg = {
-			// 	url: carousel[carCount].url,
-			// 	title: carousel[carCount].title,
-			// }
 			nextImg()
-		}, 10000)
+		}, 15000)
 	}
 
 	function nextImg() {

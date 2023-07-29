@@ -326,7 +326,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="shadow-xl card bg-neutral">
+	<div class="hidden shadow-xl card bg-neutral">
 		<div class="card-body">
 			<div class="flex items-center justify-start gap-8">
 				<div class="form-control">
@@ -366,24 +366,31 @@
 			</div>
 		</div>
 	</div>
-	<div class="flex flex-row items-center justify-start gap-4">
-		<p class="">Clear all:</p>
-		<button
-			class="text-gray-800 btn btn-xs btn-neutral"
-			on:click={() => {
-				clear('carousel')
-			}}
-		>
-			<span class="label-text">Carousel</span>
-		</button>
-
-		<button class="text-gray-800 btn btn-xs btn-neutral" on:click={() => clear('gallery')}>
-			<span class="label-text">Gallery</span>
-		</button>
-
-		<button class="text-gray-800 btn btn-xs btn-neutral" on:click={() => {}}>
-			<span class="label-text">Now</span>
-		</button>
+	<div class="flex justify-start gap-16">
+		<div class="form-control">
+			<label class="items-center gap-2 cursor-pointer label">
+				<span class="label-text"> List</span>
+				<input type="checkbox" class="toggle toggle-primary" bind:checked={pref.tiles} />
+				<span class="label-text">Thumbs</span>
+			</label>
+		</div>
+		<div class="flex flex-row items-center justify-start gap-4">
+			<p class="">Clear all:</p>
+			<button
+				class="text-gray-800 btn btn-xs btn-neutral"
+				on:click={() => {
+					clear('carousel')
+				}}
+			>
+				<span class="label-text">Carousel</span>
+			</button>
+			<button class="text-gray-800 btn btn-xs btn-neutral" on:click={() => clear('gallery')}>
+				<span class="label-text">Gallery</span>
+			</button>
+			<button class="text-gray-800 btn btn-xs btn-neutral" on:click={() => {}}>
+				<span class="label-text">Now</span>
+			</button>
+		</div>
 	</div>
 	<div class="flex flex-row flex-wrap gap-6">
 		{#if images?.length > 0}
