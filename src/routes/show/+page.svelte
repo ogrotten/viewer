@@ -119,6 +119,10 @@
 
 	onMount(() => {
 		// setup()
+		HT = window.innerHeight / 1.75
+		WD = window.innerWidth / 3.5
+		SHT = screen.height / 2
+		SWD = screen.width / 4
 	})
 
 	$: if (showCarousel) runBg()
@@ -146,7 +150,12 @@
 		})
 	}
 
-	$: console.log(`LOG..+page: gallery`, gallery)
+	let HT = 0,
+		WD = 0,
+		SHT = 0,
+		SWD = 0
+
+	$: console.log(`LOG..+page: {window, screen}`, { window, screen })
 </script>
 
 {#if !connected}
@@ -181,6 +190,7 @@
 	/>
 {:else if showGallery}
 	<div
+		id={'svelte-bricks'}
 		class=""
 		transition:fadeScale={{
 			delay: 0,
@@ -190,13 +200,27 @@
 		}}
 	>
 		{#if galleryTile && gallery.length > 1}
-			<Masonry items={gallery} let:item gap={0}>
-				<!-- {item?.url} -->
-				<!-- {@const { url } = img} -->
-				<!-- class="w-1/4 transition-all duration-500 origin-top scale-100 bg-center bg-no-repeat bg-contain h-1/3" -->
-				<!-- <div style="background-image: url({item?.url})" /> -->
-				<img src={item?.url} alt={item?.title} />
-			</Masonry>
+			<div
+				class="absolute w-full h-full p-10"
+				transition:fadeScale={{
+					delay: 0,
+					duration: 500,
+					easing: cubicInOut,
+					baseScale: 0.85,
+				}}
+			>
+				<Masonry
+					items={gallery}
+					let:item
+					gap={24}
+					minColWidth={WD - 200}
+					maxColWidth={WD}
+					animate={true}
+					columnClass={'brickcol'}
+				>
+					<img id="brickitem" src={item?.url} alt={item?.title} />
+				</Masonry>
+			</div>
 		{:else}
 			<div
 				id="gallery"
@@ -278,7 +302,11 @@
 {/if}
 
 <style>
-	.brick-col {
-		@apply w-1/4 min-w-max;
+	#brickitem {
+		@apply w-full h-full object-contain;
+		@apply max-h-[800px] origin-top rounded-md;
+	}
+	.brickcol {
+		@apply box-border m-8;
 	}
 </style>
