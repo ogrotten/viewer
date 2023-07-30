@@ -15,7 +15,7 @@
 	import { db } from '$lib/firebase'
 	import { dbUser } from '$lib/firestore'
 
-	const debug = true
+	const debug = false
 
 	const setupLink = 'https://viewer-bice.vercel.app/show/'
 
@@ -460,19 +460,25 @@
 								id="list-tiles"
 								class="flex flex-col p-4 border bg-stone-800 border-stone-600"
 							>
-								<div class="flex justify-between">
+								<!-- <div class="flex justify-between">
 									<br />
 									<button
 										class="p-1 transition-all hover:bg-red-900"
 										on:click={() => imageDelete(image, idx)}>❌</button
 									>
-								</div>
+								</div> -->
 								<a href={image.url} class="" target="_blank">
-									<img
-										src={url}
-										alt="image"
-										class="object-cover object-top w-36 h-36 rounded-2xl"
-									/>
+									<div class="relative">
+										<button
+											class="absolute top-0 right-0 z-10 p-1 transition-all hover:bg-red-900"
+											on:click={() => imageDelete(image, idx)}>❌</button
+										>
+										<img
+											src={url}
+											alt="image"
+											class="z-0 object-cover object-top w-48 h-36 rounded-2xl"
+										/>
+									</div>
 								</a>
 								<div class="flex items-center justify-start gap-2 py-4">
 									<button
@@ -505,30 +511,30 @@
 								</div>
 								<div class="flex flex-row justify-between gap-2">
 									<button
-										class="text-gray-800 btn btn-sm"
+										class="font-normal text-gray-800 capitalize btn btn-xs font-xs"
 										class:unselected={!image.carousel}
 										class:btn-primary={image.carousel}
 										on:click={() =>
 											parameter({ ...image, carousel: !image.carousel })}
 									>
-										<span class="label-text">C</span>
+										<span class="label-text">Carousel</span>
 									</button>
 									<button
-										class="text-gray-800 btn btn-sm"
+										class="font-normal text-gray-800 capitalize btn btn-xs font-xs"
 										class:unselected={!image.gallery}
 										class:btn-secondary={image.gallery}
 										on:click={() =>
 											parameter({ ...image, gallery: !image.gallery })}
 									>
-										<span class="label-text">G</span>
+										<span class="label-text">Gallery</span>
 									</button>
 									<button
-										class="text-gray-800 btn btn-sm"
+										class="font-normal text-gray-800 capitalize btn btn-xs font-xs"
 										class:unselected={!image.now}
 										class:btn-accent={image.now}
 										on:click={() => parameter({ ...image, now: !image.now })}
 									>
-										<span class="label-text">N</span>
+										<span class="label-text">Now</span>
 									</button>
 								</div>
 							</span>
@@ -632,7 +638,6 @@
 			</div>
 		{/if}
 	</section>
-	]
 </div>
 
 <style>

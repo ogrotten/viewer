@@ -20,7 +20,7 @@
 	import { dbUser } from '$lib/firestore'
 	import Masonry from 'svelte-bricks'
 
-	const debug = true
+	const debug = false
 
 	let viewer: DocumentData = {},
 		unsubViewer,
@@ -360,10 +360,10 @@
 
 <style>
 	#brickitem {
-		@apply w-full h-full object-contain;
-		@apply max-h-[800px] rounded-md;
+		@apply w-full h-fit object-contain;
+		@apply max-h-[800px] px-4 pb-0;
 	}
 	.brickcol {
-		@apply box-border m-8;
+		@apply box-border px-4;
 	}
 </style>
