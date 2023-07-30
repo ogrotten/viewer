@@ -17,6 +17,8 @@
 
 	const debug = true
 
+	const setupLink = 'https://viewer-bice.vercel.app/show/'
+
 	let images: Image[],
 		pref = {
 			carouselTime: 0,
@@ -171,11 +173,13 @@
 			})
 	}
 
-	let copied = false
+	let linkcopied = false
+	let idcopied = false
 	$: {
-		if (copied) {
+		if (linkcopied || idcopied) {
 			setTimeout(() => {
-				copied = false
+				idcopied = false
+				linkcopied = false
 			}, 1500)
 		}
 	}
@@ -195,22 +199,24 @@
 
 <div class="flex flex-col gap-10">
 	<span class="">
-		<div class="flex items-center justify-start w-full gap-2">
-			<p class="">Copy Your Connect ID:</p>
-			<span class="">
-				{#if $dbUser?.id}
+		<p class="pt-2 font-semibold">Use this setup to see the live show.</p>
+		<ul class="pl-8 text-xs list-disc">
+			<li class="mt-2">
+				<p class="">
+					<!-- <a href={''} class="hover:underline text-warning">
+						{setupLink}
+					</a> -->
+					Link:
 					<button
 						class="z-50 h-full border w-fit border-warning btn-outline btn-warning btn-xs"
 						on:click={() => {
-							navigator.clipboard.writeText($dbUser?.id).then(() => {
-								console.log('Content copied to clipboard')
-							})
-							copied = true
+							navigator.clipboard.writeText(setupLink).then(() => {})
+							linkcopied = true
 						}}
 					>
-						{$dbUser?.id}
+						{setupLink}
 					</button>
-					{#if copied}
+					{#if linkcopied}
 						<button
 							class="z-0 h-full font-bold transition duration-200 border pointer-events-none w-fit border-success btn-outline btn-success btn-xs"
 							transition:fly={{ x: 20 }}
@@ -218,23 +224,39 @@
 							👍 Copied!
 						</button>
 					{/if}
-				{:else}
-					<div />
-				{/if}
-			</span>
-			<!-- <button
-				name="carousel"
-				id="carousel"
-				class="h-full font-semibold transition-all border w-fit border-warning btn-outline btn-warning btn-xs"
-				on:click={() =>
-					navigator.clipboard.writeText(connectUrl).then(() => {
-						console.log('Content copied to clipboard')
-					})}
-			>
-				{connectUrl}
-			</button> -->
-		</div>
-		<p class="pt-2 text-sm">Give it to people that you want to see the live show.</p>
+				</p>
+			</li>
+			<li class="mt-2">
+				<div class="flex items-center justify-start w-full gap-2">
+					<p class="">Connect ID:</p>
+					<span class="">
+						{#if $dbUser?.id}
+							<button
+								class="z-50 h-full border w-fit border-warning btn-outline btn-warning btn-xs"
+								on:click={() => {
+									navigator.clipboard.writeText($dbUser?.id).then(() => {
+										console.log('Content copied to clipboard')
+									})
+									idcopied = true
+								}}
+							>
+								{$dbUser?.id}
+							</button>
+							{#if idcopied}
+								<button
+									class="z-0 h-full font-bold transition duration-200 border pointer-events-none w-fit border-success btn-outline btn-success btn-xs"
+									transition:fly={{ x: 20 }}
+								>
+									👍 Copied!
+								</button>
+							{/if}
+						{:else}
+							<div />
+						{/if}
+					</span>
+				</div>
+			</li>
+		</ul>
 	</span>
 	<div class="flex flex-row items-start justify-around w-full h-16 gap-16 my-10">
 		<button
@@ -280,7 +302,7 @@
 			Now
 		</button>
 	</div>
-	<div id="reset" class="">
+	<div id="reset" class="flex items-center gap-2">
 		<button class="btn btn-error btn-outline btn-xs" on:click={resetShowStates}>wtf...</button>
 		<p class="text-xs">
 			Click to reset if it's being stupid. Won't reset image selections below.
@@ -324,11 +346,18 @@
 					</div>
 				{:else if tab === 1}
 					<div class="flex flex-col gap-4" in:fly>
+						<div class="">
+							Enter a list, one per line (title optional):
+							<pre
+								data-prefix=""
+								class="p-1 mt-2 text-sm bg-black border rounded-lg border-cyan-900 w-fit"><code> <span
+										class="font-bold">URL, Title</span
+									> </code></pre>
+						</div>
 						<textarea
 							rows="5"
 							class="textarea textarea-bordered"
-							placeholder="Enter a list, one per line: 
-										URL, Title (optional)"
+							placeholder=""
 							bind:value={many}
 						/>
 						<button
