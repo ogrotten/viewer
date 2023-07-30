@@ -17,11 +17,13 @@
 
 	const debug = true
 
+	const setupLink = 'https://viewer-bice.vercel.app/show/'
+
 	let images: Image[],
 		pref = {
 			carouselTime: 0,
 			carouselTransition: 0,
-			tiles: false,
+			tiles: true,
 		}
 
 	let newImg: Image = {
@@ -86,8 +88,12 @@
 		})
 	}
 
-	const imageEdit = () => {
-		//
+	let showTitleEdit = -1
+	const titleEdit = img => {
+		updateDoc(doc(db, 'viewers', $dbUser?.uid, 'images', img.id), img).then(() => {
+			showTitleEdit = -1
+			getImages()
+		})
 	}
 
 	async function parameter(image: Image) {
@@ -167,11 +173,13 @@
 			})
 	}
 
-	let copied = false
+	let linkcopied = false
+	let idcopied = false
 	$: {
-		if (copied) {
+		if (linkcopied || idcopied) {
 			setTimeout(() => {
-				copied = false
+				idcopied = false
+				linkcopied = false
 			}, 1500)
 		}
 	}
@@ -180,24 +188,35 @@
 	$: connectUrl = `https://viewer-bice.vercel.app/show/${$dbUser?.id}`
 </script>
 
+<svelte:window
+	on:keydown={e => {
+		if (e.key === 'Escape') showTitleEdit = -1
+	}}
+/>
+<!-- on:click|preventDefault={() => {
+		if (showTitleEdit !== -1) showTitleEdit = -1
+	}} -->
+
 <div class="flex flex-col gap-10">
 	<span class="">
-		<div class="flex items-center justify-start w-full gap-2">
-			<p class="">Copy Your Connect ID:</p>
-			<span class="">
-				{#if $dbUser?.id}
+		<p class="pt-2 font-semibold">Use this setup to see the live show.</p>
+		<ul class="pl-8 text-xs list-disc">
+			<li class="mt-2">
+				<p class="">
+					<!-- <a href={''} class="hover:underline text-warning">
+						{setupLink}
+					</a> -->
+					Link:
 					<button
 						class="z-50 h-full border w-fit border-warning btn-outline btn-warning btn-xs"
 						on:click={() => {
-							navigator.clipboard.writeText($dbUser?.id).then(() => {
-								console.log('Content copied to clipboard')
-							})
-							copied = true
+							navigator.clipboard.writeText(setupLink).then(() => {})
+							linkcopied = true
 						}}
 					>
-						{$dbUser?.id}
+						{setupLink}
 					</button>
-					{#if copied}
+					{#if linkcopied}
 						<button
 							class="z-0 h-full font-bold transition duration-200 border pointer-events-none w-fit border-success btn-outline btn-success btn-xs"
 							transition:fly={{ x: 20 }}
@@ -205,23 +224,39 @@
 							👍 Copied!
 						</button>
 					{/if}
-				{:else}
-					<div />
-				{/if}
-			</span>
-			<!-- <button
-				name="carousel"
-				id="carousel"
-				class="h-full font-semibold transition-all border w-fit border-warning btn-outline btn-warning btn-xs"
-				on:click={() =>
-					navigator.clipboard.writeText(connectUrl).then(() => {
-						console.log('Content copied to clipboard')
-					})}
-			>
-				{connectUrl}
-			</button> -->
-		</div>
-		<p class="pt-2 text-sm">Give it to people that you want to see the live show.</p>
+				</p>
+			</li>
+			<li class="mt-2">
+				<div class="flex items-center justify-start w-full gap-2">
+					<p class="">Connect ID:</p>
+					<span class="">
+						{#if $dbUser?.id}
+							<button
+								class="z-50 h-full border w-fit border-warning btn-outline btn-warning btn-xs"
+								on:click={() => {
+									navigator.clipboard.writeText($dbUser?.id).then(() => {
+										console.log('Content copied to clipboard')
+									})
+									idcopied = true
+								}}
+							>
+								{$dbUser?.id}
+							</button>
+							{#if idcopied}
+								<button
+									class="z-0 h-full font-bold transition duration-200 border pointer-events-none w-fit border-success btn-outline btn-success btn-xs"
+									transition:fly={{ x: 20 }}
+								>
+									👍 Copied!
+								</button>
+							{/if}
+						{:else}
+							<div />
+						{/if}
+					</span>
+				</div>
+			</li>
+		</ul>
 	</span>
 	<div class="flex flex-row items-start justify-around w-full h-16 gap-16 my-10">
 		<button
@@ -267,13 +302,13 @@
 			Now
 		</button>
 	</div>
-	<div class="">
+	<div id="reset" class="flex items-center gap-2">
 		<button class="btn btn-error btn-outline btn-xs" on:click={resetShowStates}>wtf...</button>
 		<p class="text-xs">
 			Click to reset if it's being stupid. Won't reset image selections below.
 		</p>
 	</div>
-	<div class="">
+	<div id="add-images" class="">
 		<div class="px-8 pt-2 pb-0 rounded-t-xl tabs bg-neutral-focus">
 			<p class="mb-1 mr-4 font-bold">Add . . .</p>
 			<a class="tab" class:active={tab === 0} on:click={() => (tab = 0)} href={''}>
@@ -311,11 +346,18 @@
 					</div>
 				{:else if tab === 1}
 					<div class="flex flex-col gap-4" in:fly>
+						<div class="">
+							Enter a list, one per line (title optional):
+							<pre
+								data-prefix=""
+								class="p-1 mt-2 text-sm bg-black border rounded-lg border-cyan-900 w-fit"><code> <span
+										class="font-bold">URL, Title</span
+									> </code></pre>
+						</div>
 						<textarea
 							rows="5"
 							class="textarea textarea-bordered"
-							placeholder="Enter a list, one per line: 
-										URL, Title (optional)"
+							placeholder=""
 							bind:value={many}
 						/>
 						<button
@@ -373,7 +415,7 @@
 		</div>
 	</div>
 
-	<section class="">
+	<section id="image-list" class="">
 		<div class="flex justify-start gap-16 mb-8">
 			<div class="form-control">
 				<label class="items-center gap-2 cursor-pointer label">
@@ -407,7 +449,7 @@
 			</div>
 		</div>
 		{#if images?.length > 0}
-			<div id="list-cont" class="w-full" transition:fly>
+			<div id="list-container" class="w-full" transition:fly>
 				{#if pref.tiles}
 					<div id="list-cont" class="flex flex-row flex-wrap justify-start w-full gap-6">
 						{#each images as image, idx (image.id)}
@@ -432,8 +474,36 @@
 										class="object-cover object-top w-36 h-36 rounded-2xl"
 									/>
 								</a>
-								<div class="flex flex-col gap-2">
-									<p class=" min-h-8">{image.title || ''}</p>
+								<div class="flex items-center justify-start gap-2 py-4">
+									<button
+										class="p-1 transition-all hover:bg-blue-600"
+										class:bg-blue-700={showTitleEdit === idx}
+										on:click={() => {
+											showTitleEdit === -1
+												? (showTitleEdit = idx)
+												: (showTitleEdit = -1)
+										}}>✏️</button
+									>
+									{#if showTitleEdit !== idx}
+										<a class="font-md w-28">{image.title || ''}</a>
+									{:else}
+										<form on:submit={() => titleEdit(image)} class="">
+											<input
+												autofocus
+												type="text"
+												placeholder="Title"
+												class="input input-xs input-bordered input-neutral w-28"
+												bind:value={image.title}
+												on:keydown={e => {
+													if (e.key === 'Escape') {
+														showTitleEdit = -1
+													}
+												}}
+											/>
+										</form>
+									{/if}
+								</div>
+								<div class="flex flex-row justify-between gap-2">
 									<button
 										class="text-gray-800 btn btn-sm"
 										class:unselected={!image.carousel}
@@ -441,7 +511,7 @@
 										on:click={() =>
 											parameter({ ...image, carousel: !image.carousel })}
 									>
-										<span class="label-text">Carousel</span>
+										<span class="label-text">C</span>
 									</button>
 									<button
 										class="text-gray-800 btn btn-sm"
@@ -450,7 +520,7 @@
 										on:click={() =>
 											parameter({ ...image, gallery: !image.gallery })}
 									>
-										<span class="label-text">Gallery</span>
+										<span class="label-text">G</span>
 									</button>
 									<button
 										class="text-gray-800 btn btn-sm"
@@ -458,7 +528,7 @@
 										class:btn-accent={image.now}
 										on:click={() => parameter({ ...image, now: !image.now })}
 									>
-										<span class="label-text">Now</span>
+										<span class="label-text">N</span>
 									</button>
 								</div>
 							</span>
@@ -477,21 +547,50 @@
 								class="flex flex-row items-center gap-4 p-2 border-t border-stone-700"
 							>
 								<button
-									class="p-1 transition-all hover:bg-red-900"
-									on:click={() => imageEdit(image, idx)}>✏️</button
+									class="p-1 transition-all hover:bg-blue-600"
+									class:bg-blue-700={showTitleEdit === idx}
+									on:click={() => {
+										showTitleEdit === -1
+											? (showTitleEdit = idx)
+											: (showTitleEdit = -1)
+									}}>✏️</button
 								>
-								<a
-									href={image.url}
-									class="flex flex-row items-center gap-2"
-									target="_blank"
-								>
-									<img
-										src={url}
-										alt="image"
-										class="object-cover object-top w-8 h-8 rounded"
-									/>
-									<p class="w-28 font-md">{image.title || ''}</p>
-								</a>
+								{#if showTitleEdit !== idx}
+									<a
+										href={image.url}
+										class="flex flex-row items-center gap-2"
+										target="_blank"
+									>
+										<img
+											src={url}
+											alt="image"
+											class="object-cover object-top w-8 h-8 rounded"
+										/>
+										<p class="w-28 font-md">{image.title || ''}</p>
+									</a>
+								{:else}
+									<span class="flex flex-row items-center gap-2">
+										<img
+											src={url}
+											alt="image"
+											class="object-cover object-top w-8 h-8 rounded"
+										/>
+										<form on:submit={() => titleEdit(image)} class="">
+											<input
+												autofocus
+												type="text"
+												placeholder="Title"
+												class="w-28 input input-sm input-bordered input-neutral"
+												bind:value={image.title}
+												on:keydown={e => {
+													if (e.key === 'Escape') {
+														showTitleEdit = -1
+													}
+												}}
+											/>
+										</form>
+									</span>
+								{/if}
 								<!-- <div class="flex flex-col gap-2"> -->
 								<button
 									class="text-gray-800 btn btn-xs font-xs"
