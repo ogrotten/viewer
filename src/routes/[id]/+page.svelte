@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition'
+	import { fly, fade } from 'svelte/transition'
 	import { onMount } from 'svelte'
 	import {
 		addDoc,
@@ -14,6 +14,8 @@
 	} from 'firebase/firestore'
 	import { db } from '$lib/firebase'
 	import { dbUser } from '$lib/firestore'
+
+	const debug = true
 
 	let images: Image[],
 		pref = {
@@ -82,6 +84,10 @@
 		await deleteDoc(doc(db, 'viewers', $dbUser?.uid, 'images', image.id)).then(() => {
 			getImages()
 		})
+	}
+
+	const imageEdit = () => {
+		//
 	}
 
 	async function parameter(image: Image) {
@@ -366,144 +372,168 @@
 			</div>
 		</div>
 	</div>
-	<div class="flex justify-start gap-16">
-		<div class="form-control">
-			<label class="items-center gap-2 cursor-pointer label">
-				<span class="label-text"> List</span>
-				<input type="checkbox" class="toggle toggle-primary" bind:checked={pref.tiles} />
-				<span class="label-text">Thumbs</span>
-			</label>
+
+	<section class="">
+		<div class="flex justify-start gap-16 mb-8">
+			<div class="form-control">
+				<label class="items-center gap-2 cursor-pointer label">
+					<input
+						type="checkbox"
+						class="toggle toggle-xs bg-primary"
+						bind:checked={pref.tiles}
+					/>
+					<span class="label-text">{pref.tiles ? 'Tiles' : 'List'}</span>
+				</label>
+			</div>
+			<div class="flex flex-row items-center justify-start gap-4">
+				<p class="">Clear all:</p>
+				<button
+					class="text-gray-800 btn btn-xs btn-neutral"
+					on:click={() => {
+						clear('carousel')
+					}}
+				>
+					<span class="label-text">Carousel</span>
+				</button>
+				<button
+					class="text-gray-800 btn btn-xs btn-neutral"
+					on:click={() => clear('gallery')}
+				>
+					<span class="label-text">Gallery</span>
+				</button>
+				<button class="text-gray-800 btn btn-xs btn-neutral" on:click={() => {}}>
+					<span class="label-text">Now</span>
+				</button>
+			</div>
 		</div>
-		<div class="flex flex-row items-center justify-start gap-4">
-			<p class="">Clear all:</p>
-			<button
-				class="text-gray-800 btn btn-xs btn-neutral"
-				on:click={() => {
-					clear('carousel')
-				}}
-			>
-				<span class="label-text">Carousel</span>
-			</button>
-			<button class="text-gray-800 btn btn-xs btn-neutral" on:click={() => clear('gallery')}>
-				<span class="label-text">Gallery</span>
-			</button>
-			<button class="text-gray-800 btn btn-xs btn-neutral" on:click={() => {}}>
-				<span class="label-text">Now</span>
-			</button>
-		</div>
-	</div>
-	<div class="flex flex-row flex-wrap gap-6">
 		{#if images?.length > 0}
-			{#if pref.tiles}
-				{#each images as image, idx (image.id)}
-					<!-- <Icon src={XMark} class="w-4 h-4 mr-2 font-bold text-red-600" /> -->
-					<!-- svelte-ignore a11y-img-redundant-alt -->
-					<span class="flex flex-col p-4 border bg-stone-800 border-stone-600">
-						<div class="flex justify-between">
-							<br />
-							<button
-								class="p-1 transition-all hover:bg-red-900"
-								on:click={() => imageDelete(image, idx)}>❌</button
+			<div id="list-cont" class="w-full" transition:fly>
+				{#if pref.tiles}
+					<div id="list-cont" class="flex flex-row flex-wrap justify-start w-full gap-6">
+						{#each images as image, idx (image.id)}
+							{@const url = debug ? 'https://dummyimage.com/144' : image.url}
+							<!-- <Icon src={XMark} class="w-4 h-4 mr-2 font-bold text-red-600" /> -->
+							<!-- svelte-ignore a11y-img-redundant-alt -->
+							<span
+								id="list-tiles"
+								class="flex flex-col p-4 border bg-stone-800 border-stone-600"
 							>
-						</div>
-						<a href={image.url} class="" target="_blank">
-							<img
-								src={image.url}
-								alt="image"
-								class="object-cover object-top w-36 h-36 rounded-2xl"
-							/>
-						</a>
-						<div class="flex flex-col gap-2">
-							<p class=" min-h-8">{image.title || ''}</p>
+								<div class="flex justify-between">
+									<br />
+									<button
+										class="p-1 transition-all hover:bg-red-900"
+										on:click={() => imageDelete(image, idx)}>❌</button
+									>
+								</div>
+								<a href={image.url} class="" target="_blank">
+									<img
+										src={url}
+										alt="image"
+										class="object-cover object-top w-36 h-36 rounded-2xl"
+									/>
+								</a>
+								<div class="flex flex-col gap-2">
+									<p class=" min-h-8">{image.title || ''}</p>
+									<button
+										class="text-gray-800 btn btn-sm"
+										class:unselected={!image.carousel}
+										class:btn-primary={image.carousel}
+										on:click={() =>
+											parameter({ ...image, carousel: !image.carousel })}
+									>
+										<span class="label-text">Carousel</span>
+									</button>
+									<button
+										class="text-gray-800 btn btn-sm"
+										class:unselected={!image.gallery}
+										class:btn-secondary={image.gallery}
+										on:click={() =>
+											parameter({ ...image, gallery: !image.gallery })}
+									>
+										<span class="label-text">Gallery</span>
+									</button>
+									<button
+										class="text-gray-800 btn btn-sm"
+										class:unselected={!image.now}
+										class:btn-accent={image.now}
+										on:click={() => parameter({ ...image, now: !image.now })}
+									>
+										<span class="label-text">Now</span>
+									</button>
+								</div>
+							</span>
+						{/each}
+					</div>
+				{:else}
+					<ul
+						id="list-list"
+						class="flex flex-wrap justify-start divide-y divide-stone-700 gap-x-12"
+					>
+						{#each images as image, idx (image.id)}
+							{@const url = debug ? 'https://dummyimage.com/32' : image.url}
 
-							<button
-								class="text-gray-800 btn btn-sm"
-								class:unselected={!image.carousel}
-								class:btn-primary={image.carousel}
-								on:click={() => parameter({ ...image, carousel: !image.carousel })}
+							<!-- svelte-ignore a11y-img-redundant-alt -->
+							<li
+								class="flex flex-row items-center gap-4 p-2 border-t border-stone-700"
 							>
-								<span class="label-text">Carousel</span>
-							</button>
-
-							<button
-								class="text-gray-800 btn btn-sm"
-								class:unselected={!image.gallery}
-								class:btn-secondary={image.gallery}
-								on:click={() => parameter({ ...image, gallery: !image.gallery })}
-							>
-								<span class="label-text">Gallery</span>
-							</button>
-
-							<button
-								class="text-gray-800 btn btn-sm"
-								class:unselected={!image.now}
-								class:btn-accent={image.now}
-								on:click={() => parameter({ ...image, now: !image.now })}
-							>
-								<span class="label-text">Now</span>
-							</button>
-						</div>
-					</span>
-				{/each}
-			{:else}
-				<ul class="divide-y divide-stone-700">
-					{#each images as image, idx (image.id)}
-						<!-- <Icon src={XMark} class="w-4 h-4 mr-2 font-bold text-red-600" /> -->
-						<!-- svelte-ignore a11y-img-redundant-alt -->
-						<li class="flex flex-row items-center gap-12 p-2">
-							<a
-								href={image.url}
-								class="flex flex-row items-center gap-2"
-								target="_blank"
-							>
-								<img
-									src={image.url}
-									alt="image"
-									class="object-cover object-top w-8 h-8 rounded"
-								/>
-								<p class="w-28 font-md">{image.title || ''}</p>
-							</a>
-							<!-- <div class="flex flex-col gap-2"> -->
-
-							<button
-								class="text-gray-800 btn btn-xs font-xs"
-								class:unselected={!image.carousel}
-								class:btn-primary={image.carousel}
-								on:click={() => parameter({ ...image, carousel: !image.carousel })}
-							>
-								<span class="label-text">Carousel</span>
-							</button>
-
-							<button
-								class="text-gray-800 btn btn-xs font-xs"
-								class:unselected={!image.gallery}
-								class:btn-secondary={image.gallery}
-								on:click={() => parameter({ ...image, gallery: !image.gallery })}
-							>
-								<span class="label-text">Gallery</span>
-							</button>
-
-							<button
-								class="text-gray-800 btn btn-xs font-xs"
-								class:unselected={!image.now}
-								class:btn-accent={image.now}
-								on:click={() => parameter({ ...image, now: !image.now })}
-							>
-								<span class="label-text">Now</span>
-							</button>
-							<!-- </div> -->
-							<div class="flex justify-between">
 								<button
 									class="p-1 transition-all hover:bg-red-900"
-									on:click={() => imageDelete(image, idx)}>❌</button
+									on:click={() => imageEdit(image, idx)}>✏️</button
 								>
-							</div>
-						</li>
-					{/each}
-				</ul>
-			{/if}
+								<a
+									href={image.url}
+									class="flex flex-row items-center gap-2"
+									target="_blank"
+								>
+									<img
+										src={url}
+										alt="image"
+										class="object-cover object-top w-8 h-8 rounded"
+									/>
+									<p class="w-28 font-md">{image.title || ''}</p>
+								</a>
+								<!-- <div class="flex flex-col gap-2"> -->
+								<button
+									class="text-gray-800 btn btn-xs font-xs"
+									class:unselected={!image.carousel}
+									class:btn-primary={image.carousel}
+									on:click={() =>
+										parameter({ ...image, carousel: !image.carousel })}
+								>
+									<span class="label-text">Carousel</span>
+								</button>
+								<button
+									class="text-gray-800 btn btn-xs font-xs"
+									class:unselected={!image.gallery}
+									class:btn-secondary={image.gallery}
+									on:click={() =>
+										parameter({ ...image, gallery: !image.gallery })}
+								>
+									<span class="label-text">Gallery</span>
+								</button>
+								<button
+									class="text-gray-800 btn btn-xs font-xs"
+									class:unselected={!image.now}
+									class:btn-accent={image.now}
+									on:click={() => parameter({ ...image, now: !image.now })}
+								>
+									<span class="label-text">Now</span>
+								</button>
+								<!-- </div> -->
+								<div class="flex justify-between">
+									<button
+										class="p-1 transition-all hover:bg-red-900"
+										on:click={() => imageDelete(image, idx)}>❌</button
+									>
+								</div>
+							</li>
+						{/each}
+					</ul>
+				{/if}
+			</div>
 		{/if}
-	</div>
+	</section>
+	]
 </div>
 
 <style>
