@@ -184,6 +184,15 @@
 	$: connectUrl = `https://viewer-bice.vercel.app/show/${$dbUser?.id}`
 </script>
 
+<svelte:window
+	on:keydown={e => {
+		if (e.key === 'Escape') showTitleEdit = -1
+	}}
+/>
+<!-- on:click|preventDefault={() => {
+		if (showTitleEdit !== -1) showTitleEdit = -1
+	}} -->
+
 <div class="flex flex-col gap-10">
 	<span class="">
 		<div class="flex items-center justify-start w-full gap-2">
@@ -436,8 +445,36 @@
 										class="object-cover object-top w-36 h-36 rounded-2xl"
 									/>
 								</a>
-								<p class="h-12">{image.title || ''}</p>
-								<div class="flex flex-col gap-2">
+								<div class="flex items-center justify-start gap-2 py-4">
+									<button
+										class="p-1 transition-all hover:bg-blue-600"
+										class:bg-blue-700={showTitleEdit === idx}
+										on:click={() => {
+											showTitleEdit === -1
+												? (showTitleEdit = idx)
+												: (showTitleEdit = -1)
+										}}>✏️</button
+									>
+									{#if showTitleEdit !== idx}
+										<a class="font-md w-28">{image.title || ''}</a>
+									{:else}
+										<form on:submit={() => titleEdit(image)} class="">
+											<input
+												autofocus
+												type="text"
+												placeholder="Title"
+												class="input input-xs input-bordered input-neutral w-28"
+												bind:value={image.title}
+												on:keydown={e => {
+													if (e.key === 'Escape') {
+														showTitleEdit = -1
+													}
+												}}
+											/>
+										</form>
+									{/if}
+								</div>
+								<div class="flex flex-row justify-between gap-2">
 									<button
 										class="text-gray-800 btn btn-sm"
 										class:unselected={!image.carousel}
@@ -445,7 +482,7 @@
 										on:click={() =>
 											parameter({ ...image, carousel: !image.carousel })}
 									>
-										<span class="label-text">Carousel</span>
+										<span class="label-text">C</span>
 									</button>
 									<button
 										class="text-gray-800 btn btn-sm"
@@ -454,7 +491,7 @@
 										on:click={() =>
 											parameter({ ...image, gallery: !image.gallery })}
 									>
-										<span class="label-text">Gallery</span>
+										<span class="label-text">G</span>
 									</button>
 									<button
 										class="text-gray-800 btn btn-sm"
@@ -462,7 +499,7 @@
 										class:btn-accent={image.now}
 										on:click={() => parameter({ ...image, now: !image.now })}
 									>
-										<span class="label-text">Now</span>
+										<span class="label-text">N</span>
 									</button>
 								</div>
 							</span>
