@@ -21,7 +21,7 @@
 		pref = {
 			carouselTime: 0,
 			carouselTransition: 0,
-			tiles: false,
+			tiles: true,
 		}
 
 	let newImg: Image = {
@@ -436,8 +436,8 @@
 										class="object-cover object-top w-36 h-36 rounded-2xl"
 									/>
 								</a>
+								<p class="h-12">{image.title || ''}</p>
 								<div class="flex flex-col gap-2">
-									<p class=" min-h-8">{image.title || ''}</p>
 									<button
 										class="text-gray-800 btn btn-sm"
 										class:unselected={!image.carousel}
@@ -511,10 +511,16 @@
 										/>
 										<form on:submit={() => titleEdit(image)} class="">
 											<input
+												autofocus
 												type="text"
 												placeholder="Title"
 												class="w-28 input input-sm input-bordered input-neutral"
 												bind:value={image.title}
+												on:keydown={e => {
+													if (e.key === 'Escape') {
+														showTitleEdit = -1
+													}
+												}}
 											/>
 										</form>
 									</span>
