@@ -460,14 +460,29 @@
 								id="list-tiles"
 								class="flex flex-col p-4 border bg-stone-800 border-stone-600"
 							>
-								<!-- <div class="flex justify-between">
+								<div class="flex justify-between">
 									<br />
-									<button
-										class="p-1 transition-all hover:bg-red-900"
-										on:click={() => imageDelete(image, idx)}>❌</button
-									>
-								</div> -->
-								<a href={image.url} class="" target="_blank">
+									<button class="p-1" on:click={() => imageDelete(image, idx)}
+										><svg
+											xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 24 24"
+											fill="currentColor"
+											class="w-6 h-6 p-0.5 text-gray-500 transition-all rounded hover:bg-red-800 hover:text-white"
+										>
+											<path
+												fill-rule="evenodd"
+												d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
+												clip-rule="evenodd"
+											/>
+										</svg>
+									</button>
+								</div>
+								<img
+									src={url}
+									alt="image"
+									class="z-0 object-cover object-top w-48 h-36 rounded-2xl"
+								/>
+								<!-- <a href={image.url} class="" target="_blank">
 									<div class="relative">
 										<button
 											class="absolute top-0 right-0 z-10 p-1 transition-all hover:bg-red-900"
@@ -479,7 +494,7 @@
 											class="z-0 object-cover object-top w-48 h-36 rounded-2xl"
 										/>
 									</div>
-								</a>
+								</a> -->
 								<div class="flex items-center justify-start gap-2 py-4">
 									<button
 										class="p-1 transition-all hover:bg-blue-600"
