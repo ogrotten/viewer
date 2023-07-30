@@ -106,7 +106,7 @@
 	function runBg() {
 		intervalId = setInterval(() => {
 			nextImg()
-		}, 15000)
+		}, 30000)
 	}
 
 	function nextImg() {
