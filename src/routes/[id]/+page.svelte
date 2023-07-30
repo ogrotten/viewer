@@ -87,8 +87,11 @@
 	}
 
 	let showTitleEdit = -1
-	const titleEdit = (image, idx) => {
-		showTitleEdit = idx
+	const titleEdit = img => {
+		updateDoc(doc(db, 'viewers', $dbUser?.uid, 'images', img.id), img).then(() => {
+			showTitleEdit = -1
+			getImages()
+		})
 	}
 
 	async function parameter(image: Image) {
@@ -268,13 +271,13 @@
 			Now
 		</button>
 	</div>
-	<div class="">
+	<div id="reset" class="">
 		<button class="btn btn-error btn-outline btn-xs" on:click={resetShowStates}>wtf...</button>
 		<p class="text-xs">
 			Click to reset if it's being stupid. Won't reset image selections below.
 		</p>
 	</div>
-	<div class="">
+	<div id="add-images" class="">
 		<div class="px-8 pt-2 pb-0 rounded-t-xl tabs bg-neutral-focus">
 			<p class="mb-1 mr-4 font-bold">Add . . .</p>
 			<a class="tab" class:active={tab === 0} on:click={() => (tab = 0)} href={''}>
@@ -374,7 +377,7 @@
 		</div>
 	</div>
 
-	<section id="list-container" class="">
+	<section id="image-list" class="">
 		<div class="flex justify-start gap-16 mb-8">
 			<div class="form-control">
 				<label class="items-center gap-2 cursor-pointer label">
@@ -408,7 +411,7 @@
 			</div>
 		</div>
 		{#if images?.length > 0}
-			<div id="list-cont" class="w-full" transition:fly>
+			<div id="list-container" class="w-full" transition:fly>
 				{#if pref.tiles}
 					<div id="list-cont" class="flex flex-row flex-wrap justify-start w-full gap-6">
 						{#each images as image, idx (image.id)}
@@ -506,12 +509,14 @@
 											alt="image"
 											class="object-cover object-top w-8 h-8 rounded"
 										/>
-										<input
-											type="text"
-											placeholder="Title"
-											class="w-28 input input-sm input-bordered input-neutral"
-											bind:value={image.title}
-										/>
+										<form on:submit={() => titleEdit(image)} class="">
+											<input
+												type="text"
+												placeholder="Title"
+												class="w-28 input input-sm input-bordered input-neutral"
+												bind:value={image.title}
+											/>
+										</form>
 									</span>
 								{/if}
 								<!-- <div class="flex flex-col gap-2"> -->
