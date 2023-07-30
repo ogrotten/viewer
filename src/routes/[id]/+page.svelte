@@ -86,8 +86,9 @@
 		})
 	}
 
-	const imageEdit = () => {
-		//
+	let showTitleEdit = -1
+	const titleEdit = (image, idx) => {
+		showTitleEdit = idx
 	}
 
 	async function parameter(image: Image) {
@@ -373,7 +374,7 @@
 		</div>
 	</div>
 
-	<section class="">
+	<section id="list-container" class="">
 		<div class="flex justify-start gap-16 mb-8">
 			<div class="form-control">
 				<label class="items-center gap-2 cursor-pointer label">
@@ -477,21 +478,42 @@
 								class="flex flex-row items-center gap-4 p-2 border-t border-stone-700"
 							>
 								<button
-									class="p-1 transition-all hover:bg-red-900"
-									on:click={() => imageEdit(image, idx)}>✏️</button
+									class="p-1 transition-all hover:bg-blue-600"
+									class:bg-blue-700={showTitleEdit === idx}
+									on:click={() => {
+										showTitleEdit === -1
+											? (showTitleEdit = idx)
+											: (showTitleEdit = -1)
+									}}>✏️</button
 								>
-								<a
-									href={image.url}
-									class="flex flex-row items-center gap-2"
-									target="_blank"
-								>
-									<img
-										src={url}
-										alt="image"
-										class="object-cover object-top w-8 h-8 rounded"
-									/>
-									<p class="w-28 font-md">{image.title || ''}</p>
-								</a>
+								{#if showTitleEdit !== idx}
+									<a
+										href={image.url}
+										class="flex flex-row items-center gap-2"
+										target="_blank"
+									>
+										<img
+											src={url}
+											alt="image"
+											class="object-cover object-top w-8 h-8 rounded"
+										/>
+										<p class="w-28 font-md">{image.title || ''}</p>
+									</a>
+								{:else}
+									<span class="flex flex-row items-center gap-2">
+										<img
+											src={url}
+											alt="image"
+											class="object-cover object-top w-8 h-8 rounded"
+										/>
+										<input
+											type="text"
+											placeholder="Title"
+											class="w-28 input input-sm input-bordered input-neutral"
+											bind:value={image.title}
+										/>
+									</span>
+								{/if}
 								<!-- <div class="flex flex-col gap-2"> -->
 								<button
 									class="text-gray-800 btn btn-xs font-xs"
