@@ -18,12 +18,11 @@
 
 	$: showtime = time
 		.round({
-			smallestUnit: 'seconds',
+			smallestUnit: 'minutes',
 			roundingMode: 'floor',
 		})
 		.toString()
-
-	$: console.log(`LOG..+page: showtime`, showtime)
+		.split(':')
 
 	onMount(() => {
 		const interval = setInterval(() => {
@@ -31,8 +30,27 @@
 		}, 1000)
 		return () => clearInterval(interval)
 	})
+
+	$: hh = showtime[0]
+	$: mm = showtime[1]
+	$: ss = showtime[2]
 </script>
 
 <div class="">
-	{showtime}
+	{hh}:{mm}
+	{ss}
 </div>
+
+<style>
+	.light {
+		/*  */
+	}
+
+	.dark {
+		/*  */
+	}
+
+	.black {
+		/*  */
+	}
+</style>
