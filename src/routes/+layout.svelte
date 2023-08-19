@@ -11,7 +11,9 @@
 		goto('/')
 	}
 
-	const show = $page.url.pathname === '/show'
+	const { pathname } = $page.url
+	const show = pathname === '/show' || pathname === '/clock'
+
 	const debug = false
 
 	$: console.log(`LOG..+layout: $page.url.pathname`, $page.url.pathname)
