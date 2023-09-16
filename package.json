@@ -32,6 +32,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@js-temporal/polyfill": "^0.4.4",
 		"firebase": "^10.0.0",
 		"svelte-bricks": "^0.2.0"
 	}
