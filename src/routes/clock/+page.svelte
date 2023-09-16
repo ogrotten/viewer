@@ -43,10 +43,10 @@
 	$: console.warn(`LOG..+page: WATCH`, { H, W })
 </script>
 
-<div class="" id="SVG-CONTAINER">
-	<svg class="size" xmlns="http://www.w3.org/2000/svg" version="1.1" id="SVG">
-		<!-- <text x={W / 2} y={H / 2} fill="red" class="scale-150"> -->
-		<text x={`${W / 2}`} y={`${H / 2}`} fill="red" class="scale-150">
+<div class="relative w-screen h-screen centering" id="SVG-CONTAINER">
+	<svg class="relative centering" xmlns="http://www.w3.org/2000/svg" version="1.1" id="SVG">
+		<!-- <text x={`${W / 2}`} y={`${H / 2}`} fill="red" class="scale-150"> -->
+		<text x="0" y="0" fill="red" class="fixed origin-center scale-150">
 			{hh}:{mm}
 			<!-- {ss} -->
 		</text>
@@ -70,5 +70,9 @@
 
 	.black {
 		/*  */
+	}
+
+	.centering {
+		@apply flex items-center justify-center;
 	}
 </style>
