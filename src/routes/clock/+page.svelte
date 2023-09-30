@@ -18,12 +18,12 @@
 		W = w?.innerWidth
 	}
 
-	let showtime: string
+	let showtime: string[]
 	let time: Temporal.PlainTime = Temporal.Now.plainTimeISO()
 
 	$: showtime = time
 		.round({
-			smallestUnit: 'minutes',
+			smallestUnit: 'milliseconds',
 			roundingMode: 'floor',
 		})
 		.toString()
@@ -51,6 +51,7 @@
 			<!-- {ss} -->
 		</text>
 	</svg>
+	<p class="">{hh}:{mm}:{Math.floor(ss)}</p>
 </div>
 
 <style>
