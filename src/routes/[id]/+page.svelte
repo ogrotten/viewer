@@ -126,6 +126,7 @@
 				updateDoc(doc(db, 'viewers', $dbUser?.uid), { [incoming]: false })
 			})
 		console.log(`LOG..+page: filteredImages`, filteredImages)
+		clg
 	}
 
 	const resetShowStates = () => {
