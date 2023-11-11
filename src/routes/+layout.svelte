@@ -4,14 +4,25 @@
 	import TopNav from './_components/TopNav.svelte'
 	import { dbUser } from '$lib/firestore'
 	import { goto } from '$app/navigation'
+	import { page } from '$app/stores'
 
 	if (!dbUser) {
 		console.log(`LOG..+layout: no user`)
 		goto('/')
 	}
+
+	const { pathname } = $page.url
+	const show = pathname === '/show' || pathname === '/clock'
+
+	const debug = false
+
+	$: console.log(`LOG..+layout: $page.url.pathname`, $page.url.pathname)
 </script>
 
-<TopNav />
-<div class="p-6 m-4 mt-0 border-t-2 border-gray-700">
+{#if !show}
+	<TopNav />
+{/if}
+
+<div class="w-full h-full min-h-screen overflow-hidden" class:bg-red-800={debug} class:p-10={!show}>
 	<slot />
 </div>

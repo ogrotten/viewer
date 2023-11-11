@@ -4,7 +4,7 @@ import { doc, getFirestore, onSnapshot, getDoc, setDoc } from "firebase/firestor
 import { onAuthStateChanged } from 'firebase/auth'
 import { db } from '$lib/firebase'
 
-import type { User } from 'firebase/auth'
+// import type { User } from 'firebase/auth'
 import { goto } from '$app/navigation'
 
 /**
@@ -12,19 +12,20 @@ import { goto } from '$app/navigation'
  */
 async function userStore() {
 	let unsubscribe: () => void
+	console.log(`LOG..firestore: auth.currentUser`, auth.currentUser)
 
 	if (!auth || !globalThis.window) {
 		console.warn('Auth is not initialized or not in browser')
-		const { subscribe } = writable<User | null>(null)
-
-		console.log(`LOG..firestore: AUTH `, [auth, globalThis.window])
-
+		debugger
+		const { subscribe } = writable(null)
 		return {
 			subscribe,
 		}
 	}
 
+
 	const { subscribe } = writable(auth?.currentUser ?? null, (set) => {
+
 		unsubscribe = onAuthStateChanged(auth, async (user) => {
 			if (!user) {
 				set(null)
@@ -49,7 +50,9 @@ async function userStore() {
 							id: user.uid,
 						})
 						setDoc(viewRef, {
-							images: [],
+							gallery: false,
+							now: false,
+							carousel: false,
 						})
 					}
 				})
