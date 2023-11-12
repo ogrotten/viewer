@@ -6,17 +6,15 @@
 	import { goto } from '$app/navigation'
 	import { page } from '$app/stores'
 
+	const { pathname } = $page.url
+	const show = pathname.includes('show') || pathname.includes('/clock')
+
 	if (!dbUser) {
 		console.log(`LOG..+layout: no user`)
 		goto('/')
 	}
 
-	const { pathname } = $page.url
-	const show = pathname === '/show' || pathname === '/clock'
-
 	const debug = false
-
-	$: console.log(`LOG..+layout: $page.url.pathname`, $page.url.pathname)
 </script>
 
 {#if !show}
