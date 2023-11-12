@@ -20,7 +20,7 @@
 
 	const debug = false
 
-	let setupLink = 'https://viewer-bice.vercel.app/show/'
+	let setupLink = 'https://char.show/show/'
 
 	let images: Image[],
 		pref = {
@@ -196,7 +196,7 @@
 	}
 
 	let connectUrl = ''
-	$: connectUrl = `https://viewer-bice.vercel.app/show/${$dbUser?.id}`
+	// $: connectUrl = `https://viewer-bice.vercel.app/show/${$dbUser?.id}`
 </script>
 
 <svelte:window
