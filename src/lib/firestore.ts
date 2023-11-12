@@ -16,7 +16,6 @@ function userStore() {
 
 	if (!auth || !globalThis.window) {
 		console.warn('Auth is not initialized or not in browser')
-		debugger
 		const { subscribe } = writable(null)
 		return {
 			subscribe,
