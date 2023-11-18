@@ -23,7 +23,7 @@
 
 	$: showtime = time
 		.round({
-			smallestUnit: 'milliseconds',
+			smallestUnit: 'seconds',
 			roundingMode: 'floor',
 		})
 		.toString()
@@ -43,15 +43,15 @@
 	$: console.warn(`LOG..+page: WATCH`, { H, W })
 </script>
 
-<div class="relative w-screen h-screen centering" id="SVG-CONTAINER">
-	<svg class="relative centering" xmlns="http://www.w3.org/2000/svg" version="1.1" id="SVG">
+<div class="w-screen h-screen bg-green-50 centering" id="SVG-CONTAINER">
+	<svg class="border w-fit h-fit" xmlns="http://www.w3.org/2000/svg" version="1.1" id="SVG">
 		<!-- <text x={`${W / 2}`} y={`${H / 2}`} fill="red" class="scale-150"> -->
-		<text x="0" y="0" fill="red" class="fixed origin-center scale-150">
+		<text x="0" y="15" fill="red" class="m-auto scale-150 absolute-ce">
 			{hh}:{mm}
 			<!-- {ss} -->
 		</text>
 	</svg>
-	<p class="">{hh}:{mm}:{Math.floor(ss)}</p>
+	<!-- <p class="">{hh}:{mm}:{ss}</p> -->
 </div>
 
 <style>
