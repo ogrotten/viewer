@@ -12,7 +12,6 @@ import { goto } from '$app/navigation'
  */
 function userStore() {
 	let unsubscribe: () => void
-	console.log(`LOG..firestore: auth.currentUser`, auth.currentUser)
 
 	if (!auth || !globalThis.window) {
 		console.warn('Auth is not initialized or not in browser')
