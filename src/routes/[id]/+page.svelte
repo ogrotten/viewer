@@ -588,10 +588,10 @@
 												alt="image"
 												class="object-cover object-top w-8 h-8 rounded"
 												on:mouseenter={() => {
-													// showHover = idx
+													showHover = idx
 												}}
 												on:mouseout={() => {
-													// showHover = -1
+													showHover = -1
 												}}
 											/>
 											<p class="w-28 font-md">{image.title || ''}</p>
@@ -624,7 +624,7 @@
 										<img
 											src={url}
 											alt="image"
-											class="fixed z-10 object-cover object-top w-48 h-36 rounded-2xl"
+											class="absolute z-10 object-cover object-top w-48 h-48 left-28 rounded-2xl"
 										/>
 									{/if}
 									<button
