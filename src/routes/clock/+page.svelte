@@ -48,9 +48,10 @@
 	let secAlarm4 = '45'
 
 	$: {
-		if (ss === secAlarm1 || ss === secAlarm2 || ss === secAlarm3 || ss === secAlarm4)
-			console.log(`LOG..+page: yay`)
+		if (hh + ':' + mm === alarm) console.log(`LOG..+page: yay`)
 	}
+	let alarm
+	$: console.log(alarm)
 </script>
 
 <div class="w-screen h-screen bg-green-50 centering" id="SVG-CONTAINER">
@@ -61,6 +62,15 @@
 		</text>
 	</svg>
 	<!-- <p class="">{hh}:{mm}:{ss}</p> -->
+	<input
+		bind:value={alarm}
+		class="border"
+		type="time"
+		id="appt"
+		name="appt"
+		min="09:00"
+		max="18:00"
+	/>
 </div>
 
 <style>
