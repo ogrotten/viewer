@@ -41,14 +41,23 @@
 	$: ss = showtime[2]
 
 	$: console.warn(`LOG..+page: WATCH`, { H, W })
+
+	let secAlarm1 = '00'
+	let secAlarm2 = '15'
+	let secAlarm3 = '30'
+	let secAlarm4 = '45'
+
+	$: {
+		if (ss === secAlarm1 || ss === secAlarm2 || ss === secAlarm3 || ss === secAlarm4)
+			console.log(`LOG..+page: yay`)
+	}
 </script>
 
 <div class="w-screen h-screen bg-green-50 centering" id="SVG-CONTAINER">
 	<svg class="border w-fit h-fit" xmlns="http://www.w3.org/2000/svg" version="1.1" id="SVG">
 		<!-- <text x={`${W / 2}`} y={`${H / 2}`} fill="red" class="scale-150"> -->
 		<text x="0" y="15" fill="red" class="m-auto scale-150 absolute-ce">
-			{hh}:{mm}
-			<!-- {ss} -->
+			{hh}:{mm}:{ss}
 		</text>
 	</svg>
 	<!-- <p class="">{hh}:{mm}:{ss}</p> -->
