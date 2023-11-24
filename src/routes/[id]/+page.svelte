@@ -26,7 +26,7 @@
 		pref = {
 			carouselTime: 0,
 			carouselTransition: 0,
-			tiles: true,
+			tiles: false,
 		}
 
 	let newImg: Image = {
@@ -45,6 +45,8 @@
 	let show = { gallery: false, now: false, carousel: false, galleryTile: false },
 		tab = 1,
 		disableNow = false
+
+	let showHover = -1
 
 	const resetImage = () => {
 		newImg = {
@@ -295,12 +297,8 @@
 				<button class=" btn btn-xs btn-neutral" on:click={() => (showAdd = !showAdd)}>
 					<span class="text-gray-200">Add Images...</span>
 				</button>
-				{#if showAdd}<a
-						class="tab"
-						class:active={tab === 0}
-						on:click={() => (tab = 0)}
-						href={''}
-					>
+				{#if showAdd}
+					<a class="tab" class:active={tab === 0} on:click={() => (tab = 0)} href={''}>
 						Just One
 					</a>
 					<a class="tab" class:active={tab === 1} on:click={() => (tab = 1)} href={''}>
@@ -567,7 +565,7 @@
 
 								<!-- svelte-ignore a11y-img-redundant-alt -->
 								<li
-									class="flex flex-row items-center gap-4 p-2 border-t border-stone-700"
+									class="relative flex flex-row items-center gap-4 p-2 border-t border-stone-700"
 								>
 									<button
 										class="p-1 transition-all hover:bg-blue-600"
@@ -579,6 +577,7 @@
 										}}>✏️</button
 									>
 									{#if showTitleEdit !== idx}
+										<!-- svelte-ignore a11y-mouse-events-have-key-events -->
 										<a
 											href={image.url}
 											class="flex flex-row items-center gap-2"
@@ -588,6 +587,12 @@
 												src={url}
 												alt="image"
 												class="object-cover object-top w-8 h-8 rounded"
+												on:mouseenter={() => {
+													showHover = idx
+												}}
+												on:mouseout={() => {
+													showHover = -1
+												}}
 											/>
 											<p class="w-28 font-md">{image.title || ''}</p>
 										</a>
@@ -615,6 +620,13 @@
 										</span>
 									{/if}
 									<!-- <div class="flex flex-col gap-2"> -->
+									{#if showHover === idx}
+										<img
+											src={url}
+											alt="image"
+											class="absolute z-10 object-cover object-top w-48 h-48 left-28 rounded-2xl"
+										/>
+									{/if}
 									<button
 										class="text-gray-800 btn btn-xs font-xs"
 										class:unselected={!image.carousel}
