@@ -20,14 +20,16 @@
 
 	let showtime: string[]
 	let time: Temporal.PlainTime = Temporal.Now.plainTimeISO()
+	let fullTime
 
-	$: showtime = time
+	$: fullTime = time
 		.round({
 			smallestUnit: 'seconds',
 			roundingMode: 'floor',
 		})
 		.toString()
-		.split(':')
+
+	$: showtime = fullTime.split(':')
 
 	onMount(() => {
 		const interval = setInterval(() => {
@@ -42,14 +44,13 @@
 
 	$: console.warn(`LOG..+page: WATCH`, { H, W })
 
-	let secAlarm1 = '00'
-	let secAlarm2 = '15'
-	let secAlarm3 = '30'
-	let secAlarm4 = '45'
+	let secAlarm = ['00', '15', '30', '45']
+	secAlarm.push('55')
 
-	$: {
-		if (ss === secAlarm1 || ss === secAlarm2 || ss === secAlarm3 || ss === secAlarm4)
-			console.log(`LOG..+page: yay`)
+	let fullAlarm = ['14:42:20', '14:30:40']
+
+	$: if (fullAlarm.includes(fullTime)) {
+		console.log(`LOG..+page: new yay`, fullTime)
 	}
 </script>
 
