@@ -20,7 +20,9 @@
 	import { dbUser } from '$lib/firestore'
 	import Masonry from 'svelte-bricks'
 
-	const debug = true
+	const debug = false
+
+	console.log(`LOG..+page: `)
 
 	let viewer: DocumentData = {},
 		unsubViewer,
@@ -43,12 +45,6 @@
 	let connected = false,
 		connect = '',
 		attach = ''
-
-	if (debug) {
-		connected = true
-		connect = ''
-		attach = 'kMXSlsmOsUgwQ71cRXCd6CE05KN2'
-	}
 
 	async function setup(incoming: string) {
 		console.log(`LOG..+page: incoming`, incoming)

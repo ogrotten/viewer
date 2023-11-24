@@ -8,7 +8,7 @@
 			{#if $dbUser}
 				<li><a href="/">Home</a></li>
 				<li><a href={$dbUser.id}>Manage</a></li>
-				<li><a href="/show">Show</a></li>
+				<li><a href={`/show/${$dbUser.id}`}>Show</a></li>
 			{/if}
 		</ul>
 	</div>

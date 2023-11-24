@@ -16,6 +16,7 @@
 	import { db } from '$lib/firebase'
 	import { dbUser } from '$lib/firestore'
 	import Masonry from 'svelte-bricks'
+	import { flip } from 'svelte/animate'
 
 	const debug = false
 	const uid = $page.params.id
@@ -42,12 +43,6 @@
 	let connected = false,
 		connect = '',
 		attach = uid || ''
-
-	// if (debug) {
-	// 	connected = true
-	// 	connect = ''
-	// 	attach = 'kMXSlsmOsUgwQ71cRXCd6CE05KN2'
-	// }
 
 	async function setup(incoming: string) {
 		console.log(`LOG..+page: incoming`, incoming)
@@ -163,14 +158,14 @@
 <div class="relative">
 	{#if !connected}
 		<div class="flex items-center justify-center w-screen h-screen">
-			<span class="w-fit">
+			<!-- <span class="w-fit">
 				<input
 					type="attach"
 					placeholder="Connect to..."
 					class="max-w-xs w-80 input-sm input input-bordered input-neutral"
 					bind:value={attach}
 				/>
-			</span>
+			</span> -->
 		</div>
 	{:else if showNow && now?.[0]?.url}
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -232,8 +227,8 @@
 	{:else if showGallery}
 		<div
 			id={'svelte-bricks'}
-			class=""
-			transition:fadeScale={{
+			class="transition-all duration-500 origin-center scale-100"
+			transition:fadeScale|local={{
 				delay: 0,
 				duration: 500,
 				easing: cubicInOut,
@@ -243,7 +238,7 @@
 			{#if galleryTile && gallery.length > 1}
 				<div
 					class="absolute w-full h-full p-10"
-					transition:fadeScale={{
+					transition:fadeScale|local={{
 						delay: 0,
 						duration: 500,
 						easing: cubicInOut,
@@ -292,10 +287,15 @@
 						baseScale: 0.85,
 					}}
 				>
-					{#each gallery as img}
+					{#each gallery as img, idx (idx)}
 						<!-- svelte-ignore a11y-click-events-have-key-events -->
 						<!-- svelte-ignore a11y-no-static-element-interactions -->
 						<div
+							animate:flip={{
+								delay: 0,
+								duration: 500,
+								easing: cubicInOut,
+							}}
 							transition:fadeScale={{
 								delay: 0,
 								duration: 500,
@@ -347,15 +347,15 @@
 				/>
 			{/each}
 		</div>
-	{:else}
+	{:else if !showNow && !localShowNow && !showGallery && !showCarousel}
 		<div class="flex items-center justify-center w-screen h-screen">
 			<span class="w-fit">
 				<!-- <p style="font-size: 400px" class="invert opacity-20 grayscale">🎥</p> -->
 				<p
-					style="font-size: 85px"
-					class="absolute invert opacity-20 grayscale bottom-10 left-10"
+					style="font-size: 44px"
+					class="absolute invert opacity-15 grayscale bottom-10 left-10 animate-pulse"
 				>
-					🎦
+					No images selected.
 				</p>
 				<!-- <p style="font-size: 400px" class="opacity-20 grayscale">📸</p> -->
 			</span>
