@@ -9,6 +9,7 @@ interface Image {
 	url: string;
 	carousel: boolean;
 	gallery: boolean;
+	index: number;
 	now: boolean;
 	title: string;
 	id?: string;

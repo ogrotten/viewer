@@ -15,12 +15,12 @@
 		getDoc,
 	} from 'firebase/firestore'
 
-	let loading = true,
-		showAdd = false
-
 	const debug = false
-
 	let setupLink = 'https://char.show/show/'
+	let loading = true,
+		showAdd = false,
+		linkcopied = false,
+		idcopied = false
 
 	let images: Image[],
 		pref = {
@@ -36,6 +36,7 @@
 			now: false,
 			title: '',
 			id: '',
+			index: Date.now(),
 		},
 		urlValid = false,
 		many = '',
@@ -55,6 +56,8 @@
 			gallery: false,
 			now: false,
 			title: '',
+			id: '',
+			index: Date.now(),
 		}
 		urlValid = false
 	}
@@ -153,6 +156,17 @@
 		})
 	}
 
+	const setGalleryItem = (image: Image) => {
+		if (image.gallery) {
+			image.gallery = false
+			image.index = 0
+		} else {
+			image.gallery = true
+			image.index = Date.now()
+		}
+		return parameter(image)
+	}
+
 	$: if ($dbUser?.id) setup()
 
 	$: {
@@ -186,8 +200,6 @@
 			})
 	}
 
-	let linkcopied = false
-	let idcopied = false
 	$: {
 		if (linkcopied || idcopied) {
 			setTimeout(() => {
@@ -197,8 +209,20 @@
 		}
 	}
 
-	let connectUrl = ''
-	// $: connectUrl = `https://viewer-bice.vercel.app/show/${$dbUser?.id}`
+	let imgLists = {
+		carousel: <Image[]>[],
+		gallery: <Image[]>[],
+	}
+
+	$: imgLists = {
+		carousel: images?.filter(image => image.carousel),
+		gallery: images?.filter(image => image.gallery),
+	}
+
+	$: console.log(
+		`LOG..+page: imgLists.gallery`,
+		imgLists?.gallery?.map(img => img.index),
+	)
 </script>
 
 <svelte:window
@@ -537,8 +561,7 @@
 											class="font-normal text-gray-800 capitalize btn btn-xs font-xs"
 											class:unselected={!image.gallery}
 											class:btn-secondary={image.gallery}
-											on:click={() =>
-												parameter({ ...image, gallery: !image.gallery })}
+											on:click={() => setGalleryItem(image)}
 										>
 											<span class="label-text">Gallery</span>
 										</button>
@@ -640,9 +663,11 @@
 										class="text-gray-800 btn btn-xs font-xs"
 										class:unselected={!image.gallery}
 										class:btn-secondary={image.gallery}
-										on:click={() =>
-											parameter({ ...image, gallery: !image.gallery })}
+										on:click={() => setGalleryItem(image)}
 									>
+										<!-- on:click={() =>
+											parameter({ ...image, gallery: !image.gallery })
+											} -->
 										<span class="label-text">Gallery</span>
 									</button>
 									<button

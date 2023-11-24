@@ -31,6 +31,7 @@
 	let gallery: Image[] = [],
 		now: Image[],
 		unsubGallery,
+		presentGallery: Image[] = [],
 		unsubNow
 
 	let localNow: Image[] = [],
@@ -43,6 +44,18 @@
 	let connected = false,
 		connect = '',
 		attach = uid || ''
+
+	let bgimg = {}
+	let carIndex = 0,
+		carCount = 1,
+		intervalId
+
+	let tile = {
+		HT: 0,
+		WD: 0,
+		SHT: 0,
+		SWD: 0,
+	}
 
 	async function setup(incoming: string) {
 		console.log(`LOG..+page: incoming`, incoming)
@@ -91,11 +104,6 @@
 			}
 		},
 	})
-
-	let bgimg = {}
-	let carIndex = 0,
-		carCount = 1,
-		intervalId
 
 	function runBg() {
 		intervalId = setInterval(() => {
@@ -147,11 +155,15 @@
 		})
 	}
 
-	let tile = {
-		HT: 0,
-		WD: 0,
-		SHT: 0,
-		SWD: 0,
+	$: if (gallery?.length < presentGallery?.length) {
+		let galleryIds = gallery.map(x => x.id)
+		let removed = presentGallery.filter(x => !galleryIds.includes(x.id))
+		presentGallery
+			.splice(presentGallery.indexOf(removed[0]), 1)
+			.sort((a, b) => a.index - b.index)
+	} else if (gallery?.length > presentGallery?.length) {
+		let added = gallery.at(-1)
+		presentGallery = gallery.sort((a, b) => a.index - b.index)
 	}
 </script>
 
@@ -287,7 +299,7 @@
 						baseScale: 0.85,
 					}}
 				>
-					{#each gallery as img, idx (idx)}
+					{#each presentGallery as img, idx (img.id)}
 						<!-- svelte-ignore a11y-click-events-have-key-events -->
 						<!-- svelte-ignore a11y-no-static-element-interactions -->
 						<div
