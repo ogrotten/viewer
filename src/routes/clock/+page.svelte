@@ -20,7 +20,8 @@
 
 	let showtime: string[]
 	let time: Temporal.PlainTime = Temporal.Now.plainTimeISO()
-	let fullTime
+	let fullTime: string
+	let fullAlarm: string[] = ['12:34:56']
 
 	$: fullTime = time
 		.round({
@@ -47,21 +48,22 @@
 	let secAlarm = ['00', '15', '30', '45']
 	secAlarm.push('55')
 
-	let fullAlarm = ['14:42:20', '14:30:40']
-
 	$: if (fullAlarm.includes(fullTime)) {
 		console.log(`LOG..+page: new yay`, fullTime)
 	}
 </script>
 
 <div class="w-screen h-screen bg-green-50 centering" id="SVG-CONTAINER">
+	<input
+		type="time"
+		bind:value={fullAlarm[0]}
+		on:change={e => console.log(`LOG..+page: e`, e.target.value)}
+	/>
 	<svg class="border w-fit h-fit" xmlns="http://www.w3.org/2000/svg" version="1.1" id="SVG">
-		<!-- <text x={`${W / 2}`} y={`${H / 2}`} fill="red" class="scale-150"> -->
 		<text x="0" y="15" fill="red" class="m-auto scale-150 absolute-ce">
 			{hh}:{mm}:{ss}
 		</text>
 	</svg>
-	<!-- <p class="">{hh}:{mm}:{ss}</p> -->
 </div>
 
 <style>
