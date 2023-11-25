@@ -50,24 +50,33 @@
 	}
 
 	const deleteAlarm = (incoming: number) => {
-		console.log(`LOG..+page: inside`, fullAlarm[incoming])
+		// debugger
 		fullAlarm.splice(incoming, 1)
+		fullAlarm = fullAlarm
+		console.log(`LOG..+page: inside`, fullAlarm)
 	}
 </script>
 
-<div class="flex flex-col w-screen h-screen bg-green-50 centering" id="SVG-CONTAINER">
-	<div class="flex flex-col">
-		{#each fullAlarm as alarm, idx}<input
-				type="time"
-				bind:value={alarm}
-				on:change={e => console.log(`LOG..+page: e`, e.target.value)}
-			/>
-			<button on:click={() => deleteAlarm(idx)}>delete</button>
+<div class="flex flex-col w-screen h-screen gap-2 bg-green-50 centering" id="SVG-CONTAINER">
+	<div class="flex flex-col gap-2">
+		{#each fullAlarm as alarm, idx}
+			<div class="flex gap-2">
+				<input
+					type="time"
+					bind:value={alarm}
+					on:change={e => console.log(`LOG..+page: e`, e.target.value)}
+				/>
+				<button on:click={() => deleteAlarm(idx)}>❌</button>
+			</div>
 		{/each}
 	</div>
 
 	<div>
-		<button on:click={addAlarm}> add </button>
+		<div class="flex justify-end pb-2">
+			<button on:click={addAlarm} class="p-1 text-white bg-green-300 border rounded-lg">
+				➕ add
+			</button>
+		</div>
 
 		<svg class="border w-fit h-fit" xmlns="http://www.w3.org/2000/svg" version="1.1" id="SVG">
 			<text x="0" y="15" fill="red" class="m-auto scale-150 absolute-ce">
