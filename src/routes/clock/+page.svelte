@@ -16,8 +16,7 @@
 
 	let showtime: string[]
 	let time: Temporal.PlainTime = Temporal.Now.plainTimeISO()
-	let fullTime: string
-	let alarms: string[] = ['12:34:56']
+	let alarms: string[]
 
 	onMount(() => {
 		getAlarms()
@@ -26,6 +25,15 @@
 		}, 1000)
 		return () => clearInterval(interval)
 	})
+
+	const fullTime = () => {
+		return time
+			.round({
+				smallestUnit: 'seconds',
+				roundingMode: 'floor',
+			})
+			.toString()
+	}
 
 	async function getAlarms() {
 		const querySnapshot = await getDocs(collection(db, 'users', $dbUser?.uid, 'alarms'))
@@ -51,19 +59,12 @@
 		W = w?.innerWidth
 	}
 
-	$: fullTime = time
-		.round({
-			smallestUnit: 'seconds',
-			roundingMode: 'floor',
-		})
-		.toString()
-
-	$: showtime = fullTime.split(':')
+	$: showtime = fullTime().split(':')
 
 	$: [hh, mm, ss] = showtime
 
-	$: if (alarms.includes(fullTime)) {
-		console.log(`LOG..+page: new yay`, fullTime)
+	$: if (alarms.includes(fullTime())) {
+		console.log(`LOG..+page: new yay`, fullTime())
 	}
 
 	$: console.log(`LOG..+page: WATCH`, $dbUser.displayName)
