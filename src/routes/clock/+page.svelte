@@ -46,24 +46,29 @@
 	}
 
 	const addAlarm = () => {
+		fullAlarm = [...fullAlarm, '12:34:56']
 		console.log(`LOG..+page: inside`)
 	}
 </script>
 
-<div class="w-screen h-screen bg-green-50 centering" id="SVG-CONTAINER">
-	{#each fullAlarm as alarm, idx}<input
-			type="time"
-			bind:value={alarm}
-			on:change={e => console.log(`LOG..+page: e`, e.target.value)}
-		/>
-	{/each}
-	<br />
-	<button on:click={addAlarm}> add </button>
-	<svg class="border w-fit h-fit" xmlns="http://www.w3.org/2000/svg" version="1.1" id="SVG">
-		<text x="0" y="15" fill="red" class="m-auto scale-150 absolute-ce">
-			{hh}:{mm}:{ss}
-		</text>
-	</svg>
+<div class="flex flex-col w-screen h-screen bg-green-50 centering" id="SVG-CONTAINER">
+	<div class="flex flex-col">
+		{#each fullAlarm as alarm, idx}<input
+				type="time"
+				bind:value={alarm}
+				on:change={e => console.log(`LOG..+page: e`, e.target.value)}
+			/>
+		{/each}
+	</div>
+
+	<div>
+		<button on:click={addAlarm}> add </button>
+		<svg class="border w-fit h-fit" xmlns="http://www.w3.org/2000/svg" version="1.1" id="SVG">
+			<text x="0" y="15" fill="red" class="m-auto scale-150 absolute-ce">
+				{hh}:{mm}:{ss}
+			</text>
+		</svg>
+	</div>
 </div>
 
 <style>
