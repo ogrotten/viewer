@@ -11,17 +11,17 @@
 		H: number = 0,
 		W: number = 0
 
+	let showtime: string[]
+	let time: Temporal.PlainTime = Temporal.Now.plainTimeISO()
+	let fullTime: string
+	let fullAlarm: string[] = ['12:34:56']
+
 	$: if (browser) {
 		w = window
 		orient = w.innerHeight > w.innerWidth ? 'portrait' : 'landscape'
 		H = w?.innerHeight
 		W = w?.innerWidth
 	}
-
-	let showtime: string[]
-	let time: Temporal.PlainTime = Temporal.Now.plainTimeISO()
-	let fullTime: string
-	let fullAlarm: string[] = ['12:34:56']
 
 	$: fullTime = time
 		.round({
@@ -39,26 +39,26 @@
 		return () => clearInterval(interval)
 	})
 
-	$: hh = showtime[0]
-	$: mm = showtime[1]
-	$: ss = showtime[2]
-
-	$: console.warn(`LOG..+page: WATCH`, { H, W })
-
-	let secAlarm = ['00', '15', '30', '45']
-	secAlarm.push('55')
+	$: [hh, mm, ss] = showtime
 
 	$: if (fullAlarm.includes(fullTime)) {
 		console.log(`LOG..+page: new yay`, fullTime)
 	}
+
+	const addAlarm = () => {
+		console.log(`LOG..+page: inside`)
+	}
 </script>
 
 <div class="w-screen h-screen bg-green-50 centering" id="SVG-CONTAINER">
-	<input
-		type="time"
-		bind:value={fullAlarm[0]}
-		on:change={e => console.log(`LOG..+page: e`, e.target.value)}
-	/>
+	{#each fullAlarm as alarm, idx}<input
+			type="time"
+			bind:value={alarm}
+			on:change={e => console.log(`LOG..+page: e`, e.target.value)}
+		/>
+	{/each}
+	<br />
+	<button on:click={addAlarm}> add </button>
 	<svg class="border w-fit h-fit" xmlns="http://www.w3.org/2000/svg" version="1.1" id="SVG">
 		<text x="0" y="15" fill="red" class="m-auto scale-150 absolute-ce">
 			{hh}:{mm}:{ss}
