@@ -47,7 +47,11 @@
 
 	const addAlarm = () => {
 		fullAlarm = [...fullAlarm, '12:34:56']
-		console.log(`LOG..+page: inside`)
+	}
+
+	const deleteAlarm = (incoming: number) => {
+		console.log(`LOG..+page: inside`, fullAlarm[incoming])
+		fullAlarm.splice(incoming, 1)
 	}
 </script>
 
@@ -58,11 +62,13 @@
 				bind:value={alarm}
 				on:change={e => console.log(`LOG..+page: e`, e.target.value)}
 			/>
+			<button on:click={() => deleteAlarm(idx)}>delete</button>
 		{/each}
 	</div>
 
 	<div>
 		<button on:click={addAlarm}> add </button>
+
 		<svg class="border w-fit h-fit" xmlns="http://www.w3.org/2000/svg" version="1.1" id="SVG">
 			<text x="0" y="15" fill="red" class="m-auto scale-150 absolute-ce">
 				{hh}:{mm}:{ss}
