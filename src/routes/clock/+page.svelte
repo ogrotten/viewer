@@ -60,6 +60,13 @@
 
 	$: if ($dbUser?.id) getAlarms()
 
+	$: othertime = time
+		.round({
+			smallestUnit: 'seconds',
+			roundingMode: 'floor',
+		})
+		.toString()
+
 	$: if (browser) {
 		w = window
 		orient = w.innerHeight > w.innerWidth ? 'portrait' : 'landscape'
@@ -75,7 +82,7 @@
 		.toString()
 		.split(':')
 
-	$: if (alarms?.includes(fullTime())) {
+	$: if (alarms?.includes(othertime)) {
 		console.log(`LOG..+page: new yay`, fullTime())
 	}
 
