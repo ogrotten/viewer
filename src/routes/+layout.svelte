@@ -7,7 +7,7 @@
 	import { page } from '$app/stores'
 
 	const { pathname } = $page.url
-	const show = pathname.includes('show') || pathname.includes('/clock')
+	const show = pathname.includes('show')
 
 	if (!dbUser) {
 		console.log(`LOG..+layout: no user`)

@@ -3,6 +3,9 @@
 	import { browser } from '$app/environment'
 	import type { PageData } from './$types'
 	import { onMount } from 'svelte'
+	import { dbUser } from '$lib/firestore'
+	import { db } from '$lib/firebase'
+	import { getDocs, collection } from 'firebase/firestore'
 
 	export let data: PageData
 
@@ -14,7 +17,32 @@
 	let showtime: string[]
 	let time: Temporal.PlainTime = Temporal.Now.plainTimeISO()
 	let fullTime: string
-	let fullAlarm: string[] = ['12:34:56']
+	let alarms: string[] = ['12:34:56']
+
+	onMount(() => {
+		getAlarms()
+		const interval = setInterval(() => {
+			time = Temporal.Now.plainTimeISO()
+		}, 1000)
+		return () => clearInterval(interval)
+	})
+
+	async function getAlarms() {
+		const querySnapshot = await getDocs(collection(db, 'users', $dbUser?.uid, 'alarms'))
+		alarms = [...querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))]
+		// resetImage()
+	}
+
+	const addAlarm = () => {
+		alarms = [...alarms, '12:34:56']
+	}
+
+	const deleteAlarm = (incoming: number) => {
+		// debugger
+		alarms.splice(incoming, 1)
+		alarms = alarms
+		console.log(`LOG..+page: inside`, alarms)
+	}
 
 	$: if (browser) {
 		w = window
@@ -32,34 +60,18 @@
 
 	$: showtime = fullTime.split(':')
 
-	onMount(() => {
-		const interval = setInterval(() => {
-			time = Temporal.Now.plainTimeISO()
-		}, 1000)
-		return () => clearInterval(interval)
-	})
-
 	$: [hh, mm, ss] = showtime
 
-	$: if (fullAlarm.includes(fullTime)) {
+	$: if (alarms.includes(fullTime)) {
 		console.log(`LOG..+page: new yay`, fullTime)
 	}
 
-	const addAlarm = () => {
-		fullAlarm = [...fullAlarm, '12:34:56']
-	}
-
-	const deleteAlarm = (incoming: number) => {
-		// debugger
-		fullAlarm.splice(incoming, 1)
-		fullAlarm = fullAlarm
-		console.log(`LOG..+page: inside`, fullAlarm)
-	}
+	$: console.log(`LOG..+page: WATCH`, $dbUser.displayName)
 </script>
 
 <div class="flex flex-col w-screen h-screen gap-2 bg-green-50 centering" id="SVG-CONTAINER">
 	<div class="flex flex-col gap-2">
-		{#each fullAlarm as alarm, idx}
+		{#each alarms as alarm, idx}
 			<div class="flex gap-2">
 				<input
 					type="time"
