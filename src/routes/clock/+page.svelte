@@ -14,9 +14,8 @@
 		H: number = 0,
 		W: number = 0
 
-	let showtime: string[]
 	let time: Temporal.PlainTime = Temporal.Now.plainTimeISO()
-	let alarms: string[] = [] // = [fullTime()]
+	let alarms: string[] = []
 
 	onMount(() => {
 		// getAlarms()
@@ -49,7 +48,7 @@
 	}
 
 	const addAlarm = () => {
-		alarms = [...alarms, '12:34:56']
+		alarms = [...alarms, fullTime()]
 	}
 
 	const deleteAlarm = (incoming: number) => {
@@ -68,9 +67,13 @@
 		W = w?.innerWidth
 	}
 
-	$: showtime = fullTime().split(':')
-
-	$: [hh, mm, ss] = showtime
+	$: [hh, mm, ss] = time
+		.round({
+			smallestUnit: 'seconds',
+			roundingMode: 'floor',
+		})
+		.toString()
+		.split(':')
 
 	$: if (alarms?.includes(fullTime())) {
 		console.log(`LOG..+page: new yay`, fullTime())
