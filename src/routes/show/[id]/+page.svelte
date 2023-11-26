@@ -160,10 +160,10 @@
 		let removed = presentGallery.filter(x => !galleryIds.includes(x.id))
 		presentGallery
 			.splice(presentGallery.indexOf(removed[0]), 1)
-			.sort((a, b) => a.index - b.index)
+			.sort((a, b) => b.index - a.index)
 	} else if (gallery?.length > presentGallery?.length) {
 		let added = gallery.at(-1)
-		presentGallery = gallery.sort((a, b) => a.index - b.index)
+		presentGallery = gallery.sort((a, b) => b.index - a.index)
 	}
 </script>
 
@@ -237,16 +237,7 @@
 			</p>
 		</span>
 	{:else if showGallery}
-		<div
-			id={'svelte-bricks'}
-			class="transition-all duration-500 origin-center scale-100"
-			transition:fadeScale|local={{
-				delay: 0,
-				duration: 500,
-				easing: cubicInOut,
-				baseScale: 0.85,
-			}}
-		>
+		<div id={'svelte-bricks'} class="transition-all duration-500 origin-center scale-100">
 			{#if galleryTile && gallery.length > 1}
 				<div
 					class="absolute w-full h-full p-10"
@@ -292,7 +283,7 @@
 				<div
 					id="gallery"
 					class="box-border absolute flex flex-row w-full h-full"
-					transition:fadeScale={{
+					transition:fadeScale|local={{
 						delay: 0,
 						duration: 500,
 						easing: cubicInOut,
