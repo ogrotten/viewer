@@ -5,7 +5,7 @@
 	import { onMount } from 'svelte'
 	import { dbUser } from '$lib/firestore'
 	import { db } from '$lib/firebase'
-	import { getDocs, collection } from 'firebase/firestore'
+	import { getDocs, collection, setDoc, doc, addDoc, updateDoc, getDoc } from 'firebase/firestore'
 
 	export let data: PageData
 
@@ -16,21 +16,36 @@
 
 	let showtime: string[]
 	let time: Temporal.PlainTime = Temporal.Now.plainTimeISO()
-	let fullTime: string
-	let alarms: string[] = ['12:34:56']
+	let alarms: string[] = [] // = [fullTime()]
 
 	onMount(() => {
-		getAlarms()
+		// getAlarms()
 		const interval = setInterval(() => {
 			time = Temporal.Now.plainTimeISO()
 		}, 1000)
 		return () => clearInterval(interval)
 	})
 
+	function fullTime() {
+		return time
+			.round({
+				smallestUnit: 'seconds',
+				roundingMode: 'floor',
+			})
+			.toString()
+	}
+
+	async function saveAlarms() {
+		await updateDoc(doc(db, `users/${$dbUser?.uid}`), { alarms }).then(() => {
+			console.log(`LOG..+page: alarms saved`)
+		})
+	}
+
 	async function getAlarms() {
-		const querySnapshot = await getDocs(collection(db, 'users', $dbUser?.uid, 'alarms'))
-		alarms = [...querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))]
-		// resetImage()
+		// alarms = $dbUser?.alarms
+		await getDoc(doc(db, `users/${$dbUser?.uid}`)).then(doc => {
+			alarms = doc.data()?.alarms || [fullTime()]
+		})
 	}
 
 	const addAlarm = () => {
@@ -44,6 +59,8 @@
 		console.log(`LOG..+page: inside`, alarms)
 	}
 
+	$: if ($dbUser?.id) getAlarms()
+
 	$: if (browser) {
 		w = window
 		orient = w.innerHeight > w.innerWidth ? 'portrait' : 'landscape'
@@ -51,22 +68,15 @@
 		W = w?.innerWidth
 	}
 
-	$: fullTime = time
-		.round({
-			smallestUnit: 'seconds',
-			roundingMode: 'floor',
-		})
-		.toString()
-
-	$: showtime = fullTime.split(':')
+	$: showtime = fullTime().split(':')
 
 	$: [hh, mm, ss] = showtime
 
-	$: if (alarms.includes(fullTime)) {
-		console.log(`LOG..+page: new yay`, fullTime)
+	$: if (alarms?.includes(fullTime())) {
+		console.log(`LOG..+page: new yay`, fullTime())
 	}
 
-	$: console.log(`LOG..+page: WATCH`, $dbUser.displayName)
+	$: console.log(`LOG..+page: WATCH`, $dbUser)
 </script>
 
 <div class="flex flex-col w-screen h-screen gap-2 bg-green-50 centering" id="SVG-CONTAINER">
@@ -95,6 +105,11 @@
 				{hh}:{mm}:{ss}
 			</text>
 		</svg>
+		<div class="flex justify-end pb-2">
+			<button on:click={saveAlarms} class="p-1 text-white bg-green-300 border rounded-lg">
+				📥 save
+			</button>
+		</div>
 	</div>
 </div>
 
