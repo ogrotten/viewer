@@ -45,16 +45,7 @@
 		// alarms = $dbUser?.alarms
 		await getDoc(doc(db, `users/${$dbUser?.uid}`)).then(doc => {
 			alarms = doc.data()?.alarms || [fullTime()]
-			// debugger
-			// if (!doc.exists()) {
-			// 	console.log('No such document!')
-			// } else {
-			// 	alarms = doc.data()?.alarms || [fullTime()]
-			// 	console.log(`LOG..+page: `, alarms)
-			// }
 		})
-
-		// console.log(`LOG..+page: $dbUser`, $dbUser)
 	}
 
 	const addAlarm = () => {
