@@ -13,3 +13,9 @@ interface Image {
 	title: string;
 	id?: string;
 }
+
+// interface HrMinSec {
+// 	id: string;
+// 	time: string;
+// 	date: string;
+// }
