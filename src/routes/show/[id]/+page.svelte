@@ -237,7 +237,16 @@
 			</p>
 		</span>
 	{:else if showGallery}
-		<div id={'svelte-bricks'} class="transition-all duration-500 origin-center scale-100">
+		<div
+			id={'svelte-bricks'}
+			class="transition-all duration-500 origin-center scale-100"
+			transition:fadeScale|local={{
+				delay: 0,
+				duration: 500,
+				easing: cubicInOut,
+				baseScale: 0.85,
+			}}
+		>
 			{#if galleryTile && gallery.length > 1}
 				<div
 					class="absolute w-full h-full p-10"
