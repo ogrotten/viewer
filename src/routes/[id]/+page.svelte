@@ -16,7 +16,7 @@
 	} from 'firebase/firestore'
 
 	const debug = false
-	let setupLink = 'https://char.show/show/'
+	let setupLink = `${$page.url.origin}/show/`
 	let loading = true,
 		showAdd = false,
 		linkcopied = false,
