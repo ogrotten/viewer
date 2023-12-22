@@ -250,7 +250,7 @@
 			{#if galleryTile && gallery.length > 1}
 				<div
 					class="absolute w-full h-full p-10"
-					transition:fadeScale|local={{
+					transition:fadeScale={{
 						delay: 0,
 						duration: 500,
 						easing: cubicInOut,
@@ -302,12 +302,12 @@
 					{#each presentGallery as img, idx (img.id)}
 						<!-- svelte-ignore a11y-click-events-have-key-events -->
 						<!-- svelte-ignore a11y-no-static-element-interactions -->
-						<div
-							animate:flip={{
+						<!-- animate:flip={{
 								delay: 0,
 								duration: 500,
 								easing: cubicInOut,
-							}}
+							}} -->
+						<div
 							transition:fadeScale={{
 								delay: 0,
 								duration: 500,
