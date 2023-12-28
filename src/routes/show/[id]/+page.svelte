@@ -243,7 +243,7 @@
 				}}
 				on:click={() => (localShowNow = false)}
 			/>
-			<p
+			<!-- <p
 				class="absolute bottom-0 left-0 w-full p-2 py-2 text-2xl font-bold text-center transition-all opacity-50"
 				in:fade={{
 					delay: 200,
@@ -258,9 +258,9 @@
 				style="mix-blend-mode: difference; color: #8c8"
 			>
 				{localNow?.[0]?.title}
-			</p>
+			</p> -->
 			<p
-				class="absolute bottom-0 left-0 w-full p-2 py-2 text-2xl font-bold text-center transition-all opacity-50"
+				class="absolute bottom-0 left-0 w-full p-2 py-2 text-2xl font-bold text-center transition-all opacity-75 text-cyan-50"
 				in:fade={{
 					delay: 200,
 					duration: 2000,
@@ -271,7 +271,7 @@
 					duration: 100,
 					easing: cubicOut,
 				}}
-				style="mix-blend-mode: luminosity; color: #8c8"
+				style="text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;"
 			>
 				{localNow?.[0]?.title}
 			</p>
@@ -310,7 +310,7 @@
 						<!-- svelte-ignore a11y-click-events-have-key-events -->
 						<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 						<div
-							class="relative transition-all duration-200 scale-100 group hover:scale-95"
+							class="relative transition-all duration-200 origin-center scale-100 group hover:scale-95"
 							transition:fadeScale|local={{
 								delay: 0,
 								duration: 500,
@@ -333,25 +333,12 @@
 									localShowNow = true
 								}}
 								title={item?.title}
-								class="p-0 transition-all origin-center group-hover:scale-95"
+								class="p-0 transition-all group-hover:scale-95"
 							/>
-							<!-- <p
-								class="w-full p-2 py-2 text-2xl font-bold text-center transition-all group-hover:text-white"
-								class:hidden={!item.title}
-								>
-								{item.title}
-							</p> -->
 							<p
-								class="absolute inset-x-0 bottom-0 p-2 py-2 text-2xl font-bold text-center transition-all duration-200 opacity-50 group-hover:scale-95"
+								class="absolute inset-x-0 bottom-0 p-2 py-2 text-2xl font-bold text-center transition-all duration-200 opacity-50 group-hover:bottom-4 group-hover:scale-95 group-hover:opacity-100 text-cyan-50"
 								class:hidden={!item.title}
-								style="mix-blend-mode: difference; color: #8c8"
-							>
-								{item.title}
-							</p>
-							<p
-								class="absolute inset-x-0 bottom-0 p-2 py-2 text-2xl font-bold text-center transition-all duration-200 opacity-50 group-hover:scale-95"
-								class:hidden={!item.title}
-								style="mix-blend-mode: luminosity; color: #8c8"
+								style="text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;"
 							>
 								{item.title}
 							</p>
@@ -395,7 +382,8 @@
 						>
 							{#if img.title}
 								<p
-									class="absolute bottom-0 left-0 w-full p-2 py-2 text-2xl font-bold text-center transition-all duration-500 bg-black bg-opacity-50 group-hover:bg-opacity-100 group-hover:bg-cyan-950 group-hover:text-white"
+									class="absolute bottom-0 left-0 w-full p-2 py-2 text-2xl font-bold text-center transition-all duration-500 opacity-50 group-hover:opacity-100 text-cyan-50"
+									style="text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;"
 								>
 									{img.title}
 								</p>
