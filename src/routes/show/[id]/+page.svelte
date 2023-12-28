@@ -221,32 +221,61 @@
 	{:else if localShowNow && localNow?.[0]?.url}
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-		<span class="">
+		<div
+			class="relative"
+			in:fadeScale|local={{
+				delay: 500,
+				duration: 2000,
+				easing: cubicOut,
+				baseScale: 0.7,
+			}}
+		>
 			<img
 				id="now"
 				alt={localNow?.[0]?.title}
 				src={localNow?.[0]?.url}
-				class="absolute object-contain w-screen h-screen transition-all duration-1000"
-				in:fadeScale={{
-					delay: 0,
-					duration: 2000,
-					easing: cubicOut,
-					baseScale: 0.85,
-				}}
+				class="object-contain w-screen h-screen transition-all"
 				out:fadeScale={{
 					delay: 0,
-					duration: 2000,
+					duration: 200,
 					easing: cubicIn,
 					baseScale: 0.85,
 				}}
 				on:click={() => (localShowNow = false)}
 			/>
 			<p
-				class="absolute bottom-0 left-0 w-full p-2 py-2 text-2xl font-bold text-center transition-all bg-black bg-opacity-50 group-hover:bg-opacity-100 group-hover:bg-cyan-950 group-hover:text-white"
+				class="absolute bottom-0 left-0 w-full p-2 py-2 text-2xl font-bold text-center transition-all opacity-50"
+				in:fade={{
+					delay: 200,
+					duration: 2000,
+					easing: cubicOut,
+				}}
+				out:fade={{
+					delay: 0,
+					duration: 100,
+					easing: cubicOut,
+				}}
+				style="mix-blend-mode: difference; color: #8c8"
 			>
 				{localNow?.[0]?.title}
 			</p>
-		</span>
+			<p
+				class="absolute bottom-0 left-0 w-full p-2 py-2 text-2xl font-bold text-center transition-all opacity-50"
+				in:fade={{
+					delay: 200,
+					duration: 2000,
+					easing: cubicOut,
+				}}
+				out:fade={{
+					delay: 0,
+					duration: 100,
+					easing: cubicOut,
+				}}
+				style="mix-blend-mode: luminosity; color: #8c8"
+			>
+				{localNow?.[0]?.title}
+			</p>
+		</div>
 	{:else if showGallery}
 		<div
 			id={'svelte-bricks'}
@@ -271,35 +300,62 @@
 					<Masonry
 						items={gallery}
 						let:item
-						gap={0}
+						gap={2}
 						minColWidth={setCols(tile.WD, gallery.length)}
 						maxColWidth={setCols(tile.WD, gallery.length)}
 						animate={true}
 						masonryHeight={tile.FHT}
 						masonryWidth={tile.FWD}
 					>
-						<!-- columnClass={'brickcol'} -->
 						<!-- svelte-ignore a11y-click-events-have-key-events -->
 						<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-						<!-- <span class="p-0 group"> -->
-						<img
-							id="brickitem"
-							src={item?.url}
-							alt={item?.title}
-							on:click={() => {
-								localNow[0] = item
-								localShowNow = true
+						<div
+							class="relative transition-all duration-200 scale-100 group hover:scale-95"
+							transition:fadeScale|local={{
+								delay: 0,
+								duration: 500,
+								easing: cubicInOut,
+								baseScale: 0.85,
 							}}
-							title={item?.title}
-							class="p-0 transition-all duration-200 origin-center scale-100 hover:scale-95"
-						/>
-						<!-- <p
+						>
+							<img
+								transition:fadeScale|local={{
+									delay: 0,
+									duration: 500,
+									easing: cubicInOut,
+									baseScale: 0.85,
+								}}
+								id="brickitem"
+								src={item?.url}
+								alt={item?.title}
+								on:click={() => {
+									localNow[0] = item
+									localShowNow = true
+								}}
+								title={item?.title}
+								class="p-0 transition-all origin-center group-hover:scale-95"
+							/>
+							<!-- <p
 								class="w-full p-2 py-2 text-2xl font-bold text-center transition-all group-hover:text-white"
+								class:hidden={!item.title}
+								>
+								{item.title}
+							</p> -->
+							<p
+								class="absolute inset-x-0 bottom-0 p-2 py-2 text-2xl font-bold text-center transition-all duration-200 opacity-50 group-hover:scale-95"
+								class:hidden={!item.title}
+								style="mix-blend-mode: difference; color: #8c8"
 							>
 								{item.title}
 							</p>
-						</span> -->
-						<!-- </span> -->
+							<p
+								class="absolute inset-x-0 bottom-0 p-2 py-2 text-2xl font-bold text-center transition-all duration-200 opacity-50 group-hover:scale-95"
+								class:hidden={!item.title}
+								style="mix-blend-mode: luminosity; color: #8c8"
+							>
+								{item.title}
+							</p>
+						</div>
 					</Masonry>
 				</div>
 			{:else}
