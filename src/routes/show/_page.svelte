@@ -22,8 +22,6 @@
 
 	const debug = false
 
-	console.log(`LOG..+page: `)
-
 	let viewer: DocumentData = {},
 		unsubViewer,
 		showGallery = false,
@@ -47,7 +45,6 @@
 		attach = ''
 
 	async function setup(incoming: string) {
-		console.log(`LOG..+page: incoming`, incoming)
 		unsubViewer = onSnapshot(doc(db, 'viewers', incoming), doc => {
 			viewer = doc.data()
 			showGallery = viewer.gallery
@@ -137,12 +134,10 @@
 	$: if (attach.length > 25) {
 		getDoc(doc(db, 'viewers', attach)).then(doc => {
 			if (doc.exists()) {
-				// console.log(`LOG..+page: cool`)
 				connected = true
 				connect = attach
 				setup(attach)
 			} else {
-				// console.log(`LOG..+page: not cool`)
 				connected = false
 				connect = ''
 			}

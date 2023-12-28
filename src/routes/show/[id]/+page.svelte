@@ -120,7 +120,6 @@
 		if (l < 4) outgoing = tile.FWD / l - 100
 		else outgoing = w - Math.floor(Math.floor((125 * Math.log(l * 0.85)) / 100)) * 100
 
-		console.log(`LOG..+page: outgoing`, outgoing)
 		return outgoing
 	}
 
@@ -223,7 +222,7 @@
 		<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 		<div
 			class="relative"
-			in:fadeScale|local={{
+			in:fadeScale={{
 				delay: 500,
 				duration: 2000,
 				easing: cubicOut,
@@ -279,8 +278,8 @@
 	{:else if showGallery}
 		<div
 			id={'svelte-bricks'}
-			class=""
-			transition:fadeScale|local={{
+			class="relative"
+			transition:fadeScale={{
 				delay: 0,
 				duration: 500,
 				easing: cubicInOut,
@@ -289,13 +288,14 @@
 		>
 			{#if galleryTile && gallery.length > 1}
 				<div
-					class=""
+					class="relative"
 					transition:fadeScale={{
 						delay: 0,
 						duration: 500,
 						easing: cubicInOut,
 						baseScale: 0.85,
 					}}
+					id="tile"
 				>
 					<Masonry
 						items={gallery}
@@ -311,7 +311,7 @@
 						<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 						<div
 							class="relative transition-all duration-200 origin-center scale-100 group hover:scale-95"
-							transition:fadeScale|local={{
+							transition:fadeScale={{
 								delay: 0,
 								duration: 500,
 								easing: cubicInOut,
@@ -319,7 +319,7 @@
 							}}
 						>
 							<img
-								transition:fadeScale|local={{
+								transition:fadeScale={{
 									delay: 0,
 									duration: 500,
 									easing: cubicInOut,
@@ -347,10 +347,16 @@
 				</div>
 			{:else}
 				<div
-					id="gallery"
+					id="gallery notile"
 					class="box-border absolute flex flex-row w-full h-full"
-					transition:fadeScale|local={{
+					out:fadeScale={{
 						delay: 0,
+						duration: 500,
+						easing: cubicInOut,
+						baseScale: 0.85,
+					}}
+					in:fadeScale={{
+						delay: 500,
 						duration: 500,
 						easing: cubicInOut,
 						baseScale: 0.85,

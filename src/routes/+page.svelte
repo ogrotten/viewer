@@ -2,8 +2,6 @@
 	import AuthCheck from '$lib/components/AuthCheck.svelte'
 	import { dbUser } from '$lib/firestore'
 	import TopNav from './_components/TopNav.svelte'
-
-	$: console.log(`LOG..+page: user`, $dbUser)
 </script>
 
 <div class="">

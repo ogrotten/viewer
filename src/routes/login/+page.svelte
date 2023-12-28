@@ -14,11 +14,8 @@
 	}
 
 	$: if (dbUser.id) {
-		console.log(`LOG..+login: dbUser`, $dbUser.id)
 		goto(`${$dbUser.id}`)
 	}
-
-	$: console.log(`LOG..+login: dbUser`, $dbUser)
 </script>
 
 <h2>Login</h2>

@@ -143,7 +143,6 @@
 				show[incoming] = false
 				updateDoc(doc(db, 'viewers', $dbUser?.uid), { [incoming]: false })
 			})
-		console.log(`LOG..+page: filteredImages`, filteredImages)
 	}
 
 	const resetShowStates = () => {
@@ -219,10 +218,7 @@
 		gallery: images?.filter(image => image.gallery),
 	}
 
-	$: console.log(
-		`LOG..+page: imgLists.gallery`,
-		imgLists?.gallery?.map(img => img.index),
-	)
+	$: console.log(imgLists?.gallery?.map(img => img.index))
 </script>
 
 <svelte:window
