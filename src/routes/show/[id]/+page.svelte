@@ -20,7 +20,6 @@
 
 	const debug = false
 	const uid = $page.params.id
-	console.log(`LOG..+page: uid`, uid)
 
 	let viewer: DocumentData = {},
 		unsubViewer,
@@ -55,10 +54,11 @@
 		WD: 0,
 		SHT: 0,
 		SWD: 0,
+		FHT: 0,
+		FWD: 0,
 	}
 
 	async function setup(incoming: string) {
-		console.log(`LOG..+page: incoming`, incoming)
 		unsubViewer = onSnapshot(doc(db, 'viewers', incoming), doc => {
 			viewer = doc.data()
 			showGallery = viewer.gallery
@@ -115,12 +115,25 @@
 		carIndex = (carIndex + 1) % carousel.length
 	}
 
+	const setCols = (w: number, l: number) => {
+		let outgoing
+		if (l < 4) outgoing = tile.FWD / l
+		else outgoing = w - Math.floor(Math.floor((125 * Math.log(l)) / 100)) * 100
+
+		console.log(`LOG..+page: outgoing`, outgoing)
+		return outgoing
+	}
+
+	// $: maxColWidth = setCols(tile.WD, gallery?.length)
+
 	onMount(() => {
 		tile = {
-			HT: window.innerHeight / 1.75,
-			WD: window.innerWidth / 3.5,
+			HT: Math.floor(window.innerHeight / 1.8),
+			WD: Math.floor(window.innerWidth / 4),
 			SHT: screen.height / 2,
 			SWD: screen.width / 4,
+			FHT: window.innerHeight,
+			FWD: window.innerWidth,
 		}
 	})
 
@@ -143,12 +156,10 @@
 	$: if (attach.length > 25) {
 		getDoc(doc(db, 'viewers', attach)).then(doc => {
 			if (doc.exists()) {
-				// console.log(`LOG..+page: cool`)
 				connected = true
 				connect = attach
 				setup(attach)
 			} else {
-				// console.log(`LOG..+page: not cool`)
 				connected = false
 				connect = ''
 			}
@@ -167,7 +178,7 @@
 	}
 </script>
 
-<div class="relative">
+<div class="">
 	{#if !connected}
 		<div class="flex items-center justify-center w-screen h-screen">
 			<!-- <span class="w-fit">
@@ -239,7 +250,7 @@
 	{:else if showGallery}
 		<div
 			id={'svelte-bricks'}
-			class="transition-all duration-500 origin-center scale-100"
+			class=""
 			transition:fadeScale|local={{
 				delay: 0,
 				duration: 500,
@@ -249,7 +260,7 @@
 		>
 			{#if galleryTile && gallery.length > 1}
 				<div
-					class="absolute w-full h-full p-10"
+					class=""
 					transition:fadeScale={{
 						delay: 0,
 						duration: 500,
@@ -261,31 +272,34 @@
 						items={gallery}
 						let:item
 						gap={0}
-						minColWidth={tile.WD - 200}
-						maxColWidth={tile.WD}
+						minColWidth={setCols(tile.WD, gallery.length)}
+						maxColWidth={setCols(tile.WD, gallery.length)}
 						animate={true}
-						columnClass={'brickcol'}
+						masonryHeight={tile.FHT}
+						masonryWidth={tile.FWD}
 					>
+						<!-- columnClass={'brickcol'} -->
 						<!-- svelte-ignore a11y-click-events-have-key-events -->
 						<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-						<span class="p-8 group">
-							<img
-								id="brickitem"
-								src={item?.url}
-								alt={item?.title}
-								on:click={() => {
-									localNow[0] = item
-									localShowNow = true
-								}}
-								title={item?.title}
-								class="transition-all duration-500 origin-center scale-100 hover:scale-95"
-							/>
-							<p
+						<!-- <span class="p-0 group"> -->
+						<img
+							id="brickitem"
+							src={item?.url}
+							alt={item?.title}
+							on:click={() => {
+								localNow[0] = item
+								localShowNow = true
+							}}
+							title={item?.title}
+							class="p-0 transition-all duration-200 origin-center scale-100 hover:scale-95"
+						/>
+						<!-- <p
 								class="w-full p-2 py-2 text-2xl font-bold text-center transition-all group-hover:text-white"
 							>
 								{item.title}
 							</p>
-						</span>
+						</span> -->
+						<!-- </span> -->
 					</Masonry>
 				</div>
 			{:else}
@@ -378,9 +392,9 @@
 <style>
 	#brickitem {
 		@apply w-full h-fit object-contain;
-		@apply max-h-[800px] px-4 pb-0;
+		@apply px-0 pb-0;
 	}
 	.brickcol {
-		@apply box-border px-4;
+		@apply box-border p-0;
 	}
 </style>
