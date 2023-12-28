@@ -117,8 +117,8 @@
 
 	const setCols = (w: number, l: number) => {
 		let outgoing
-		if (l < 4) outgoing = tile.FWD / l
-		else outgoing = w - Math.floor(Math.floor((125 * Math.log(l)) / 100)) * 100
+		if (l < 4) outgoing = tile.FWD / l - 100
+		else outgoing = w - Math.floor(Math.floor((125 * Math.log(l * 0.85)) / 100)) * 100
 
 		console.log(`LOG..+page: outgoing`, outgoing)
 		return outgoing
