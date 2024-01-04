@@ -17,6 +17,7 @@
 	import { dbUser } from '$lib/firestore'
 	import Masonry from 'svelte-bricks'
 	import { flip } from 'svelte/animate'
+	import GalleryTile from './GalleryTile.svelte'
 
 	const debug = false
 	const uid = $page.params.id
@@ -276,18 +277,10 @@
 			</p>
 		</div>
 	{:else if showGallery}
-		<div
-			id={'svelte-bricks'}
-			class="relative"
-			transition:fadeScale={{
-				delay: 0,
-				duration: 500,
-				easing: cubicInOut,
-				baseScale: 0.85,
-			}}
-		>
+		<div id={'svelte-bricks'} class="relative">
 			{#if galleryTile && gallery.length > 1}
-				<div
+				<GalleryTile {gallery} />
+				<!-- <div
 					class="relative"
 					transition:fadeScale={{
 						delay: 0,
@@ -307,8 +300,8 @@
 						masonryHeight={tile.FHT}
 						masonryWidth={tile.FWD}
 					>
-						<!-- svelte-ignore a11y-click-events-have-key-events -->
-						<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+						svelte-ignore a11y-click-events-have-key-events
+						svelte-ignore a11y-no-noninteractive-element-interactions
 						<div
 							class="relative transition-all duration-200 origin-center scale-100 group hover:scale-95"
 							transition:fadeScale={{
@@ -344,7 +337,7 @@
 							</p>
 						</div>
 					</Masonry>
-				</div>
+				</div> -->
 			{:else}
 				<div
 					id="gallery notile"
