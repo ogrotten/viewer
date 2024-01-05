@@ -25,31 +25,30 @@
 	}
 </script>
 
-{#each presentGallery as img, idx (img.id)}
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<!-- animate:flip={{
-								delay: 0,
-								duration: 500,
-								easing: cubicInOut,
-							}} -->
-	<div
-		class="h-screen transition-all duration-500 origin-center scale-100 bg-center bg-no-repeat hover:scale-95 group"
-		class:bg-contain={gallery.length <= 2}
-		class:bg-cover={gallery.length > 2}
-		style="width: {100 / gallery.length}%; background-image: url({img.url})"
-		on:click={() => dispatch('imageClick', img)}
-	>
-		{#if img.title}
-			<p
-				class="absolute bottom-0 left-0 w-full p-2 py-2 text-2xl font-bold text-center transition-all duration-500 opacity-50 group-hover:opacity-100 text-cyan-50"
-				style="text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;"
-			>
-				{img.title}
-			</p>
-		{/if}
-	</div>
-{/each}
+<span class="flex flex-wrap">
+	{#each presentGallery as img, idx (img.id)}
+		<img src={img.url} alt="" class="" />
+		<!-- style="width: {100 / gallery.length}%" -->
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<!-- svelte-ignore a11y-no-static-element-interactions -->
+		<!-- <div
+			class="h-screen transition-all duration-500 origin-center scale-100 bg-center bg-no-repeat hover:scale-95 group"
+			class:bg-contain={gallery.length <= 2}
+			class:bg-cover={gallery.length > 2}
+			style="width: {100 / gallery.length}%; background-image: url({img.url})"
+			on:click={() => dispatch('imageClick', img)}
+		>
+			{#if img.title}
+				<p
+					class="absolute bottom-0 left-0 w-full p-2 py-2 text-2xl font-bold text-center transition-all duration-500 opacity-50 group-hover:opacity-100 text-cyan-50"
+					style="text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;"
+				>
+					{img.title}
+				</p>
+			{/if}
+		</div> -->
+	{/each}
+</span>
 
 <style>
 	#brickitem {

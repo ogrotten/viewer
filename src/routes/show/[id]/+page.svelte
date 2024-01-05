@@ -289,30 +289,13 @@
 			}}
 		>
 			{#if galleryTile && gallery.length > 1}
-				<div
-					id="gallery tiled"
-					class="box-border absolute flex flex-row w-full h-full"
-					out:fadeScale={{
-						delay: 0,
-						duration: 500,
-						easing: cubicInOut,
-						baseScale: 0.85,
+				<GalleryTiler
+					{gallery}
+					on:imageClick={({ detail }) => {
+						localNow[0] = detail
+						localShowNow = true
 					}}
-					in:fadeScale={{
-						delay: 500,
-						duration: 500,
-						easing: cubicInOut,
-						baseScale: 0.85,
-					}}
-				>
-					<GalleryTiler
-						{gallery}
-						on:imageClick={({ detail }) => {
-							localNow[0] = detail
-							localShowNow = true
-						}}
-					/>
-				</div>
+				/>
 			{:else}
 				<div
 					id="gallery notile"
