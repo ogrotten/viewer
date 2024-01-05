@@ -10,48 +10,30 @@
 	export let gallery: Image[] = []
 	export let presentGallery: Image[] = []
 	export let packWrap: HTMLSpanElement
-	let Packery
+
+	let Packery, pk
 	onMount(async () => {
 		const module = await import('packery')
 		Packery = module.default
-		// console.log(`LOG..GalleryTiler: Packery`, Packery)
-		const pk = new Packery(packWrap, {
+		pk = new Packery(packWrap, {
 			itemSelector: '#brickitem',
 			gutter: 0,
 			percentPosition: true,
 		})
 	})
 
-	$: if (browser) {
-		// const Packery = import('packery')
-		// debugger
-		// packery = new Packery(packWrap, {
-		// 	itemSelector: '#brickitem',
-		// 	gutter: 0,
-		// 	percentPosition: true,
-		// })
-		// packery.addItems(gallery)
-		// import('packery')
-		// 	.then(Packery => {
-		// 		// debugger
-		// 		const pk = new Packery(packWrap, {
-		// 			itemSelector: '#brickitem',
-		// 			gutter: 0,
-		// 			percentPosition: true,
-		// 		})
-		// 		pk.addItems(gallery)
-		// 	})
-		// 	.catch(err => {
-		// 		console.warn(`LOG..GalleryTile: err`, err)
-		// 	})
+	$: if (pk) {
+		console.log(`LOG..GalleryTiler: pk`, pk.getItemElements()[0].naturalWidth)
 	}
 
 	// on:click={()=> dispatch('imageClick', img)}
 </script>
 
-<div class="" bind:this={packWrap}>
+<div class="" bind:this={packWrap} id="packWrap">
 	{#each presentGallery as img, idx (img.id)}
-		<img src={img.url} alt="" class="w-48 h-48" id="brickitem" />
+		<div class="relative">
+			<img src={img.url} alt="" class="z-0 w-48 h-48" id="brickitem" />
+		</div>
 	{/each}
 </div>
 
