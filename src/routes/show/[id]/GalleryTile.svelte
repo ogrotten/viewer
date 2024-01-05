@@ -9,8 +9,10 @@
 	export let gallery: Image[] = [],
 		presentGallery: Image[] = []
 
-	let images: HTMLImageElement[] = [],
-		imgBase: HTMLImageElement
+	let images: HTMLDivElement[] = [],
+		imgBase: HTMLImageElement,
+		itemDiv: HTMLDivElement,
+		itemContentDiv: HTMLDivElement
 
 	const size = 300
 
@@ -20,7 +22,8 @@
 	onMount(async () => {
 		const module = await import('muuri').then()
 		Muuri = module.default
-		mu = new Muuri(muWrap, {
+
+		mu = new Muuri('#muWrap', {
 			dragEnabled: true,
 			items: '.item',
 		})
@@ -38,40 +41,82 @@
 			const img = imgBase.cloneNode() as HTMLImageElement
 			img.src = incoming.url
 			img.alt = incoming.title
-			// img.classList.add('')
-			return img
+			let classes = 'square'
+			if (img.width > img.height) {
+				classes += ' wide'
+			} else if (img.width < img.height) {
+				classes += ' tall'
+			}
+
+			img.classList.add(classes)
+			const inner = itemContentDiv
+			const outer = itemDiv
+
+			inner.appendChild(img)
+			outer.appendChild(inner)
+
+			// debugger
+			return outer
 		})
-		// debugger
+		debugger
 		mu.add(images)
 	}
+
+	// $: if (imgBase && imgBase.complete) {
+	// 	// imgBase.addEventListener('load', () => {
+	// 	// 	imgWrapper.appendChild(imgBase)
+	// 	// })
+
+	// 	debugger
+	// }
+
+	$: console.log(`LOG..GalleryTile: images`, images)
 </script>
 
 <div class="hidden">
+	<div bind:this={itemDiv} class="item">
+		<div bind:this={itemContentDiv} class="item-content">
+			<!--  -->
+		</div>
+	</div>
 	<img bind:this={imgBase} src="" alt="" id="brickitem" />
 </div>
 
-<div class="" bind:this={muWrap} id="muWrap">
-	<!-- {#each presentGallery as img, idx (img.id)}
+<div id="muWrap" class=" bg-slate-500">
+	<!--  -->
+</div>
+
+<!-- {#each images as m}
+	{m}
+{/each} -->
+
+<!-- <div class="invisible" bind:this={muWrap} id="muWrap">
+	<div class="item">
+		<div class="item-content">
+			{}
+		</div>
+	</div>
+	{#each presentGallery as img, idx (img.id)}
 		<div class="relative">
 			<img src={img.url} alt="" class="z-0 w-48 h-48" id="brickitem" />
 		</div>
-	{/each} -->
-</div>
+	{/each}
+</div> -->
 
 <style lang="postcss">
-	.mgrid {
+	#muwrap {
 		position: relative;
 	}
 
 	.item {
-		background: #000;
-		color: #fff;
 		display: block;
-		height: 100px;
-		margin: 5px;
 		position: absolute;
 		width: 100px;
+		height: 100px;
+		margin: 5px;
 		z-index: 1;
+		background: #000;
+		color: #fff;
 	}
 
 	.item-wide {
