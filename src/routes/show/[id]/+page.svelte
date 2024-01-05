@@ -278,26 +278,26 @@
 			</p>
 		</div>
 	{:else if showGallery}
-		<div
-			id={'svelte-bricks'}
-			class="relative"
-			transition:fadeScale={{
-				delay: 0,
-				duration: 500,
-				easing: cubicInOut,
-				baseScale: 0.85,
-			}}
-		>
-			{#if galleryTile && gallery.length > 1}
-				<GalleryTiler
-					{gallery}
-					{presentGallery}
-					on:imageClick={({ detail }) => {
-						localNow[0] = detail
-						localShowNow = true
-					}}
-				/>
-			{:else}
+		{#if galleryTile && gallery.length > 1}
+			<GalleryTiler
+				{gallery}
+				{presentGallery}
+				on:imageClick={({ detail }) => {
+					localNow[0] = detail
+					localShowNow = true
+				}}
+			/>
+		{:else}
+			<div
+				id={'svelte-bricks'}
+				class="relative"
+				transition:fadeScale={{
+					delay: 0,
+					duration: 500,
+					easing: cubicInOut,
+					baseScale: 0.85,
+				}}
+			>
 				<div
 					id="gallery notile"
 					class="box-border absolute flex flex-row w-full h-full"
@@ -349,8 +349,8 @@
 						</div>
 					{/each}
 				</div>
-			{/if}
-		</div>
+			</div>
+		{/if}
 	{:else if showCarousel}
 		<div
 			id="carousel"

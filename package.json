@@ -21,7 +21,7 @@
 		"@types/packery": "^1.4.37",
 		"autoprefixer": "^10.4.14",
 		"daisyui": "^3.2.1",
-		"packery": "^2.1.2",
+		"muuri": "^0.9.5",
 		"postcss": "^8.4.25",
 		"prettier": "^2.8.0",
 		"prettier-plugin-svelte": "^2.10.1",
@@ -36,6 +36,7 @@
 	"dependencies": {
 		"@js-temporal/polyfill": "^0.4.4",
 		"firebase": "^10.0.0",
+		"packery": "^2.1.2",
 		"svelte-bricks": "^0.2.0"
 	}
 }
