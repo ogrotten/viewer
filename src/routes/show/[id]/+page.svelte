@@ -291,6 +291,7 @@
 			{#if galleryTile && gallery.length > 1}
 				<GalleryTiler
 					{gallery}
+					{presentGallery}
 					on:imageClick={({ detail }) => {
 						localNow[0] = detail
 						localShowNow = true
