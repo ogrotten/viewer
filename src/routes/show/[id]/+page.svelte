@@ -279,65 +279,7 @@
 	{:else if showGallery}
 		<div id={'svelte-bricks'} class="relative">
 			{#if galleryTile && gallery.length > 1}
-				<GalleryTile {gallery} />
-				<!-- <div
-					class="relative"
-					transition:fadeScale={{
-						delay: 0,
-						duration: 500,
-						easing: cubicInOut,
-						baseScale: 0.85,
-					}}
-					id="tile"
-				>
-					<Masonry
-						items={gallery}
-						let:item
-						gap={2}
-						minColWidth={setCols(tile.WD, gallery.length)}
-						maxColWidth={setCols(tile.WD, gallery.length)}
-						animate={true}
-						masonryHeight={tile.FHT}
-						masonryWidth={tile.FWD}
-					>
-						svelte-ignore a11y-click-events-have-key-events
-						svelte-ignore a11y-no-noninteractive-element-interactions
-						<div
-							class="relative transition-all duration-200 origin-center scale-100 group hover:scale-95"
-							transition:fadeScale={{
-								delay: 0,
-								duration: 500,
-								easing: cubicInOut,
-								baseScale: 0.85,
-							}}
-						>
-							<img
-								transition:fadeScale={{
-									delay: 0,
-									duration: 500,
-									easing: cubicInOut,
-									baseScale: 0.85,
-								}}
-								id="brickitem"
-								src={item?.url}
-								alt={item?.title}
-								on:click={() => {
-									localNow[0] = item
-									localShowNow = true
-								}}
-								title={item?.title}
-								class="p-0 transition-all group-hover:scale-95"
-							/>
-							<p
-								class="absolute inset-x-0 bottom-0 p-2 py-2 text-2xl font-bold text-center transition-all duration-200 opacity-50 group-hover:bottom-4 group-hover:scale-95 group-hover:opacity-100 text-cyan-50"
-								class:hidden={!item.title}
-								style="text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;"
-							>
-								{item.title}
-							</p>
-						</div>
-					</Masonry>
-				</div> -->
+				<GalleryTile {presentGallery} {gallery} />
 			{:else}
 				<div
 					id="gallery notile"

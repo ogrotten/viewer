@@ -6,125 +6,57 @@
 
 	let loading = true
 
-	export let gallery: Image[] = []
+	export let gallery: Image[] = [],
+		presentGallery: Image[] = []
 
-	let listElem: HTMLUListElement
-	let listHandler: any
-	let listItems: HTMLLIElement[] = []
-	let images: HTMLImageElement[] = []
+	let images: HTMLImageElement[] = [],
+		imgBase: HTMLImageElement
 
 	const size = 300
 
-	onMount(() => {
-		if (browser) {
-			import('muuri')
-				.then(Muuri => {
-					// console.log('Muuri', Muuri)
-					// Use module for something
-					listHandler = new Muuri.default(listElem, {
-						dragEnabled: true,
-						// items: listItems,
-					})
-					listHandler.on('layoutStart', i => {
-						console.log('item-list: layoutStart')
-					})
-					listHandler.on('layoutEnd', i => {
-						console.log('item-list: layoutEnd')
-					})
-					// debugger
-				})
-				.catch(err => {
-					console.warn(`LOG..GalleryTile: err`, err)
-				})
-		}
+	let muWrap: HTMLSpanElement
+
+	let Muuri, mu: any
+	onMount(async () => {
+		const module = await import('muuri').then()
+		Muuri = module.default
+		mu = new Muuri(muWrap, {
+			dragEnabled: true,
+			items: '.item',
+		})
+
+		mu.on('layoutStart', i => {
+			console.log('item-list: layoutStart', i)
+		})
+		mu.on('layoutEnd', i => {
+			console.log('item-list: layoutEnd')
+		})
 	})
 
-	const sizer = () => {
-		// console.log('sizer', { listElem })
-		// console.log(`LOG..GalleryTile: listHandler.`, listHandler.getItems()[0])
-		console.log(`LOG..GalleryTile: listHandler.`, listItems.style)
-	}
-
-	$: if (listHandler) {
-		console.log(`LOG..GalleryTile: listItems`, listItems)
-		Promise.all(
-			listItems.map((item, idx) => {
-				const img: HTMLImageElement = images[idx]
-				return new Promise((resolve, reject) => {
-					img.onload = () => {
-						resolve(img)
-					}
-					img.onerror = () => {
-						reject(img)
-					}
-				})
-			}),
-		).then(imgs => {
-			// imgs.forEach((img, idx) => {
-			// 	if (img.naturalWidth > img.naturalHeight) {
-			// 		listItems[idx].classList.add('item-wide')
-			// 	} else {
-			// 		listItems[idx].classList.add('item-tall')
-			// 	}
-			// })
-			// listHandler.add(listItems)
-			// listHandler.refreshItems()
-			// loading = false
+	$: if (mu && presentGallery.length) {
+		images = gallery.map(incoming => {
+			const img = imgBase.cloneNode() as HTMLImageElement
+			img.src = incoming.url
+			img.alt = incoming.title
+			// img.classList.add('')
+			return img
 		})
+		// debugger
+		mu.add(images)
 	}
-
-	$: console.log(`LOG..GalleryTile: listItems[1]`, listItems[1])
 </script>
 
-{#if loading}
-	<!--  -->
-{:else}
-	<ul class="muuri" id="tile master" bind:this={listElem}>
-		{#each gallery as item, idx (idx)}
-			<li
-				class="item {images[idx]?.naturalWidth > images[idx]?.naturalHeight
-					? 'item-wide'
-					: 'item-tall'}"
-				bind:this={listItems[idx]}
-				class:item-wide={images[idx]?.naturalWidth > images[idx]?.naturalHeight}
-				class:item-tall={images[idx]?.naturalHeight > images[idx]?.naturalWidth}
-			>
-				<img
-					bind:this={images[idx]}
-					id="brickitem"
-					src={item?.url}
-					alt={item?.title}
-					title={item?.title}
-					class="object-cover item-content"
-				/>
-				<!-- svelte-ignore a11y-click-events-have-key-events -->
-				<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div class="hidden">
+	<img bind:this={imgBase} src="" alt="" id="brickitem" />
+</div>
 
-				<!-- class="h-screen transition-all duration-500 origin-center scale-100 bg-center bg-no-repeat item-content hover:scale-95 group" -->
-				<!-- <div
-					class="h-screen transition-all duration-500 origin-center scale-100 bg-center bg-no-repeat item-content hover:scale-95 group"
-					class:bg-contain={gallery.length <= 2}
-					class:bg-cover={gallery.length > 2}
-					style="background-image: url({item.url})"
-				> -->
-				<!-- on:click={() => {
-						localNow[0] = img
-						localShowNow = true
-					}} -->
-				<!-- <div style="background-image: url({item.url})" class="item-content"> -->
-				{#if item.title}
-					<p
-						class="absolute bottom-0 left-0 w-full p-2 py-2 text-2xl font-bold text-center transition-all duration-500 opacity-50 group-hover:opacity-100 text-cyan-50"
-						style="text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;"
-					>
-						{item.title}
-					</p>
-				{/if}
-				<!-- </div> -->
-			</li>
-		{/each}
-	</ul>
-{/if}
+<div class="" bind:this={muWrap} id="muWrap">
+	<!-- {#each presentGallery as img, idx (img.id)}
+		<div class="relative">
+			<img src={img.url} alt="" class="z-0 w-48 h-48" id="brickitem" />
+		</div>
+	{/each} -->
+</div>
 
 <style lang="postcss">
 	.mgrid {
