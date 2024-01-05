@@ -37,7 +37,7 @@
 	})
 
 	$: if (mu && presentGallery.length) {
-		images = gallery.map(incoming => {
+		images = gallery.map((incoming, idx) => {
 			const img = imgBase.cloneNode() as HTMLImageElement
 			img.src = incoming.url
 			img.alt = incoming.title
@@ -49,8 +49,8 @@
 			}
 
 			img.classList.add(classes)
-			const inner = itemContentDiv
-			const outer = itemDiv
+			const inner = itemContentDiv.cloneNode()
+			const outer = itemDiv.cloneNode()
 
 			inner.appendChild(img)
 			outer.appendChild(inner)
@@ -58,8 +58,9 @@
 			// debugger
 			return outer
 		})
+
 		debugger
-		mu.add(images)
+		mu.add([...images])
 	}
 
 	// $: if (imgBase && imgBase.complete) {
