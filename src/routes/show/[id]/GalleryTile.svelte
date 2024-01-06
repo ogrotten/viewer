@@ -59,7 +59,7 @@
 			return outer
 		})
 
-		debugger
+		// debugger
 		mu.add([...images])
 	}
 
@@ -112,18 +112,18 @@
 	.item {
 		display: block;
 		position: absolute;
-		width: 100px;
-		height: 100px;
-		margin: 5px;
+		width: 200px;
+		height: 200px;
+		margin: 0;
 		z-index: 1;
 		background: #000;
 		color: #fff;
 	}
 
-	.item-wide {
+	.wide {
 		width: 200px;
 	}
-	.item-tall {
+	.tall {
 		height: 200px;
 	}
 	.item.muuri-item-dragging {
@@ -137,7 +137,5 @@
 	}
 	.item-content {
 		position: relative;
-		width: 100%;
-		height: 100%;
 	}
 </style>
