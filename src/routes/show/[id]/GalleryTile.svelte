@@ -13,11 +13,11 @@
 		presentGallery: Image[] = []
 
 	let images: HTMLDivElement[] = [],
-		imgBase: HTMLImageElement,
+		imgBase: HTMLDivElement,
 		itemDiv: HTMLDivElement,
 		itemContentDiv: HTMLDivElement
 
-	const size = 600
+	const size = 400
 
 	let muWrap: HTMLSpanElement
 
@@ -27,7 +27,7 @@
 		Muuri = module.default
 
 		mu = new Muuri('#muWrap', {
-			dragEnabled: true,
+			dragEnabled: false,
 			items: '.item',
 			layout: {
 				fillGaps: true,
@@ -44,9 +44,9 @@
 
 	$: if (mu && presentGallery.length) {
 		images = gallery.map((incoming, idx) => {
-			const img = imgBase.cloneNode() as HTMLImageElement
-			img.src = incoming.url
-			img.alt = incoming.title
+			const img = imgBase.cloneNode() as HTMLDivElement
+			img.title = incoming.title
+			img.style.backgroundImage = `url(${incoming.url})`
 
 			const inner = itemContentDiv.cloneNode() as HTMLDivElement
 			const outer = itemDiv.cloneNode() as HTMLDivElement
@@ -56,25 +56,33 @@
 			const h: number = incoming.height as number
 			const ratio = w / h
 
-			const scratio = size / Math.max(w, h)
+			// const scratio = size / Math.max(w, h)
+			// outer.style.width = `${w * scratio}px`
+			// img.style.width = `${w * scratio}px`
+			// outer.style.height = `${h * scratio}px`
+			// img.style.height = `${h * scratio}px`
 
-			outer.style.width = `${w * scratio}px`
-			outer.style.height = `${h * scratio}px`
-
-			// if (ratio > 1.1) {
-			// 	// wide
-			// 	outer.style.width = `${size * 2}px`
-			// 	outer.style.height = `${size}px`
-			// } else if (ratio < 0.9) {
-			// 	// tall
-			// 	outer.style.width = `${size}px`
-			// 	outer.style.height = `${size * 2}px`
-			// } else {
-			// 	// square
-			// 	outer.style.width = `${size}px`
-			// 	outer.style.height = `${size}px`
-			// }
-
+			if (ratio > 1.3) {
+				// wide
+				outer.style.width = `${size * 2}px`
+				img.style.width = `${size * 2}px`
+				outer.style.height = `${size}px`
+				img.style.height = `${size}px`
+			} else if (ratio < 0.7) {
+				// tall
+				outer.style.width = `${size}px`
+				img.style.width = `${size}px`
+				outer.style.height = `${size * 2}px`
+				img.style.height = `${size * 2}px`
+			} else {
+				// square
+				outer.style.width = `${size}px`
+				img.style.width = `${size}px`
+				outer.style.height = `${size}px`
+				img.style.height = `${size}px`
+			}
+			if (incoming.title)
+				img.innerHTML = `<div class="absolute bottom-0 right-0 p-1 font-bold text-white bg-black bg-opacity-50 text-md">${incoming.title}</div>`
 			inner.appendChild(img)
 			outer.appendChild(inner)
 
@@ -89,20 +97,19 @@
 
 <div class="hidden">
 	<div bind:this={itemDiv} class="item">
-		<div bind:this={itemContentDiv} class="flex items-center justify-center item-content">
+		<div bind:this={itemContentDiv} class="item-content">
 			<!--  -->
 		</div>
 	</div>
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-	<img
+	<div
 		bind:this={imgBase}
-		src=""
-		alt=""
 		id="brickitem"
-		style="object-fit: cover;"
-		class="transition-all hover:scale-95"
-	/>
+		class="transition-all bg-center bg-no-repeat bg-cover border border-black hover:scale-95"
+	>
+		<!--  -->
+	</div>
 </div>
 
 <div id="muWrap" class="w-screen h-screen">
