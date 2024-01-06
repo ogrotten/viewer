@@ -108,8 +108,12 @@
 
 	let showTitleEdit = -1
 	const titleEdit = img => {
-		updateDoc(doc(db, 'viewers', $dbUser?.uid, 'images', img.id), img).then(() => {
-			showTitleEdit = -1
+		showTitleEdit = -1
+		updateDBImage(img)
+	}
+
+	const updateDBImage = (incoming: Image) => {
+		updateDoc(doc(db, 'viewers', $dbUser?.uid, 'images', incoming.id), incoming).then(() => {
 			getImages()
 		})
 	}
@@ -218,7 +222,14 @@
 		gallery: images?.filter(image => image.gallery),
 	}
 
-	$: console.log(imgLists?.gallery?.map(img => img.index))
+	// $: console.log(imgLists?.gallery?.map(img => img.index))
+
+	const updateImage = ({ e, idx }) => {
+		if (images[idx].width) return
+		images[idx].width = e.target.naturalWidth
+		images[idx].height = e.target.naturalHeight
+		updateDoc(doc(db, 'viewers', $dbUser?.uid, 'images', images[idx].id), images[idx])
+	}
 </script>
 
 <svelte:window
@@ -500,6 +511,7 @@
 										src={url}
 										alt="image"
 										class="z-0 object-cover object-top w-48 h-36 rounded-2xl"
+										on:load={e => updateImage({ e, idx })}
 									/>
 									<!-- <a href={image.url} class="" target="_blank">
 									<div class="relative">
@@ -612,6 +624,7 @@
 												on:mouseout={() => {
 													showHover = -1
 												}}
+												on:load={e => updateImage({ e, idx })}
 											/>
 											<p class="w-28 font-md">{image.title || ''}</p>
 										</a>
@@ -621,6 +634,7 @@
 												src={url}
 												alt="image"
 												class="object-cover object-top w-8 h-8 rounded"
+												on:load={e => updateImage({ e, idx })}
 											/>
 											<form on:submit={() => titleEdit(image)} class="">
 												<input

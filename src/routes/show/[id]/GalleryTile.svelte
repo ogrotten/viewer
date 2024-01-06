@@ -41,10 +41,11 @@
 			const img = imgBase.cloneNode() as HTMLImageElement
 			img.src = incoming.url
 			img.alt = incoming.title
+
 			let classes = 'square'
-			if (img.width > img.height) {
+			if (incoming.width > incoming.height) {
 				classes += ' wide'
-			} else if (img.width < img.height) {
+			} else if (incoming.width < incoming.height) {
 				classes += ' tall'
 			}
 
@@ -55,21 +56,11 @@
 			inner.appendChild(img)
 			outer.appendChild(inner)
 
-			// debugger
 			return outer
 		})
 
-		// debugger
 		mu.add([...images])
 	}
-
-	// $: if (imgBase && imgBase.complete) {
-	// 	// imgBase.addEventListener('load', () => {
-	// 	// 	imgWrapper.appendChild(imgBase)
-	// 	// })
-
-	// 	debugger
-	// }
 
 	$: console.log(`LOG..GalleryTile: images`, images)
 </script>
