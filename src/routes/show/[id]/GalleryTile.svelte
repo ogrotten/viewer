@@ -42,16 +42,19 @@
 			img.src = incoming.url
 			img.alt = incoming.title
 
-			let classes = 'square'
-			if (incoming.width > incoming.height) {
-				classes += ' wide'
-			} else if (incoming.width < incoming.height) {
-				classes += ' tall'
-			}
-
-			img.classList.add(classes)
 			const inner = itemContentDiv.cloneNode()
 			const outer = itemDiv.cloneNode()
+
+			if (incoming.width > incoming.height) {
+				outer.style.width = `${size * 2}px`
+				outer.style.height = `${size}px`
+			} else if (incoming.width < incoming.height) {
+				outer.style.width = `${size}px`
+				outer.style.height = `${size * 2}px`
+			} else {
+				outer.style.width = `${size}px`
+				outer.style.height = `${size}px`
+			}
 
 			inner.appendChild(img)
 			outer.appendChild(inner)
@@ -112,10 +115,10 @@
 	}
 
 	.wide {
-		width: 200px;
+		width: 400px;
 	}
 	.tall {
-		height: 200px;
+		height: 400px;
 	}
 	.item.muuri-item-dragging {
 		z-index: 3;
