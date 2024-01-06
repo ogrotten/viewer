@@ -56,20 +56,19 @@
 			const h: number = incoming.height as number
 			const ratio = w / h
 
-			const scratio = size / Math.max(w, h)
-
+			// const scratio = size / Math.max(w, h)
 			// outer.style.width = `${w * scratio}px`
 			// img.style.width = `${w * scratio}px`
 			// outer.style.height = `${h * scratio}px`
 			// img.style.height = `${h * scratio}px`
 
-			if (ratio > 1.1) {
+			if (ratio > 1.3) {
 				// wide
 				outer.style.width = `${size * 2}px`
 				img.style.width = `${size * 2}px`
 				outer.style.height = `${size}px`
 				img.style.height = `${size}px`
-			} else if (ratio < 0.9) {
+			} else if (ratio < 0.7) {
 				// tall
 				outer.style.width = `${size}px`
 				img.style.width = `${size}px`
@@ -82,7 +81,8 @@
 				outer.style.height = `${size}px`
 				img.style.height = `${size}px`
 			}
-
+			if (incoming.title)
+				img.innerHTML = `<div class="absolute bottom-0 right-0 p-1 font-bold text-white bg-black bg-opacity-50 text-md">${incoming.title}</div>`
 			inner.appendChild(img)
 			outer.appendChild(inner)
 
@@ -107,7 +107,9 @@
 		bind:this={imgBase}
 		id="brickitem"
 		class="transition-all bg-center bg-no-repeat bg-cover hover:scale-95"
-	/>
+	>
+		<!--  -->
+	</div>
 </div>
 
 <div id="muWrap" class="">
