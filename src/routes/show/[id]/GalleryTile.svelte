@@ -2,7 +2,10 @@
 	import { browser } from '$app/environment'
 	import { list } from 'postcss'
 	import { onMount } from 'svelte'
-	// import Muuri from 'muuri'
+
+	import { createEventDispatcher } from 'svelte'
+
+	const dispatch = createEventDispatcher()
 
 	let loading = true
 
@@ -14,7 +17,7 @@
 		itemDiv: HTMLDivElement,
 		itemContentDiv: HTMLDivElement
 
-	const size = 300
+	const size = 600
 
 	let muWrap: HTMLSpanElement
 
@@ -26,6 +29,9 @@
 		mu = new Muuri('#muWrap', {
 			dragEnabled: true,
 			items: '.item',
+			layout: {
+				fillGaps: true,
+			},
 		})
 
 		mu.on('layoutStart', i => {
@@ -42,19 +48,32 @@
 			img.src = incoming.url
 			img.alt = incoming.title
 
-			const inner = itemContentDiv.cloneNode()
-			const outer = itemDiv.cloneNode()
+			const inner = itemContentDiv.cloneNode() as HTMLDivElement
+			const outer = itemDiv.cloneNode() as HTMLDivElement
+			outer.onclick = () => dispatch('localNow', { id: img.id, idx })
 
-			if (incoming.width > incoming.height) {
-				outer.style.width = `${size * 2}px`
-				outer.style.height = `${size}px`
-			} else if (incoming.width < incoming.height) {
-				outer.style.width = `${size}px`
-				outer.style.height = `${size * 2}px`
-			} else {
-				outer.style.width = `${size}px`
-				outer.style.height = `${size}px`
-			}
+			const w: number = incoming.width as number
+			const h: number = incoming.height as number
+			const ratio = w / h
+
+			const scratio = size / Math.max(w, h)
+
+			outer.style.width = `${w * scratio}px`
+			outer.style.height = `${h * scratio}px`
+
+			// if (ratio > 1.1) {
+			// 	// wide
+			// 	outer.style.width = `${size * 2}px`
+			// 	outer.style.height = `${size}px`
+			// } else if (ratio < 0.9) {
+			// 	// tall
+			// 	outer.style.width = `${size}px`
+			// 	outer.style.height = `${size * 2}px`
+			// } else {
+			// 	// square
+			// 	outer.style.width = `${size}px`
+			// 	outer.style.height = `${size}px`
+			// }
 
 			inner.appendChild(img)
 			outer.appendChild(inner)
@@ -70,14 +89,23 @@
 
 <div class="hidden">
 	<div bind:this={itemDiv} class="item">
-		<div bind:this={itemContentDiv} class="item-content">
+		<div bind:this={itemContentDiv} class="flex items-center justify-center item-content">
 			<!--  -->
 		</div>
 	</div>
-	<img bind:this={imgBase} src="" alt="" id="brickitem" />
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+	<img
+		bind:this={imgBase}
+		src=""
+		alt=""
+		id="brickitem"
+		style="object-fit: cover;"
+		class="transition-all hover:scale-95"
+	/>
 </div>
 
-<div id="muWrap" class=" bg-slate-500">
+<div id="muWrap" class="">
 	<!--  -->
 </div>
 

@@ -279,7 +279,14 @@
 	{:else if showGallery}
 		<div id={'svelte-bricks'} class="relative">
 			{#if galleryTile && gallery.length > 1}
-				<GalleryTile {presentGallery} {gallery} />
+				<GalleryTile
+					{presentGallery}
+					{gallery}
+					on:localNow={({ detail }) => {
+						localNow[0] = presentGallery[detail.idx]
+						localShowNow = true
+					}}
+				/>
 			{:else}
 				<div
 					id="gallery notile"
