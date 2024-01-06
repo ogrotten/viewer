@@ -106,7 +106,7 @@
 	<div
 		bind:this={imgBase}
 		id="brickitem"
-		class="transition-all bg-center bg-no-repeat bg-cover hover:scale-95"
+		class="transition-all bg-center bg-no-repeat bg-cover border border-black hover:scale-95"
 	>
 		<!--  -->
 	</div>
