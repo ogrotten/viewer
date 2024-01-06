@@ -17,7 +17,7 @@
 		itemDiv: HTMLDivElement,
 		itemContentDiv: HTMLDivElement
 
-	const size = 600
+	const size = 400
 
 	let muWrap: HTMLSpanElement
 
@@ -58,24 +58,30 @@
 
 			const scratio = size / Math.max(w, h)
 
-			outer.style.width = `${w * scratio}px`
-			img.style.width = `${w * scratio}px`
-			outer.style.height = `${h * scratio}px`
-			img.style.height = `${h * scratio}px`
+			// outer.style.width = `${w * scratio}px`
+			// img.style.width = `${w * scratio}px`
+			// outer.style.height = `${h * scratio}px`
+			// img.style.height = `${h * scratio}px`
 
-			// if (ratio > 1.1) {
-			// 	// wide
-			// 	outer.style.width = `${size * 2}px`
-			// 	outer.style.height = `${size}px`
-			// } else if (ratio < 0.9) {
-			// 	// tall
-			// 	outer.style.width = `${size}px`
-			// 	outer.style.height = `${size * 2}px`
-			// } else {
-			// 	// square
-			// 	outer.style.width = `${size}px`
-			// 	outer.style.height = `${size}px`
-			// }
+			if (ratio > 1.1) {
+				// wide
+				outer.style.width = `${size * 2}px`
+				img.style.width = `${size * 2}px`
+				outer.style.height = `${size}px`
+				img.style.height = `${size}px`
+			} else if (ratio < 0.9) {
+				// tall
+				outer.style.width = `${size}px`
+				img.style.width = `${size}px`
+				outer.style.height = `${size * 2}px`
+				img.style.height = `${size * 2}px`
+			} else {
+				// square
+				outer.style.width = `${size}px`
+				img.style.width = `${size}px`
+				outer.style.height = `${size}px`
+				img.style.height = `${size}px`
+			}
 
 			inner.appendChild(img)
 			outer.appendChild(inner)
