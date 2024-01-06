@@ -92,7 +92,16 @@
 		mu.add([...images])
 	}
 
-	$: console.log(`LOG..GalleryTile: images`, images)
+	$: if (gallery?.length < presentGallery?.length) {
+		let galleryIds = gallery.map(x => x.id)
+		let removed = presentGallery.filter(x => !galleryIds.includes(x.id))
+		presentGallery
+			.splice(presentGallery.indexOf(removed[0]), 1)
+			.sort((a, b) => b.index - a.index)
+	} else if (gallery?.length > presentGallery?.length) {
+		let added = gallery.at(-1)
+		presentGallery = gallery.sort((a, b) => b.index - a.index)
+	}
 </script>
 
 <div class="hidden">
@@ -106,13 +115,13 @@
 	<div
 		bind:this={imgBase}
 		id="brickitem"
-		class="transition-all bg-center bg-no-repeat bg-cover border border-black hover:scale-95"
+		class="transition-all bg-center bg-no-repeat bg-cover border-2 border-black hover:scale-95"
 	>
 		<!--  -->
 	</div>
 </div>
 
-<div id="muWrap" class="w-screen h-screen">
+<div id="muWrap" class="flex justify-center w-screen h-screen">
 	<!--  -->
 </div>
 
