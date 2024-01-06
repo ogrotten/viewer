@@ -34,6 +34,7 @@
 	"dependencies": {
 		"@js-temporal/polyfill": "^0.4.4",
 		"firebase": "^10.0.0",
+		"muuri": "^0.9.5",
 		"svelte-bricks": "^0.2.0"
 	}
 }
