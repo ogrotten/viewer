@@ -82,7 +82,7 @@
 				img.style.height = `${size}px`
 			}
 			if (incoming.title)
-				img.innerHTML = `<div class="absolute bottom-0 right-0 p-1 font-bold text-white bg-black bg-opacity-50 text-md">${incoming.title}</div>`
+				img.innerHTML = `<div class="absolute bottom-0 right-0 p-1 text-xl font-bold text-white bg-black bg-opacity-50">${incoming.title}</div>`
 			inner.appendChild(img)
 			outer.appendChild(inner)
 
