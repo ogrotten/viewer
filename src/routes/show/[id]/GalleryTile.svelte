@@ -105,7 +105,7 @@
 	/>
 </div>
 
-<div id="muWrap" class="">
+<div id="muWrap" class="w-screen h-screen">
 	<!--  -->
 </div>
 
