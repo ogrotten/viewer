@@ -13,7 +13,7 @@
 		presentGallery: Image[] = []
 
 	let images: HTMLDivElement[] = [],
-		imgBase: HTMLImageElement,
+		imgBase: HTMLDivElement,
 		itemDiv: HTMLDivElement,
 		itemContentDiv: HTMLDivElement
 
@@ -27,7 +27,7 @@
 		Muuri = module.default
 
 		mu = new Muuri('#muWrap', {
-			dragEnabled: true,
+			dragEnabled: false,
 			items: '.item',
 			layout: {
 				fillGaps: true,
@@ -44,9 +44,9 @@
 
 	$: if (mu && presentGallery.length) {
 		images = gallery.map((incoming, idx) => {
-			const img = imgBase.cloneNode() as HTMLImageElement
-			img.src = incoming.url
-			img.alt = incoming.title
+			const img = imgBase.cloneNode() as HTMLDivElement
+			img.title = incoming.title
+			img.style.backgroundImage = `url(${incoming.url})`
 
 			const inner = itemContentDiv.cloneNode() as HTMLDivElement
 			const outer = itemDiv.cloneNode() as HTMLDivElement
@@ -59,7 +59,9 @@
 			const scratio = size / Math.max(w, h)
 
 			outer.style.width = `${w * scratio}px`
+			img.style.width = `${w * scratio}px`
 			outer.style.height = `${h * scratio}px`
+			img.style.height = `${h * scratio}px`
 
 			// if (ratio > 1.1) {
 			// 	// wide
@@ -89,19 +91,16 @@
 
 <div class="hidden">
 	<div bind:this={itemDiv} class="item">
-		<div bind:this={itemContentDiv} class="flex items-center justify-center item-content">
+		<div bind:this={itemContentDiv} class="item-content">
 			<!--  -->
 		</div>
 	</div>
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-	<img
+	<div
 		bind:this={imgBase}
-		src=""
-		alt=""
 		id="brickitem"
-		style="object-fit: cover;"
-		class="transition-all hover:scale-95"
+		class="transition-all bg-center bg-no-repeat bg-cover hover:scale-95"
 	/>
 </div>
 
