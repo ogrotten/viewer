@@ -10,7 +10,8 @@
 	let loading = true
 
 	export let gallery: Image[] = [],
-		presentGallery: Image[] = []
+		presentGallery: Image[] = [],
+		changed = null
 
 	let images: HTMLDivElement[] = [],
 		imgBase: HTMLDivElement,
@@ -33,7 +34,7 @@
 				fillGaps: true,
 			},
 		})
-
+		initLayout()
 		mu.on('layoutStart', i => {
 			console.log('item-list: layoutStart', i)
 		})
@@ -42,66 +43,85 @@
 		})
 	})
 
-	$: if (mu && presentGallery.length) {
-		images = gallery.map((incoming, idx) => {
-			const img = imgBase.cloneNode() as HTMLDivElement
-			img.title = incoming.title
-			img.style.backgroundImage = `url(${incoming.url})`
+	const setupNode = incoming => {
+		const img = imgBase.cloneNode() as HTMLDivElement
+		img.title = incoming.title
+		img.style.backgroundImage = `url(${incoming.url})`
+		img.id = incoming.id
 
-			const inner = itemContentDiv.cloneNode() as HTMLDivElement
-			const outer = itemDiv.cloneNode() as HTMLDivElement
-			outer.onclick = () => dispatch('localNow', { id: img.id, idx })
+		const inner = itemContentDiv.cloneNode() as HTMLDivElement
+		const outer = itemDiv.cloneNode() as HTMLDivElement
+		outer.onclick = () => dispatch('localNow', { id: img.id, idx })
 
-			const w: number = incoming.width as number
-			const h: number = incoming.height as number
-			const ratio = w / h
+		const w: number = incoming.width as number
+		const h: number = incoming.height as number
+		const ratio = w / h
 
-			// const scratio = size / Math.max(w, h)
-			// outer.style.width = `${w * scratio}px`
-			// img.style.width = `${w * scratio}px`
-			// outer.style.height = `${h * scratio}px`
-			// img.style.height = `${h * scratio}px`
+		// const scratio = size / Math.max(w, h)
+		// outer.style.width = `${w * scratio}px`
+		// img.style.width = `${w * scratio}px`
+		// outer.style.height = `${h * scratio}px`
+		// img.style.height = `${h * scratio}px`
 
-			if (ratio > 1.3) {
-				// wide
-				outer.style.width = `${size * 2}px`
-				img.style.width = `${size * 2}px`
-				outer.style.height = `${size}px`
-				img.style.height = `${size}px`
-			} else if (ratio < 0.7) {
-				// tall
-				outer.style.width = `${size}px`
-				img.style.width = `${size}px`
-				outer.style.height = `${size * 2}px`
-				img.style.height = `${size * 2}px`
-			} else {
-				// square
-				outer.style.width = `${size}px`
-				img.style.width = `${size}px`
-				outer.style.height = `${size}px`
-				img.style.height = `${size}px`
-			}
-			if (incoming.title)
-				img.innerHTML = `<div class="absolute bottom-0 right-0 p-1 text-xl font-bold text-white bg-black bg-opacity-50">${incoming.title}</div>`
-			inner.appendChild(img)
-			outer.appendChild(inner)
+		if (ratio > 1.3) {
+			// wide
+			outer.style.width = `${size * 2}px`
+			img.style.width = `${size * 2}px`
+			outer.style.height = `${size}px`
+			img.style.height = `${size}px`
+		} else if (ratio < 0.7) {
+			// tall
+			outer.style.width = `${size}px`
+			img.style.width = `${size}px`
+			outer.style.height = `${size * 2}px`
+			img.style.height = `${size * 2}px`
+		} else {
+			// square
+			outer.style.width = `${size}px`
+			img.style.width = `${size}px`
+			outer.style.height = `${size}px`
+			img.style.height = `${size}px`
+		}
+		if (incoming.title)
+			img.innerHTML = `<div class="absolute bottom-0 right-0 p-1 text-xl font-bold text-white bg-black bg-opacity-50">${incoming.title}</div>`
+		inner.appendChild(img)
+		outer.appendChild(inner)
 
-			return outer
-		})
+		return outer
+	}
+
+	const initLayout = () => {
+		images = gallery.map((one, idx) => setupNode(one))
 
 		mu.add([...images])
 	}
 
-	$: if (gallery?.length < presentGallery?.length) {
-		let galleryIds = gallery.map(x => x.id)
-		let removed = presentGallery.filter(x => !galleryIds.includes(x.id))
-		presentGallery
-			.splice(presentGallery.indexOf(removed[0]), 1)
-			.sort((a, b) => b.index - a.index)
-	} else if (gallery?.length > presentGallery?.length) {
-		let added = gallery.at(-1)
-		presentGallery = gallery.sort((a, b) => b.index - a.index)
-	}
+	// $: if (mu && changed) {
+	// 	console.log(`LOG..GalleryTile: changed`, changed)
+	// 	let check
+	// 	const incoming = gallery.find(one => one.id === changed.id)
+	// 	if (changed.added === true) {
+	// 		debugger
+	// 		if (incoming) {
+	// 			const node = setupNode(incoming)
+	// 			check = [mu.add(node), 'added']
+	// 		}
+	// 	} else if (changed.added === false) {
+	// 		debugger
+	// 		const node = mu.getItem()(one => {
+	// 			debugger
+	// 			one.getElement().id === changed.id
+	// 		})
+	// 		if (node) {
+	// 			check = [mu.remove([node], { removeElements: true }), 'removed']
+	// 		}
+	// 	}
+	// 	if (check) {
+	// 		const [res, action] = check
+	// 		console.log(`LOG..+page: ${action}`, res)
+	// 	}
+	// 	changed = null
+	// }
 </script>
 
 <div class="hidden">

@@ -166,16 +166,21 @@
 		})
 	}
 
+	let changed: null | {
+		id: string
+		added: boolean
+	} = null
 	$: if (gallery?.length < presentGallery?.length) {
 		let galleryIds = gallery.map(x => x.id)
-		let removed = presentGallery.filter(x => !galleryIds.includes(x.id))
-		presentGallery
-			.splice(presentGallery.indexOf(removed[0]), 1)
-			.sort((a, b) => b.index - a.index)
+		let removed = presentGallery.filter(x => !galleryIds.includes(x.id))[0]
+		presentGallery.splice(presentGallery.indexOf(removed), 1).sort((a, b) => b.index - a.index)
+		changed = { id: removed.id, added: false }
 	} else if (gallery?.length > presentGallery?.length) {
-		let added = gallery.at(-1)
+		changed = { id: gallery.at(-1).id, added: true }
 		presentGallery = gallery.sort((a, b) => b.index - a.index)
 	}
+
+	$: console.log(`LOG..+page: changed`, changed)
 </script>
 
 <div class="">
@@ -282,6 +287,7 @@
 				<GalleryTile
 					{presentGallery}
 					{gallery}
+					bind:changed
 					on:localNow={({ detail }) => {
 						localNow[0] = presentGallery[detail.idx]
 						localShowNow = true
