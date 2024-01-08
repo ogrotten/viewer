@@ -287,6 +287,7 @@
 				<GalleryTile
 					{presentGallery}
 					{gallery}
+					{attach}
 					bind:changed
 					on:localNow={({ detail }) => {
 						localNow[0] = presentGallery[detail.idx]

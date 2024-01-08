@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment'
+	import { db } from '$lib/firebase'
+	import { query, collection, where, onSnapshot, getDocs } from 'firebase/firestore'
 	import { list } from 'postcss'
 	import { onMount } from 'svelte'
 
@@ -11,9 +13,14 @@
 
 	export let gallery: Image[] = [],
 		presentGallery: Image[] = [],
-		changed = null
+		changed = null,
+		attach
+
+	let unsubGalleryAll,
+		galleryAll: Image[] = []
 
 	let images: HTMLDivElement[] = [],
+		imagesAll: HTMLDivElement[] = [],
 		imgBase: HTMLDivElement,
 		itemDiv: HTMLDivElement,
 		itemContentDiv: HTMLDivElement
@@ -23,27 +30,45 @@
 	let muWrap: HTMLSpanElement
 
 	let Muuri, mu: any
-	onMount(async () => {
-		const module = await import('muuri').then()
-		Muuri = module.default
 
-		mu = new Muuri('#muWrap', {
-			dragEnabled: false,
-			items: '.item',
-			layout: {
-				fillGaps: true,
-			},
+	const setup = async () => {
+		const querySnapshot = await getDocs(collection(db, 'viewers', attach, 'images'))
+		galleryAll = querySnapshot.docs
+		new Promise(resolve => {
+			imagesAll = galleryAll.map((one, idx) => setupNode(one))
+		}).then(() => {
+			initLayout(imagesAll)
 		})
-		initLayout()
-		mu.on('layoutStart', i => {
-			console.log('item-list: layoutStart', i)
-		})
-		mu.on('layoutEnd', i => {
-			console.log('item-list: layoutEnd')
-		})
+	}
+
+	onMount(async () => {
+		await setup()
+		// const g = query(collection(db, 'viewers', attach, 'images'))
+		// unsubGalleryAll = await onSnapshot(g, snap => {
+		// 	galleryAll = [...snap.docs].map(doc => ({ id: doc.id, ...doc.data() }))
+		// })
+		// initLayout(galleryAll)
+		// const module = await import('muuri').then()
+		// Muuri = module.default
+		// mu = new Muuri('#muWrap', {
+		// 	dragEnabled: false,
+		// 	items: '.item',
+		// 	layout: {
+		// 		fillGaps: true,
+		// 	},
+		// })
+		// mu.on('layoutStart', i => {
+		// 	console.log('item-list: layoutStart', i)
+		// })
+		// mu.on('layoutEnd', i => {
+		// 	console.log('item-list: layoutEnd')
+		// })
 	})
 
+	$: console.log(`LOG..GalleryTile: galleryAll`, imagesAll)
+
 	const setupNode = incoming => {
+		// debugger
 		const img = imgBase.cloneNode() as HTMLDivElement
 		img.title = incoming.title
 		img.style.backgroundImage = `url(${incoming.url})`
@@ -90,60 +115,63 @@
 		return outer
 	}
 
-	const initLayout = () => {
-		images = gallery.map((one, idx) => setupNode(one))
+	const initLayout = async incoming => {
+		// debugger
+		if (incoming.length === 0) return
+		images = incoming.map((one, idx) => setupNode(one))
+		const module = await import('muuri').then()
+		Muuri = module.default
+		mu = new Muuri('#muWrap', {
+			dragEnabled: false,
+			items: '.item',
+			layout: {
+				fillGaps: true,
+			},
+		})
 
+		mu.on('layoutStart', i => {
+			console.log('item-list: layoutStart', i)
+		})
+		mu.on('layoutEnd', i => {
+			console.log('item-list: layoutEnd')
+		})
 		mu.add([...images])
+		loading = false
 	}
 
-	// $: if (mu && changed) {
-	// 	console.log(`LOG..GalleryTile: changed`, changed)
-	// 	let check
-	// 	const incoming = gallery.find(one => one.id === changed.id)
-	// 	if (changed.added === true) {
-	// 		debugger
-	// 		if (incoming) {
-	// 			const node = setupNode(incoming)
-	// 			check = [mu.add(node), 'added']
-	// 		}
-	// 	} else if (changed.added === false) {
-	// 		debugger
-	// 		const node = mu.getItem()(one => {
-	// 			debugger
-	// 			one.getElement().id === changed.id
-	// 		})
-	// 		if (node) {
-	// 			check = [mu.remove([node], { removeElements: true }), 'removed']
-	// 		}
-	// 	}
-	// 	if (check) {
-	// 		const [res, action] = check
-	// 		console.log(`LOG..+page: ${action}`, res)
-	// 	}
-	// 	changed = null
-	// }
+	$: if (galleryAll.length > 0) {
+		// debugger
+		initLayout(galleryAll)
+	}
 </script>
 
-<div class="hidden">
-	<div bind:this={itemDiv} class="item">
-		<div bind:this={itemContentDiv} class="item-content">
+<!-- {#if loading}
+	{null}
+{:else} -->
+<div class="m-auto">
+	<div class="hidden">
+		<div bind:this={itemDiv} class="item">
+			<div bind:this={itemContentDiv} class="item-content">
+				<!--  -->
+			</div>
+		</div>
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+		<div
+			bind:this={imgBase}
+			id="brickitem"
+			class="transition-all bg-center bg-no-repeat bg-cover border-2 border-black hover:scale-95"
+		>
 			<!--  -->
 		</div>
 	</div>
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-	<div
-		bind:this={imgBase}
-		id="brickitem"
-		class="transition-all bg-center bg-no-repeat bg-cover border-2 border-black hover:scale-95"
-	>
+
+	<div id="muWrap" class="flex justify-center w-screen h-screen">
 		<!--  -->
 	</div>
 </div>
 
-<div id="muWrap" class="flex justify-center w-screen h-screen">
-	<!--  -->
-</div>
+<!-- {/if} -->
 
 <!-- {#each images as m}
 	{m}
