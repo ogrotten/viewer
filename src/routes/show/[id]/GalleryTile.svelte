@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment'
 	import { db } from '$lib/firebase'
+	import { intersectArrays } from '$lib/helpers'
 	import { query, collection, where, onSnapshot, getDocs } from 'firebase/firestore'
 	import { list } from 'postcss'
 	import { onMount } from 'svelte'
@@ -11,13 +12,13 @@
 
 	let loading = true
 
-	export let gallery: Image[] = [],
+	export let galleryAll: Image[] = [],
+		gallery: Image[] = [],
 		presentGallery: Image[] = [],
 		changed = null,
 		attach
 
-	let unsubGalleryAll,
-		galleryAll: Image[] = []
+	let unsubGalleryAll
 
 	let images: HTMLDivElement[] = [],
 		imagesAll: HTMLDivElement[] = [],
@@ -25,24 +26,24 @@
 		itemDiv: HTMLDivElement,
 		itemContentDiv: HTMLDivElement
 
-	const size = 400
+	const size = 360
 
 	let muWrap: HTMLSpanElement
 
 	let Muuri, mu: any
 
-	const setup = async () => {
-		const querySnapshot = await getDocs(collection(db, 'viewers', attach, 'images'))
-		galleryAll = querySnapshot.docs
-		new Promise(resolve => {
-			imagesAll = galleryAll.map((one, idx) => setupNode(one))
-		}).then(() => {
-			initLayout(imagesAll)
-		})
-	}
+	// const setup = async () => {
+	// 	const querySnapshot = await getDocs(collection(db, 'viewers', attach, 'images'))
+	// 	galleryAll = querySnapshot.docs
+	// 	new Promise(resolve => {
+	// 		imagesAll = galleryAll.map((one, idx) => setupNode(one))
+	// 	}).then(() => {
+	// 		initLayout(imagesAll)
+	// 	})
+	// }
 
 	onMount(async () => {
-		await setup()
+		// await setup()
 		// const g = query(collection(db, 'viewers', attach, 'images'))
 		// unsubGalleryAll = await onSnapshot(g, snap => {
 		// 	galleryAll = [...snap.docs].map(doc => ({ id: doc.id, ...doc.data() }))
@@ -65,7 +66,7 @@
 		// })
 	})
 
-	$: console.log(`LOG..GalleryTile: galleryAll`, imagesAll)
+	// $: console.log(`LOG..GalleryTile: galleryAll`, { galleryAll, gallery, presentGallery })
 
 	const setupNode = incoming => {
 		// debugger
@@ -73,10 +74,11 @@
 		img.title = incoming.title
 		img.style.backgroundImage = `url(${incoming.url})`
 		img.id = incoming.id
+		img.style.display = incoming.gallery ? '' : 'none'
 
 		const inner = itemContentDiv.cloneNode() as HTMLDivElement
 		const outer = itemDiv.cloneNode() as HTMLDivElement
-		outer.onclick = () => dispatch('localNow', { id: img.id, idx })
+		outer.onclick = idx => dispatch('localNow', { id: img.id, idx })
 
 		const w: number = incoming.width as number
 		const h: number = incoming.height as number
@@ -88,13 +90,13 @@
 		// outer.style.height = `${h * scratio}px`
 		// img.style.height = `${h * scratio}px`
 
-		if (ratio > 1.3) {
+		if (ratio > 1.25) {
 			// wide
 			outer.style.width = `${size * 2}px`
 			img.style.width = `${size * 2}px`
 			outer.style.height = `${size}px`
 			img.style.height = `${size}px`
-		} else if (ratio < 0.7) {
+		} else if (ratio < 0.75) {
 			// tall
 			outer.style.width = `${size}px`
 			img.style.width = `${size}px`
@@ -116,9 +118,9 @@
 	}
 
 	const initLayout = async incoming => {
-		// debugger
 		if (incoming.length === 0) return
 		images = incoming.map((one, idx) => setupNode(one))
+
 		const module = await import('muuri').then()
 		Muuri = module.default
 		mu = new Muuri('#muWrap', {
@@ -132,63 +134,63 @@
 		mu.on('layoutStart', i => {
 			console.log('item-list: layoutStart', i)
 		})
+
+		mu.add([...images])
+
 		mu.on('layoutEnd', i => {
 			console.log('item-list: layoutEnd')
+			loading = false
 		})
-		mu.add([...images])
-		loading = false
 	}
 
-	$: if (galleryAll.length > 0) {
-		// debugger
+	async function muDo(incoming: Array<string>[]) {
+		if (incoming.length === 0) return
+		images = incoming.map((one, idx) => one.gallery && setupNode(one))
+		mu.add([...images])
+	}
+
+	$: if (galleryAll?.length > 0 && imgBase && itemDiv && itemContentDiv) {
 		initLayout(galleryAll)
+	}
+
+	$: if (changed.added && !loading) {
+		console.log(`LOG..GalleryTile: GALLERY ADDED`, changed)
+		const incoming = galleryAll.filter(x => x.id === changed.id)
+		const node = setupNode(incoming[0])
+		mu.add(node)
+	} else if (!changed.added && !loading) {
+		console.log(`LOG..GalleryTile: GALLERY REMOVED`, changed)
+		const node = images.filter(x => x.id === changed.id)[0]
+		mu.remove(node)
+	} else {
+		console.log(`LOG..GalleryTile: GALLERY NO CHANGE`)
 	}
 </script>
 
-<!-- {#if loading}
-	{null}
-{:else} -->
-<div class="m-auto">
-	<div class="hidden">
-		<div bind:this={itemDiv} class="item">
-			<div bind:this={itemContentDiv} class="item-content">
+{#await galleryAll then value}
+	<div class="m-auto">
+		<div class="hidden">
+			<div bind:this={itemDiv} class="item">
+				<div bind:this={itemContentDiv} class="item-content">
+					<!--  -->
+				</div>
+			</div>
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+			<div
+				bind:this={imgBase}
+				id="brickitem"
+				class="transition-all bg-center bg-no-repeat bg-cover border-2 border-black hover:scale-95"
+			>
 				<!--  -->
 			</div>
 		</div>
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
-		<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-		<div
-			bind:this={imgBase}
-			id="brickitem"
-			class="transition-all bg-center bg-no-repeat bg-cover border-2 border-black hover:scale-95"
-		>
+
+		<div id="muWrap" class="flex justify-center w-screen h-screen">
 			<!--  -->
 		</div>
 	</div>
-
-	<div id="muWrap" class="flex justify-center w-screen h-screen">
-		<!--  -->
-	</div>
-</div>
-
-<!-- {/if} -->
-
-<!-- {#each images as m}
-	{m}
-{/each} -->
-
-<!-- <div class="invisible" bind:this={muWrap} id="muWrap">
-	<div class="item">
-		<div class="item-content">
-			{}
-		</div>
-	</div>
-	{#each presentGallery as img, idx (img.id)}
-		<div class="relative">
-			<img src={img.url} alt="" class="z-0 w-48 h-48" id="brickitem" />
-		</div>
-	{/each}
-</div> -->
+{/await}
 
 <style lang="postcss">
 	#muwrap {

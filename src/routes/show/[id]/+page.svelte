@@ -18,9 +18,14 @@
 	import Masonry from 'svelte-bricks'
 	import { flip } from 'svelte/animate'
 	import GalleryTile from './GalleryTile.svelte'
+	import type { PageData } from './$types'
+
+	export let data: PageData
 
 	const debug = false
 	const uid = $page.params.id
+
+	const { galleryAll } = data
 
 	let viewer: DocumentData = {},
 		unsubViewer,
@@ -72,19 +77,19 @@
 			collection(db, 'viewers', incoming, 'images'),
 			where('carousel', '==', true),
 		)
-		unsubGallery = onSnapshot(c, snap => {
-			carousel = [...snap.docs].map(doc => ({ id: doc.id, ...doc.data() }))
+		unsubCarousel = onSnapshot(c, snap => {
+			carousel = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id }))
 		})
 
 		const g = query(collection(db, 'viewers', incoming, 'images'), where('gallery', '==', true))
 		unsubGallery = onSnapshot(g, snap => {
-			gallery = [...snap.docs].map(doc => ({ id: doc.id, ...doc.data() }))
+			gallery = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id }))
 		})
 
 		const n = query(collection(db, 'viewers', incoming, 'images'), where('now', '==', true))
 
 		unsubNow = onSnapshot(n, snap => {
-			now = [...snap.docs].map(doc => ({ id: doc.id, ...doc.data() }))
+			now = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id }))
 		})
 	}
 
@@ -180,7 +185,7 @@
 		presentGallery = gallery.sort((a, b) => b.index - a.index)
 	}
 
-	$: console.log(`LOG..+page: changed`, changed)
+	// $: console.log(`LOG..+page: galleryAll`, galleryAll)
 </script>
 
 <div class="">
@@ -288,6 +293,7 @@
 					{presentGallery}
 					{gallery}
 					{attach}
+					{galleryAll}
 					bind:changed
 					on:localNow={({ detail }) => {
 						localNow[0] = presentGallery[detail.idx]
