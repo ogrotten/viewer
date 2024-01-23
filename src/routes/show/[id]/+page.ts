@@ -7,5 +7,5 @@ export const load = (async ({ params }) => {
 	const querySnapshot = await getDocs(collection(db, 'viewers', attach, 'images'))
 	const galleryAll: Image[] = querySnapshot.docs.map(doc => doc.data() as Image);
 
-	return { galleryAll };
+	return { galleryAll, count: galleryAll.length };
 }) satisfies PageLoad;

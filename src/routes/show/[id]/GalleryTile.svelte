@@ -154,18 +154,19 @@
 		initLayout(galleryAll)
 	}
 
-	$: if (changed?.added && !loading) {
+	$: if (changed?.added === true && !loading) {
 		console.log(`LOG..GalleryTile: GALLERY ADDED`, changed)
 		const show = mu.filter(`#${changed.id}`)
 		mu.show(show)
 		changed = null
-	} else if (!changed?.added && !loading) {
+	} else if (changed?.added === false && !loading) {
 		console.log(`LOG..GalleryTile: GALLERY REMOVED`, changed)
 		const hide = mu.filter(`#${changed.id}`)
 		mu.hide(hide)
 		changed = null
 	} else {
 		console.log(`LOG..GalleryTile: GALLERY NO CHANGE`)
+		changed = null
 	}
 </script>
 
