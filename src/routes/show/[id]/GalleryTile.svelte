@@ -135,6 +135,7 @@
 			console.log('item-list: layoutStart', i)
 		})
 
+		// mu.add([...images])
 		mu.add([...images])
 
 		mu.on('layoutEnd', i => {
@@ -153,15 +154,16 @@
 		initLayout(galleryAll)
 	}
 
-	$: if (changed.added && !loading) {
+	$: if (changed?.added && !loading) {
 		console.log(`LOG..GalleryTile: GALLERY ADDED`, changed)
-		const incoming = galleryAll.filter(x => x.id === changed.id)
-		const node = setupNode(incoming[0])
-		mu.add(node)
-	} else if (!changed.added && !loading) {
+		const show = mu.filter(`#${changed.id}`)
+		mu.show(show)
+		changed = null
+	} else if (!changed?.added && !loading) {
 		console.log(`LOG..GalleryTile: GALLERY REMOVED`, changed)
-		const node = images.filter(x => x.id === changed.id)[0]
-		mu.remove(node)
+		const hide = mu.filter(`#${changed.id}`)
+		mu.hide(hide)
+		changed = null
 	} else {
 		console.log(`LOG..GalleryTile: GALLERY NO CHANGE`)
 	}
