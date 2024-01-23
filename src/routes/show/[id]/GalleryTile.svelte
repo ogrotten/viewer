@@ -74,10 +74,10 @@
 		img.title = incoming.title
 		img.style.backgroundImage = `url(${incoming.url})`
 		img.id = incoming.id
-		img.style.display = incoming.gallery ? '' : 'none'
 
 		const inner = itemContentDiv.cloneNode() as HTMLDivElement
 		const outer = itemDiv.cloneNode() as HTMLDivElement
+		if (!incoming.gallery) outer.style.display = 'none'
 		outer.onclick = idx => dispatch('localNow', { id: img.id, idx })
 
 		const w: number = incoming.width as number
@@ -143,9 +143,9 @@
 		})
 	}
 
-	async function muDo(incoming: Array<string>[]) {
+	async function muDo(incoming: Image[]) {
 		if (incoming.length === 0) return
-		images = incoming.map((one, idx) => one.gallery && setupNode(one))
+		images = incoming.map((one, idx) => setupNode(one))
 		mu.add([...images])
 	}
 
@@ -177,10 +177,14 @@
 			</div>
 			<!-- svelte-ignore a11y-click-events-have-key-events -->
 			<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+			<!-- svelte-ignore a11y-no-static-element-interactions -->
 			<div
 				bind:this={imgBase}
 				id="brickitem"
 				class="transition-all bg-center bg-no-repeat bg-cover border-2 border-black hover:scale-95"
+				on:click={e => {
+					console.log('brickitem: click', e)
+				}}
 			>
 				<!--  -->
 			</div>
