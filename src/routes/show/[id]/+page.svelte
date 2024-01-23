@@ -86,7 +86,7 @@
 		const g = query(collection(db, 'viewers', incoming, 'images'), where('gallery', '==', true))
 		unsubGallery = onSnapshot(g, snap => {
 			gallery = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id }))
-			if (loading) presentGallery = [...gallery]
+			setChange()
 		})
 
 		const n = query(collection(db, 'viewers', incoming, 'images'), where('now', '==', true))
@@ -183,21 +183,23 @@
 		added: boolean
 	} = null
 
-	$: if (presentGallery?.length !== 0) {
-		if (gallery?.length < presentGallery?.length && !loading) {
-			let galleryIds = gallery.map(x => x.id)
-			let removed = presentGallery.filter(x => !galleryIds.includes(x.id))[0]
-			presentGallery
-				.splice(presentGallery.indexOf(removed), 1)
-				.sort((a, b) => b.index - a.index)
-			changed = { id: removed.id, added: false }
-		} else if (gallery?.length > presentGallery?.length && !loading) {
-			presentGallery = gallery.sort((a, b) => b.index - a.index)
-			changed = { id: gallery.at(-1).id, added: true }
-		} else {
-			console.log(`LOG..+page: `)
-			changed = null
-		}
+	const setChange = () => {
+		if (presentGallery?.length !== 0) {
+			if (gallery?.length < presentGallery?.length && !loading) {
+				let galleryIds = gallery.map(x => x.id)
+				let removed = presentGallery.filter(x => !galleryIds.includes(x.id))[0]
+				presentGallery
+					.splice(presentGallery.indexOf(removed), 1)
+					.sort((a, b) => b.index - a.index)
+				changed = { id: removed.id, added: false }
+			} else if (gallery?.length > presentGallery?.length && !loading) {
+				presentGallery = gallery.sort((a, b) => b.index - a.index)
+				changed = { id: gallery.at(-1).id, added: true }
+			} else {
+				console.log(`LOG..+page: `)
+				changed = null
+			}
+		} else presentGallery = [...gallery]
 	}
 </script>
 
