@@ -675,34 +675,37 @@
 											class="absolute z-10 object-cover object-top w-48 h-48 left-28 rounded-2xl"
 										/>
 									{/if}
-									<button
-										class="text-gray-800 btn btn-xs font-xs"
-										class:unselected={!image.carousel}
-										class:btn-primary={image.carousel}
-										on:click={() =>
-											parameter({ ...image, carousel: !image.carousel })}
-									>
-										<span class="label-text">Carousel</span>
-									</button>
-									<button
-										class="text-gray-800 btn btn-xs font-xs"
-										class:unselected={!image.gallery}
-										class:btn-secondary={image.gallery}
-										on:click={() => setGalleryItem(image)}
-									>
-										<!-- on:click={() =>
-											parameter({ ...image, gallery: !image.gallery })
-											} -->
-										<span class="label-text">Gallery</span>
-									</button>
-									<button
-										class="text-gray-800 btn btn-xs font-xs"
-										class:unselected={!image.now}
-										class:btn-accent={image.now}
-										on:click={() => parameter({ ...image, now: !image.now })}
-									>
-										<span class="label-text">Now</span>
-									</button>
+									<span title={image.id}>
+										<button
+											class="text-gray-800 btn btn-xs font-xs"
+											class:unselected={!image.carousel}
+											class:btn-primary={image.carousel}
+											on:click={() =>
+												parameter({ ...image, carousel: !image.carousel })}
+										>
+											<span class="label-text">Carousel</span>
+										</button>
+										<button
+											class="text-gray-800 btn btn-xs font-xs"
+											class:unselected={!image.gallery}
+											class:btn-secondary={image.gallery}
+											on:click={() => setGalleryItem(image)}
+										>
+											<!-- on:click={() =>
+												parameter({ ...image, gallery: !image.gallery })
+												} -->
+											<span class="label-text">Gallery</span>
+										</button>
+										<button
+											class="text-gray-800 btn btn-xs font-xs"
+											class:unselected={!image.now}
+											class:btn-accent={image.now}
+											on:click={() =>
+												parameter({ ...image, now: !image.now })}
+										>
+											<span class="label-text">Now</span>
+										</button>
+									</span>
 									<!-- </div> -->
 									<div class="flex justify-between">
 										<button

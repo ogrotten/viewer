@@ -161,17 +161,17 @@
 		if (changed?.added === true) {
 			console.log(`LOG..GalleryTile: GALLERY ADDED`, changed)
 
-			const show = mu.getElement(m => m.getElement().getAttribute('muuri-id') === changed.id)
-			mu.show(show)
+			const el = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
+			const show = mu.getItem(el[0])
+			mu.show([show])
 
 			changed = null
 		} else if (changed?.added === false && !loading) {
 			console.log(`LOG..GalleryTile: GALLERY REMOVED`, changed)
 
-			const hide = mu
-				.filter(m => m.getElement().getAttribute('data-muuri-id') !== changed.id)
-				.getElement()
-			mu.hide(hide)
+			const el = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
+			const hide = mu.getItem(el[0])
+			mu.hide([hide])
 
 			changed = null
 		} else {
