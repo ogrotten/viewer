@@ -31,42 +31,9 @@
 	let muWrap: HTMLSpanElement
 
 	let Muuri, mu: any
-
-	// const setup = async () => {
-	// 	const querySnapshot = await getDocs(collection(db, 'viewers', attach, 'images'))
-	// 	galleryAll = querySnapshot.docs
-	// 	new Promise(resolve => {
-	// 		imagesAll = galleryAll.map((one, idx) => setupNode(one))
-	// 	}).then(() => {
-	// 		initLayout(imagesAll)
-	// 	})
-	// }
-
 	onMount(async () => {
-		// await setup()
-		// const g = query(collection(db, 'viewers', attach, 'images'))
-		// unsubGalleryAll = await onSnapshot(g, snap => {
-		// 	galleryAll = [...snap.docs].map(doc => ({ id: doc.id, ...doc.data() }))
-		// })
-		// initLayout(galleryAll)
-		// const module = await import('muuri').then()
-		// Muuri = module.default
-		// mu = new Muuri('#muWrap', {
-		// 	dragEnabled: false,
-		// 	items: '.item',
-		// 	layout: {
-		// 		fillGaps: true,
-		// 	},
-		// })
-		// mu.on('layoutStart', i => {
-		// 	console.log('item-list: layoutStart', i)
-		// })
-		// mu.on('layoutEnd', i => {
-		// 	console.log('item-list: layoutEnd')
-		// })
+		initLayout(galleryAll)
 	})
-
-	// $: console.log(`LOG..GalleryTile: galleryAll`, { galleryAll, gallery, presentGallery })
 
 	const setupNode = incoming => {
 		// debugger
@@ -133,7 +100,7 @@
 		})
 
 		mu.on('layoutStart', i => {
-			console.log('item-list: layoutStart', i)
+			console.log('item-list: layoutStart')
 		})
 
 		// mu.add([...images])
@@ -151,56 +118,70 @@
 		mu.add([...images])
 	}
 
-	$: if (galleryAll?.length > 0 && imgBase && itemDiv && itemContentDiv) {
-		initLayout(galleryAll)
-	}
-
-	$: if (changed && !loading) setItemVis()
+	// $: if (galleryAll?.length > 0 && imgBase && itemDiv && itemContentDiv) {
+	// 	initLayout(galleryAll)
+	// }
 
 	const setItemVis = () => {
-		if (changed?.added === true) {
-			console.log(`LOG..GalleryTile: GALLERY ADDED`, changed)
+		console.log(`LOG..GalleryTile: wait here`)
 
-			const el = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
-			const show = mu.getItem(el[0])
-			mu.show([show])
+		console.log(`LOG..GalleryTile: GALLERY REMOVED`, changed)
 
-			changed = null
-		} else if (changed?.added === false && !loading) {
-			console.log(`LOG..GalleryTile: GALLERY REMOVED`, changed)
+		const el = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
+		const item = mu.getItem(el[0])
 
-			const el = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
-			const hide = mu.getItem(el[0])
-			mu.hide([hide])
+		if (changed.added) mu.show([item])
+		else mu.hide([item])
 
-			changed = null
-		} else {
-			console.log(`LOG..GalleryTile: GALLERY NO CHANGE`)
-			changed = null
-		}
+		changed = null
+
+		print()
+		// if (changed?.added === true) {
+		// 	console.log(`LOG..GalleryTile: GALLERY ADDED`, changed)
+
+		// 	const el = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
+		// 	const show = mu.getItem(el[0])
+		// 	mu.show([show])
+
+		// 	changed = null
+		// } else if (changed?.added === false && !loading) {
+		// 	console.log(`LOG..GalleryTile: GALLERY REMOVED`, changed)
+
+		// 	const el = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
+		// 	const hide = mu.getItem(el[0])
+		// 	mu.hide([hide])
+
+		// 	changed = null
+		// } else {
+		// 	console.log(`LOG..GalleryTile: GALLERY NO CHANGE`)
+		// 	changed = null
+		// }
 	}
+
 	$: if (changed && !loading) setItemVis()
 
-	// const setItemVis = () => {
-	// 	if (changed?.added === true) {
-	// 		console.log(`LOG..GalleryTile: GALLERY ADDED`, changed)
+	const print = () => {
+		// $: if (mu && mu?.getItems().length > 0) {
+		const muAll = mu?.getItems()
+		const states = muAll.map(i => {
+			return {
+				id: mu.getItem(i).getElement().getAttribute('data-muuri-id'),
+				visible: i.isVisible(),
+			}
+		})
+		console.log(
+			`LOG..GalleryTile: STATES`,
+			// 	states.filter(i => i.visible),
+			states.filter(i => i.visible).length,
+		)
+		states
+			.filter(i => i.visible)
+			.forEach(i => {
+				console.log(i.id, i.visible)
+			})
 
-	// 		const show = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
-	// 		mu.show([show])
-
-	// 		changed = null
-	// 	} else if (changed?.added === false && !loading) {
-	// 		console.log(`LOG..GalleryTile: GALLERY REMOVED`, changed)
-
-	// 		const hide = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
-	// 		mu.hide([hide])
-
-	// 		changed = null
-	// 	} else {
-	// 		console.log(`LOG..GalleryTile: GALLERY NO CHANGE`)
-	// 		changed = null
-	// 	}
-	// }
+		// setItemVis()
+	}
 </script>
 
 {#await galleryAll then value}

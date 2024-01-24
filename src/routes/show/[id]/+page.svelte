@@ -300,7 +300,8 @@
 		</div>
 	{:else if showGallery}
 		<div id={'svelte-bricks'} class="relative">
-			{#if galleryTile && gallery.length > 1}
+			<!-- {#if galleryTile && gallery.length > 1} -->
+			{#if galleryTile}
 				<GalleryTile
 					{presentGallery}
 					{gallery}
