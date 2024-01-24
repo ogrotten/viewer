@@ -17,3 +17,8 @@ interface Image {
 	height?: number;
 	width?: number;
 }
+
+interface Changed {
+	id: string
+	added: boolean
+}

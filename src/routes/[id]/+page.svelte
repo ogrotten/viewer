@@ -13,6 +13,8 @@
 		deleteDoc,
 		updateDoc,
 		getDoc,
+		query,
+		onSnapshot,
 	} from 'firebase/firestore'
 
 	const debug = false
@@ -79,10 +81,23 @@
 		})
 	}
 
+	let unsubAllImages
+
 	async function getImages() {
-		const querySnapshot = await getDocs(collection(db, 'viewers', $dbUser?.uid, 'images'))
-		images = [...querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))]
-		resetImage()
+		if ($dbUser?.uid) {
+			const querySnapshot = query(collection(db, 'viewers', $dbUser.uid, 'images'))
+			// debugger
+			// images = [...querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))]
+			unsubAllImages = onSnapshot(querySnapshot, snap => {
+				images = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id }))
+			})
+			resetImage()
+
+			// unsubGallery = onSnapshot(g, snap => {
+			// 	gallery = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id }))
+			// 	setChange()
+			// })
+		}
 	}
 
 	const addOne = async (incoming: Image) => {

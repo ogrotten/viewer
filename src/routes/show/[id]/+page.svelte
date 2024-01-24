@@ -178,10 +178,7 @@
 		})
 	}
 
-	let changed: null | {
-		id: string
-		added: boolean
-	} = null
+	let changed: Changed | null = null
 
 	const setChange = () => {
 		if (presentGallery?.length !== 0) {
