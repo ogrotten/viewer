@@ -181,17 +181,20 @@
 	let changed: Changed | null = null
 
 	const setChange = () => {
+		let galleryIds = gallery.map(x => x.id)
+		let presentGalleryIds = presentGallery.map(x => x.id)
+
 		if (presentGallery?.length !== 0) {
 			if (gallery?.length < presentGallery?.length && !loading) {
-				let galleryIds = gallery.map(x => x.id)
 				let removed = presentGallery.filter(x => !galleryIds.includes(x.id))[0]
 				presentGallery
 					.splice(presentGallery.indexOf(removed), 1)
 					.sort((a, b) => b.index - a.index)
 				changed = { id: removed.id, added: false }
 			} else if (gallery?.length > presentGallery?.length && !loading) {
-				presentGallery = gallery.sort((a, b) => b.index - a.index)
-				changed = { id: gallery.at(-1).id, added: true }
+				let added = gallery.filter(x => !presentGalleryIds.includes(x.id))[0]
+				presentGallery = [...gallery]
+				changed = { id: added.id, added: true }
 			} else {
 				console.log(`LOG..+page: `)
 				changed = null
