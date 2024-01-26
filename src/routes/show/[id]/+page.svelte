@@ -304,7 +304,7 @@
 	{:else if showGallery}
 		<div id={'svelte-bricks'} class="relative">
 			<!-- {#if galleryTile && gallery.length > 1} -->
-			{#if galleryTile}
+			{#if galleryTile && !localShowNow}
 				<GalleryTile
 					{presentGallery}
 					{gallery}

@@ -1,7 +1,10 @@
 <script lang="ts">
+	import fadeScale from '$lib/svelte-transitions-fade-scale'
 	import { onMount } from 'svelte'
 
 	import { createEventDispatcher } from 'svelte'
+	import { cubicInOut } from 'svelte/easing'
+	import { fade } from 'svelte/transition'
 
 	const dispatch = createEventDispatcher()
 
@@ -131,34 +134,36 @@
 	$: if (changed && !loading) setItemVis()
 </script>
 
-{#await galleryAll then value}
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div class="m-auto">
-		<div class="hidden">
-			<div bind:this={itemDiv} class="item">
-				<div bind:this={itemContentDiv} class="item-content">
+<div class="" transition:fade>
+	{#await galleryAll then value}
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+		<!-- svelte-ignore a11y-no-static-element-interactions -->
+		<div class="m-auto">
+			<div class="hidden">
+				<div bind:this={itemDiv} class="item">
+					<div bind:this={itemContentDiv} class="item-content">
+						<!--  -->
+					</div>
+				</div>
+				<div
+					bind:this={imgBase}
+					id="brickitem"
+					class="transition-all bg-center bg-no-repeat bg-cover border-2 border-black hover:scale-95"
+					on:click={e => {
+						console.log('brickitem: click', e)
+					}}
+				>
 					<!--  -->
 				</div>
 			</div>
-			<div
-				bind:this={imgBase}
-				id="brickitem"
-				class="transition-all bg-center bg-no-repeat bg-cover border-2 border-black hover:scale-95"
-				on:click={e => {
-					console.log('brickitem: click', e)
-				}}
-			>
+
+			<div id="muWrap" class="flex justify-center w-screen h-screen">
 				<!--  -->
 			</div>
 		</div>
-
-		<div id="muWrap" class="flex justify-center w-screen h-screen">
-			<!--  -->
-		</div>
-	</div>
-{/await}
+	{/await}
+</div>
 
 <style lang="postcss">
 	#muwrap {
