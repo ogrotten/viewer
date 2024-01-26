@@ -1,146 +1,203 @@
 <script lang="ts">
-	import { browser } from '$app/environment'
-	import { list } from 'postcss'
+	import fadeScale from '$lib/svelte-transitions-fade-scale'
 	import { onMount } from 'svelte'
 
 	import { createEventDispatcher } from 'svelte'
+	import { cubicInOut } from 'svelte/easing'
+	import { fade } from 'svelte/transition'
 
 	const dispatch = createEventDispatcher()
 
 	let loading = true
 
-	export let gallery: Image[] = [],
-		presentGallery: Image[] = []
+	export let galleryAll: Image[] = [],
+		gallery: Image[] = [],
+		presentGallery: Image[] = [],
+		changed = null,
+		attach
+
+	export let changedBool = false
 
 	let images: HTMLDivElement[] = [],
+		imagesAll: HTMLDivElement[] = [],
 		imgBase: HTMLDivElement,
 		itemDiv: HTMLDivElement,
 		itemContentDiv: HTMLDivElement
 
-	const size = 400
-
-	let muWrap: HTMLSpanElement
+	const size = 360
 
 	let Muuri, mu: any
 	onMount(async () => {
+		initLayout(galleryAll)
+		console.log(`LOG..GalleryTile: here`)
+	})
+
+	let mousedown = false
+	let drag = false
+
+	const setupNode = incoming => {
+		// debugger
+		const img = imgBase.cloneNode() as HTMLDivElement
+		const inner = itemContentDiv.cloneNode() as HTMLDivElement
+		const outer = itemDiv.cloneNode() as HTMLDivElement
+
+		img.title = incoming.title
+		img.style.backgroundImage = `url(${incoming.url})`
+
+		outer.style.display = 'none'
+		outer.onmouseup = () => {
+			console.log(`LOG..GalleryTile: up`)
+			if (!drag) dispatch('localNow', { id: incoming.id })
+			drag = false
+		}
+		outer.onmousemove = () => {
+			console.log(`LOG..GalleryTile: move`)
+			drag = true
+		}
+
+		outer.onmousedown = () => {
+			console.log(`LOG..GalleryTile: down`)
+			mousedown = true
+			drag = false
+		}
+
+		outer.setAttribute('data-muuri-id', incoming.id)
+
+		const w: number = incoming.width as number
+		const h: number = incoming.height as number
+		const ratio = w / h
+
+		// const scratio = size / Math.max(w, h)
+		// outer.style.width = `${w * scratio}px`
+		// img.style.width = `${w * scratio}px`
+		// outer.style.height = `${h * scratio}px`
+		// img.style.height = `${h * scratio}px`
+
+		if (ratio > 1.25) {
+			// wide
+			outer.style.width = `${size * 2}px`
+			img.style.width = `${size * 2}px`
+			outer.style.height = `${size}px`
+			img.style.height = `${size}px`
+		} else if (ratio < 0.75) {
+			// tall
+			outer.style.width = `${size}px`
+			img.style.width = `${size}px`
+			outer.style.height = `${size * 2}px`
+			img.style.height = `${size * 2}px`
+		} else {
+			// square
+			outer.style.width = `${size}px`
+			img.style.width = `${size}px`
+			outer.style.height = `${size}px`
+			img.style.height = `${size}px`
+		}
+		if (incoming.title)
+			img.innerHTML = `<div class="absolute bottom-0 right-0 p-1 text-xl font-bold text-white bg-black bg-opacity-50">${incoming.title}</div>`
+		inner.appendChild(img)
+		outer.appendChild(inner)
+
+		return outer
+	}
+
+	const initLayout = async incoming => {
+		if (incoming.length === 0) return
+		images = incoming.map((one, idx) => {
+			let outgoing = setupNode(one)
+			outgoing.setAttribute('data-muuri-idx', idx)
+			return outgoing
+		})
+
 		const module = await import('muuri').then()
 		Muuri = module.default
-
 		mu = new Muuri('#muWrap', {
-			dragEnabled: false,
+			dragEnabled: true,
 			items: '.item',
 			layout: {
 				fillGaps: true,
 			},
 		})
-
-		mu.on('layoutStart', i => {
-			console.log('item-list: layoutStart', i)
-		})
-		mu.on('layoutEnd', i => {
-			console.log('item-list: layoutEnd')
-		})
-	})
-
-	$: if (mu && presentGallery.length) {
-		images = gallery.map((incoming, idx) => {
-			const img = imgBase.cloneNode() as HTMLDivElement
-			img.title = incoming.title
-			img.style.backgroundImage = `url(${incoming.url})`
-
-			const inner = itemContentDiv.cloneNode() as HTMLDivElement
-			const outer = itemDiv.cloneNode() as HTMLDivElement
-			outer.onclick = () => dispatch('localNow', { id: img.id, idx })
-
-			const w: number = incoming.width as number
-			const h: number = incoming.height as number
-			const ratio = w / h
-
-			// const scratio = size / Math.max(w, h)
-			// outer.style.width = `${w * scratio}px`
-			// img.style.width = `${w * scratio}px`
-			// outer.style.height = `${h * scratio}px`
-			// img.style.height = `${h * scratio}px`
-
-			if (ratio > 1.3) {
-				// wide
-				outer.style.width = `${size * 2}px`
-				img.style.width = `${size * 2}px`
-				outer.style.height = `${size}px`
-				img.style.height = `${size}px`
-			} else if (ratio < 0.7) {
-				// tall
-				outer.style.width = `${size}px`
-				img.style.width = `${size}px`
-				outer.style.height = `${size * 2}px`
-				img.style.height = `${size * 2}px`
-			} else {
-				// square
-				outer.style.width = `${size}px`
-				img.style.width = `${size}px`
-				outer.style.height = `${size}px`
-				img.style.height = `${size}px`
-			}
-			if (incoming.title)
-				img.innerHTML = `<div class="absolute bottom-0 right-0 p-1 text-xl font-bold text-white bg-black bg-opacity-50">${incoming.title}</div>`
-			inner.appendChild(img)
-			outer.appendChild(inner)
-
-			return outer
-		})
-
 		mu.add([...images])
+
+		mu.on('mouseDown', () => {
+			dispatch('localNow', { id: incoming.id })
+		})
+
+		if (changedBool) {
+			const toShow = gallery?.filter(item => item.gallery).map(item => item.id)
+			mu?.filter(item => toShow.includes(item.getElement().getAttribute('data-muuri-id')))
+			changedBool = false
+		}
 	}
 
-	$: if (gallery?.length < presentGallery?.length) {
-		let galleryIds = gallery.map(x => x.id)
-		let removed = presentGallery.filter(x => !galleryIds.includes(x.id))
-		presentGallery
-			.splice(presentGallery.indexOf(removed[0]), 1)
-			.sort((a, b) => b.index - a.index)
-	} else if (gallery?.length > presentGallery?.length) {
-		let added = gallery.at(-1)
-		presentGallery = gallery.sort((a, b) => b.index - a.index)
+	const setItemVis = () => {
+		const el = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
+		const item = mu?.getItem(el[0])
+
+		if (changed.added) mu?.show([item])
+		else mu?.hide([item])
+
+		changed = null
 	}
+
+	$: if (changed) {
+		setItemVis()
+	}
+
+	/* $: if (changedBool && mu) {
+		const toShow = gallery?.filter(item => item.gallery).map(item => item.id)
+		mu?.filter(item => toShow.includes(item.getElement().getAttribute('data-muuri-id')))
+		changedBool = false
+
+		// const toShow = gallery?.filter(item => item.gallery).map(item => item.id)
+
+		// mu?.getItems.forEach(item => {
+		// 	mu.hide([item])
+		// 	if (toShow.includes(item.getElement().getAttribute('data-muuri-id'))) mu.show([item])
+		// })
+		// changedBool = false
+	} */
+
+	// $: if (presentGallery.length === 0) {
+	// 	console.log(`LOG..GalleryTile: presentGallery.length`, presentGallery.length)
+	// 	mu?.getItems().forEach(i => mu.hide([i]))
+	// }
+
+	// $: console.log(`\nLOG..+page: COUNTS`, {
+	// 	items: mu?.getItems().length,
+	// 	gal: gallery.length,
+	// 	PGal: presentGallery?.length,
+	// 	visible: mu?.getItems().filter(i => i.isVisible()).length,
+	// })
 </script>
 
-<div class="hidden">
-	<div bind:this={itemDiv} class="item">
-		<div bind:this={itemContentDiv} class="item-content">
-			<!--  -->
+<div class="" transition:fade>
+	{#await galleryAll then value}
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+		<!-- svelte-ignore a11y-no-static-element-interactions -->
+		<div class="m-auto">
+			<div class="hidden">
+				<div bind:this={itemDiv} class="item">
+					<div bind:this={itemContentDiv} class="item-content">
+						<!--  -->
+					</div>
+				</div>
+				<div
+					bind:this={imgBase}
+					id="brickitem"
+					class="transition-all bg-center bg-no-repeat bg-cover border-2 border-black hover:scale-95"
+				>
+					<!--  -->
+				</div>
+			</div>
+
+			<div id="muWrap" class="flex justify-center w-screen h-screen">
+				<!--  -->
+			</div>
 		</div>
-	</div>
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-	<div
-		bind:this={imgBase}
-		id="brickitem"
-		class="transition-all bg-center bg-no-repeat bg-cover border-2 border-black hover:scale-95"
-	>
-		<!--  -->
-	</div>
+	{/await}
 </div>
-
-<div id="muWrap" class="flex justify-center w-screen h-screen">
-	<!--  -->
-</div>
-
-<!-- {#each images as m}
-	{m}
-{/each} -->
-
-<!-- <div class="invisible" bind:this={muWrap} id="muWrap">
-	<div class="item">
-		<div class="item-content">
-			{}
-		</div>
-	</div>
-	{#each presentGallery as img, idx (img.id)}
-		<div class="relative">
-			<img src={img.url} alt="" class="z-0 w-48 h-48" id="brickitem" />
-		</div>
-	{/each}
-</div> -->
 
 <style lang="postcss">
 	#muwrap {

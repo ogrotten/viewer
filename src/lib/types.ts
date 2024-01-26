@@ -1,19 +1,25 @@
 interface Viewer {
 	id: string;
 	images: string[];
-	single: boolean;
 	portraits: number[];
+	single: boolean;
 }
 
 interface Image {
-	url: string;
+	added: number
 	carousel: boolean;
 	gallery: boolean;
+	id?: string;
 	index: number;
 	now: boolean;
 	title: string;
-	id?: string;
+	url: string;
 
 	height?: number;
 	width?: number;
+}
+
+interface Changed {
+	added: boolean
+	id: string
 }

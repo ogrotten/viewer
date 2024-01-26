@@ -18,9 +18,16 @@
 	import Masonry from 'svelte-bricks'
 	import { flip } from 'svelte/animate'
 	import GalleryTile from './GalleryTile.svelte'
+	import type { PageData } from './$types'
+
+	export let data: PageData
+
+	let loading = true
 
 	const debug = false
 	const uid = $page.params.id
+
+	const { galleryAll } = data
 
 	let viewer: DocumentData = {},
 		unsubViewer,
@@ -59,6 +66,9 @@
 		FWD: 0,
 	}
 
+	let changed: Changed | null = null
+	let changedBool = false
+
 	async function setup(incoming: string) {
 		unsubViewer = onSnapshot(doc(db, 'viewers', incoming), doc => {
 			viewer = doc.data()
@@ -72,19 +82,39 @@
 			collection(db, 'viewers', incoming, 'images'),
 			where('carousel', '==', true),
 		)
-		unsubGallery = onSnapshot(c, snap => {
-			carousel = [...snap.docs].map(doc => ({ id: doc.id, ...doc.data() }))
+		unsubCarousel = onSnapshot(c, snap => {
+			carousel = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id }))
 		})
 
 		const g = query(collection(db, 'viewers', incoming, 'images'), where('gallery', '==', true))
 		unsubGallery = onSnapshot(g, snap => {
-			gallery = [...snap.docs].map(doc => ({ id: doc.id, ...doc.data() }))
+			gallery = [...snap.docs]
+				.map(doc => ({ ...doc.data(), id: doc.id }))
+				.sort((a, b) => b.index - a.index)
+			snap.docChanges().forEach(change => {
+				if (change.type === 'added') {
+					let added = change.doc.data()
+					presentGallery = [...gallery]
+					changed = { id: added.id, added: true }
+				} else if (change.type === 'modified') {
+					presentGallery = [...gallery]
+				} else if (change.type === 'removed') {
+					let removed = change.doc.data()
+					presentGallery.splice(presentGallery.indexOf(removed), 1)
+
+					changed = { id: removed.id, added: false }
+				} else changed = null
+			})
 		})
 
 		const n = query(collection(db, 'viewers', incoming, 'images'), where('now', '==', true))
 
 		unsubNow = onSnapshot(n, snap => {
-			now = [...snap.docs].map(doc => ({ id: doc.id, ...doc.data() }))
+			now = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id }))
+		})
+
+		Promise.all([unsubViewer, unsubGallery, unsubNow, unsubCarousel]).then(() => {
+			loading = false
 		})
 	}
 
@@ -137,6 +167,8 @@
 		}
 	})
 
+	$: if (galleryTile || (showGallery && galleryTile)) changedBool = true
+
 	$: if (showCarousel) runBg()
 	else clearInterval(intervalId)
 
@@ -166,15 +198,25 @@
 		})
 	}
 
-	$: if (gallery?.length < presentGallery?.length) {
+	const setChange = () => {
 		let galleryIds = gallery.map(x => x.id)
-		let removed = presentGallery.filter(x => !galleryIds.includes(x.id))
-		presentGallery
-			.splice(presentGallery.indexOf(removed[0]), 1)
-			.sort((a, b) => b.index - a.index)
-	} else if (gallery?.length > presentGallery?.length) {
-		let added = gallery.at(-1)
-		presentGallery = gallery.sort((a, b) => b.index - a.index)
+		let presentGalleryIds = presentGallery.map(x => x.id)
+
+		if (presentGallery?.length !== 0) {
+			if (gallery?.length < presentGallery?.length && !loading) {
+				let removed = presentGallery.filter(x => !galleryIds.includes(x.id))[0]
+				presentGallery
+					.splice(presentGallery.indexOf(removed), 1)
+					.sort((a, b) => b.index - a.index)
+				changed = { id: removed.id, added: false }
+			} else if (gallery?.length > presentGallery?.length && !loading) {
+				let added = gallery.filter(x => !presentGalleryIds.includes(x.id))[0]
+				presentGallery = [...gallery]
+				changed = { id: added.id, added: true }
+			} else {
+				changed = null
+			}
+		} else presentGallery = [...gallery]
 	}
 </script>
 
@@ -241,7 +283,10 @@
 					easing: cubicIn,
 					baseScale: 0.85,
 				}}
-				on:click={() => (localShowNow = false)}
+				on:click={() => {
+					localShowNow = false
+					changedBool = true
+				}}
 			/>
 			<!-- <p
 				class="absolute bottom-0 left-0 w-full p-2 py-2 text-2xl font-bold text-center transition-all opacity-50"
@@ -278,12 +323,17 @@
 		</div>
 	{:else if showGallery}
 		<div id={'svelte-bricks'} class="relative">
-			{#if galleryTile && gallery.length > 1}
+			<!-- {#if galleryTile && gallery.length > 1} -->
+			{#if galleryTile && !localShowNow}
 				<GalleryTile
 					{presentGallery}
 					{gallery}
+					{attach}
+					{galleryAll}
+					bind:changedBool
+					bind:changed
 					on:localNow={({ detail }) => {
-						localNow[0] = presentGallery[detail.idx]
+						localNow[0] = presentGallery.filter(x => x.id === detail.id)[0]
 						localShowNow = true
 					}}
 				/>
