@@ -45,7 +45,7 @@
 		img.style.backgroundImage = `url(${incoming.url})`
 
 		if (!incoming.gallery) outer.style.display = 'none'
-		outer.onclick = idx => dispatch('localNow', { id: img.id, idx })
+		// outer.onclick = idx => dispatch('localNow', { id: img.id, idx })
 		outer.setAttribute('data-muuri-id', incoming.id)
 
 		const w: number = incoming.width as number
@@ -92,7 +92,7 @@
 		const module = await import('muuri').then()
 		Muuri = module.default
 		mu = new Muuri('#muWrap', {
-			dragEnabled: false,
+			dragEnabled: true,
 			items: '.item',
 			layout: {
 				fillGaps: true,
