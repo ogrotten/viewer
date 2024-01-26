@@ -1,9 +1,4 @@
 <script lang="ts">
-	import { browser } from '$app/environment'
-	import { db } from '$lib/firebase'
-	import { intersectArrays } from '$lib/helpers'
-	import { query, collection, where, onSnapshot, getDocs } from 'firebase/firestore'
-	import { list } from 'postcss'
 	import { onMount } from 'svelte'
 
 	import { createEventDispatcher } from 'svelte'
@@ -18,8 +13,6 @@
 		changed = null,
 		attach
 
-	let unsubGalleryAll
-
 	let images: HTMLDivElement[] = [],
 		imagesAll: HTMLDivElement[] = [],
 		imgBase: HTMLDivElement,
@@ -27,8 +20,6 @@
 		itemContentDiv: HTMLDivElement
 
 	const size = 360
-
-	let muWrap: HTMLSpanElement
 
 	let Muuri, mu: any
 	onMount(async () => {
@@ -45,7 +36,10 @@
 		img.style.backgroundImage = `url(${incoming.url})`
 
 		if (!incoming.gallery) outer.style.display = 'none'
-		// outer.onclick = idx => dispatch('localNow', { id: img.id, idx })
+		outer.onclick = () => {
+			const id = incoming.id
+			dispatch('localNow', { id })
+		}
 		outer.setAttribute('data-muuri-id', incoming.id)
 
 		const w: number = incoming.width as number
@@ -87,7 +81,11 @@
 
 	const initLayout = async incoming => {
 		if (incoming.length === 0) return
-		images = incoming.map((one, idx) => setupNode(one))
+		images = incoming.map((one, idx) => {
+			let outgoing = setupNode(one)
+			outgoing.setAttribute('data-muuri-idx', idx)
+			return outgoing
+		})
 
 		const module = await import('muuri').then()
 		Muuri = module.default
@@ -110,6 +108,13 @@
 			console.log('item-list: layoutEnd')
 			loading = false
 		})
+
+		mu.on('onmouseup', (item, e) => {
+			const id = item.getElement().getAttribute('data-muuri-id')
+			const idx = presentGallery.findIndex(i => i.id === id)
+			dispatch('localNow', { id, idx })
+			console.log(`LOG..GalleryTile: id, idx`, id, idx)
+		})
 	}
 
 	async function muDo(incoming: Image[]) {
@@ -118,15 +123,7 @@
 		mu.add([...images])
 	}
 
-	// $: if (galleryAll?.length > 0 && imgBase && itemDiv && itemContentDiv) {
-	// 	initLayout(galleryAll)
-	// }
-
 	const setItemVis = () => {
-		console.log(`LOG..GalleryTile: wait here`)
-
-		console.log(`LOG..GalleryTile: GALLERY REMOVED`, changed)
-
 		const el = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
 		const item = mu.getItem(el[0])
 
@@ -136,55 +133,15 @@
 		changed = null
 
 		print()
-		// if (changed?.added === true) {
-		// 	console.log(`LOG..GalleryTile: GALLERY ADDED`, changed)
-
-		// 	const el = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
-		// 	const show = mu.getItem(el[0])
-		// 	mu.show([show])
-
-		// 	changed = null
-		// } else if (changed?.added === false && !loading) {
-		// 	console.log(`LOG..GalleryTile: GALLERY REMOVED`, changed)
-
-		// 	const el = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
-		// 	const hide = mu.getItem(el[0])
-		// 	mu.hide([hide])
-
-		// 	changed = null
-		// } else {
-		// 	console.log(`LOG..GalleryTile: GALLERY NO CHANGE`)
-		// 	changed = null
-		// }
 	}
 
 	$: if (changed && !loading) setItemVis()
-
-	const print = () => {
-		// $: if (mu && mu?.getItems().length > 0) {
-		const muAll = mu?.getItems()
-		const states = muAll.map(i => {
-			return {
-				id: mu.getItem(i).getElement().getAttribute('data-muuri-id'),
-				visible: i.isVisible(),
-			}
-		})
-		console.log(
-			`LOG..GalleryTile: STATES`,
-			// 	states.filter(i => i.visible),
-			states.filter(i => i.visible).length,
-		)
-		states
-			.filter(i => i.visible)
-			.forEach(i => {
-				console.log(i.id, i.visible)
-			})
-
-		// setItemVis()
-	}
 </script>
 
 {#await galleryAll then value}
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div class="m-auto">
 		<div class="hidden">
 			<div bind:this={itemDiv} class="item">
@@ -192,9 +149,6 @@
 					<!--  -->
 				</div>
 			</div>
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-			<!-- svelte-ignore a11y-no-static-element-interactions -->
 			<div
 				bind:this={imgBase}
 				id="brickitem"
