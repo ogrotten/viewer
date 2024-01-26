@@ -32,6 +32,9 @@
 		console.log(`LOG..GalleryTile: here`)
 	})
 
+	let mousedown = false
+	let drag = false
+
 	const setupNode = incoming => {
 		// debugger
 		const img = imgBase.cloneNode() as HTMLDivElement
@@ -41,9 +44,22 @@
 		img.title = incoming.title
 		img.style.backgroundImage = `url(${incoming.url})`
 
-		// if (!incoming.gallery)
 		outer.style.display = 'none'
-		outer.onclick = () => dispatch('localNow', { id: incoming.id })
+		outer.onmouseup = () => {
+			console.log(`LOG..GalleryTile: up`)
+			if (!drag) dispatch('localNow', { id: incoming.id })
+			drag = false
+		}
+		outer.onmousemove = () => {
+			console.log(`LOG..GalleryTile: move`)
+			drag = true
+		}
+
+		outer.onmousedown = () => {
+			console.log(`LOG..GalleryTile: down`)
+			mousedown = true
+			drag = false
+		}
 
 		outer.setAttribute('data-muuri-id', incoming.id)
 
@@ -103,18 +119,16 @@
 		})
 		mu.add([...images])
 
+		mu.on('mouseDown', () => {
+			dispatch('localNow', { id: incoming.id })
+		})
+
 		if (changedBool) {
 			const toShow = gallery?.filter(item => item.gallery).map(item => item.id)
 			mu?.filter(item => toShow.includes(item.getElement().getAttribute('data-muuri-id')))
 			changedBool = false
 		}
 	}
-
-	// async function muDo(incoming: Image[]) {
-	// 	if (incoming.length === 0) return
-	// 	images = incoming.map((one, idx) => setupNode(one))
-	// 	mu.add([...images])
-	// }
 
 	const setItemVis = () => {
 		const el = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
@@ -127,13 +141,6 @@
 	}
 
 	$: if (changed) {
-		// if (changed?.id === 'all') {
-		// 	const toShow = presentGallery?.filter(item => item.gallery).map(item => item.id)
-
-		// 	mu?.filter(item => toShow.includes(item.getElement().getAttribute('data-muuri-id')))
-		// }
-
-		console.log(`LOG..GalleryTile: changed.id`, changed.id)
 		setItemVis()
 	}
 
@@ -151,17 +158,17 @@
 		// changedBool = false
 	} */
 
-	$: if (presentGallery.length === 0) {
-		console.log(`LOG..GalleryTile: presentGallery.length`, presentGallery.length)
-		mu?.getItems().forEach(i => mu.hide([i]))
-	}
+	// $: if (presentGallery.length === 0) {
+	// 	console.log(`LOG..GalleryTile: presentGallery.length`, presentGallery.length)
+	// 	mu?.getItems().forEach(i => mu.hide([i]))
+	// }
 
-	$: console.log(`\nLOG..+page: COUNTS`, {
-		items: mu?.getItems().length,
-		gal: gallery.length,
-		PGal: presentGallery?.length,
-		visible: mu?.getItems().filter(i => i.isVisible()).length,
-	})
+	// $: console.log(`\nLOG..+page: COUNTS`, {
+	// 	items: mu?.getItems().length,
+	// 	gal: gallery.length,
+	// 	PGal: presentGallery?.length,
+	// 	visible: mu?.getItems().filter(i => i.isVisible()).length,
+	// })
 </script>
 
 <div class="" transition:fade>
@@ -180,9 +187,6 @@
 					bind:this={imgBase}
 					id="brickitem"
 					class="transition-all bg-center bg-no-repeat bg-cover border-2 border-black hover:scale-95"
-					on:click={e => {
-						console.log('brickitem: click', e)
-					}}
 				>
 					<!--  -->
 				</div>

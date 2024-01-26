@@ -214,7 +214,6 @@
 				presentGallery = [...gallery]
 				changed = { id: added.id, added: true }
 			} else {
-				console.log(`LOG..+page: `)
 				changed = null
 			}
 		} else presentGallery = [...gallery]
@@ -334,7 +333,6 @@
 					bind:changedBool
 					bind:changed
 					on:localNow={({ detail }) => {
-						console.log(`LOG..+page: detail`, detail)
 						localNow[0] = presentGallery.filter(x => x.id === detail.id)[0]
 						localShowNow = true
 					}}
