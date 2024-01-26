@@ -16,6 +16,8 @@
 		changed = null,
 		attach
 
+	export let changedBool = false
+
 	let images: HTMLDivElement[] = [],
 		imagesAll: HTMLDivElement[] = [],
 		imgBase: HTMLDivElement,
@@ -27,6 +29,7 @@
 	let Muuri, mu: any
 	onMount(async () => {
 		initLayout(galleryAll)
+		console.log(`LOG..GalleryTile: here`)
 	})
 
 	const setupNode = incoming => {
@@ -38,7 +41,8 @@
 		img.title = incoming.title
 		img.style.backgroundImage = `url(${incoming.url})`
 
-		if (!incoming.gallery) outer.style.display = 'none'
+		// if (!incoming.gallery)
+		outer.style.display = 'none'
 		outer.onclick = () => dispatch('localNow', { id: incoming.id })
 
 		outer.setAttribute('data-muuri-id', incoming.id)
@@ -97,41 +101,67 @@
 				fillGaps: true,
 			},
 		})
-
-		mu.on('layoutStart', i => {
-			console.log('item-list: layoutStart')
-		})
-
-		// mu.add([...images])
 		mu.add([...images])
 
-		mu.on('layoutEnd', i => {
-			console.log('item-list: layoutEnd')
-			loading = false
-		})
-
-		mu.on('onmouseup', (item, e) => {
-			console.log(`LOG..GalleryTile: id, idx`, id, idx)
-		})
+		if (changedBool) {
+			const toShow = gallery?.filter(item => item.gallery).map(item => item.id)
+			mu?.filter(item => toShow.includes(item.getElement().getAttribute('data-muuri-id')))
+			changedBool = false
+		}
 	}
 
-	async function muDo(incoming: Image[]) {
-		if (incoming.length === 0) return
-		images = incoming.map((one, idx) => setupNode(one))
-		mu.add([...images])
-	}
+	// async function muDo(incoming: Image[]) {
+	// 	if (incoming.length === 0) return
+	// 	images = incoming.map((one, idx) => setupNode(one))
+	// 	mu.add([...images])
+	// }
 
 	const setItemVis = () => {
 		const el = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
-		const item = mu.getItem(el[0])
+		const item = mu?.getItem(el[0])
 
-		if (changed.added) mu.show([item])
-		else mu.hide([item])
+		if (changed.added) mu?.show([item])
+		else mu?.hide([item])
 
 		changed = null
 	}
 
-	$: if (changed && !loading) setItemVis()
+	$: if (changed) {
+		// if (changed?.id === 'all') {
+		// 	const toShow = presentGallery?.filter(item => item.gallery).map(item => item.id)
+
+		// 	mu?.filter(item => toShow.includes(item.getElement().getAttribute('data-muuri-id')))
+		// }
+
+		console.log(`LOG..GalleryTile: changed.id`, changed.id)
+		setItemVis()
+	}
+
+	/* $: if (changedBool && mu) {
+		const toShow = gallery?.filter(item => item.gallery).map(item => item.id)
+		mu?.filter(item => toShow.includes(item.getElement().getAttribute('data-muuri-id')))
+		changedBool = false
+
+		// const toShow = gallery?.filter(item => item.gallery).map(item => item.id)
+
+		// mu?.getItems.forEach(item => {
+		// 	mu.hide([item])
+		// 	if (toShow.includes(item.getElement().getAttribute('data-muuri-id'))) mu.show([item])
+		// })
+		// changedBool = false
+	} */
+
+	$: if (presentGallery.length === 0) {
+		console.log(`LOG..GalleryTile: presentGallery.length`, presentGallery.length)
+		mu?.getItems().forEach(i => mu.hide([i]))
+	}
+
+	$: console.log(`\nLOG..+page: COUNTS`, {
+		items: mu?.getItems().length,
+		gal: gallery.length,
+		PGal: presentGallery?.length,
+		visible: mu?.getItems().filter(i => i.isVisible()).length,
+	})
 </script>
 
 <div class="" transition:fade>

@@ -39,6 +39,7 @@
 			title: '',
 			id: '',
 			index: Date.now(),
+			added: Date.now(),
 		},
 		urlValid = false,
 		many = '',
@@ -89,7 +90,9 @@
 			// debugger
 			// images = [...querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))]
 			unsubAllImages = onSnapshot(querySnapshot, snap => {
-				images = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id }))
+				images = [...snap.docs]
+					.map(doc => ({ ...doc.data(), id: doc.id }))
+					.sort((a, b) => a.added - b.added)
 			})
 			resetImage()
 
@@ -134,6 +137,7 @@
 	}
 
 	async function parameter(image: Image) {
+		// if (!image.added) image.added = Date.now()
 		if (image.now) {
 			const { id } = image
 			images.forEach((img, idx) => {

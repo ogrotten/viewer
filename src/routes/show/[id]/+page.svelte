@@ -66,6 +66,9 @@
 		FWD: 0,
 	}
 
+	let changed: Changed | null = null
+	let changedBool = false
+
 	async function setup(incoming: string) {
 		unsubViewer = onSnapshot(doc(db, 'viewers', incoming), doc => {
 			viewer = doc.data()
@@ -85,8 +88,23 @@
 
 		const g = query(collection(db, 'viewers', incoming, 'images'), where('gallery', '==', true))
 		unsubGallery = onSnapshot(g, snap => {
-			gallery = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id }))
-			setChange()
+			gallery = [...snap.docs]
+				.map(doc => ({ ...doc.data(), id: doc.id }))
+				.sort((a, b) => b.index - a.index)
+			snap.docChanges().forEach(change => {
+				if (change.type === 'added') {
+					let added = change.doc.data()
+					presentGallery = [...gallery]
+					changed = { id: added.id, added: true }
+				} else if (change.type === 'modified') {
+					presentGallery = [...gallery]
+				} else if (change.type === 'removed') {
+					let removed = change.doc.data()
+					presentGallery.splice(presentGallery.indexOf(removed), 1)
+
+					changed = { id: removed.id, added: false }
+				} else changed = null
+			})
 		})
 
 		const n = query(collection(db, 'viewers', incoming, 'images'), where('now', '==', true))
@@ -149,6 +167,8 @@
 		}
 	})
 
+	$: if (galleryTile) changedBool = true
+
 	$: if (showCarousel) runBg()
 	else clearInterval(intervalId)
 
@@ -177,8 +197,6 @@
 			}
 		})
 	}
-
-	let changed: Changed | null = null
 
 	const setChange = () => {
 		let galleryIds = gallery.map(x => x.id)
@@ -310,6 +328,7 @@
 					{gallery}
 					{attach}
 					{galleryAll}
+					bind:changedBool
 					bind:changed
 					on:localNow={({ detail }) => {
 						console.log(`LOG..+page: detail`, detail)
