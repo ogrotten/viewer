@@ -313,7 +313,6 @@
 					bind:changed
 					on:localNow={({ detail }) => {
 						console.log(`LOG..+page: detail`, detail)
-						// localNow[0] = presentGallery[detail.idx]
 						localNow[0] = presentGallery.filter(x => x.id === detail.id)[0]
 						localShowNow = true
 					}}

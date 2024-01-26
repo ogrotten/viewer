@@ -36,10 +36,8 @@
 		img.style.backgroundImage = `url(${incoming.url})`
 
 		if (!incoming.gallery) outer.style.display = 'none'
-		outer.onclick = () => {
-			const id = incoming.id
-			dispatch('localNow', { id })
-		}
+		outer.onclick = () => dispatch('localNow', { id: incoming.id })
+
 		outer.setAttribute('data-muuri-id', incoming.id)
 
 		const w: number = incoming.width as number
@@ -110,9 +108,6 @@
 		})
 
 		mu.on('onmouseup', (item, e) => {
-			const id = item.getElement().getAttribute('data-muuri-id')
-			const idx = presentGallery.findIndex(i => i.id === id)
-			dispatch('localNow', { id, idx })
 			console.log(`LOG..GalleryTile: id, idx`, id, idx)
 		})
 	}
@@ -131,8 +126,6 @@
 		else mu.hide([item])
 
 		changed = null
-
-		print()
 	}
 
 	$: if (changed && !loading) setItemVis()
