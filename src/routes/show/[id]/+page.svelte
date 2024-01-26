@@ -284,7 +284,10 @@
 					easing: cubicIn,
 					baseScale: 0.85,
 				}}
-				on:click={() => (localShowNow = false)}
+				on:click={() => {
+					localShowNow = false
+					changedBool = true
+				}}
 			/>
 			<!-- <p
 				class="absolute bottom-0 left-0 w-full p-2 py-2 text-2xl font-bold text-center transition-all opacity-50"
