@@ -167,7 +167,7 @@
 		}
 	})
 
-	$: if (galleryTile) changedBool = true
+	$: if (galleryTile || (showGallery && galleryTile)) changedBool = true
 
 	$: if (showCarousel) runBg()
 	else clearInterval(intervalId)
