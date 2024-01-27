@@ -459,49 +459,44 @@
 					</button> -->
 					<!-- {:else} -->
 					<div id="add-images" class="mb-8">
-						<div
-							class="flex flex-row items-center justify-start gap-8 p-4 min-h-8 rounded-t-xl tabs bg-neutral-focus"
-							class:rounded-b-xl={!showAdd}
-						>
-							<button
-								class="w-48 transition-all btn btn-xs btn-neutral"
-								on:click={() => {
-									clear(viewerTabOptions[viewerTab].name.toLowerCase())
-								}}
-								disabled={viewerTab === 0}
-								class:disable-clear={viewerTab === 0}
-							>
-								<span class="text-neutral-content">
-									Clear {viewerTabOptions[viewerTab].name} selections
-								</span>
-							</button>
-							<button
-								class=" btn btn-xs btn-neutral"
-								on:click={() => (showAdd = !showAdd)}
-							>
-								<span class="text-neutral-content">
-									{showAdd ? 'Cancel' : 'Add Images'}
-									{#if showAdd}
-										<a
-											class="tab"
-											class:active={tab === 0}
-											on:click={() => (tab = 0)}
-											href={''}
-										>
-											Just One
-										</a>
-										<a
-											class="tab"
-											class:active={tab === 1}
-											on:click={() => (tab = 1)}
-											href={''}
-										>
-											Many
-										</a>
+						<div class="flex items-center justify-between p-4 rounded bg-neutral-focus">
+							<div class="flex flex-row items-center justify-start w-full gap-8">
+								<button
+									class=" btn btn-xs btn-neutral"
+									on:click={() => (showAdd = !showAdd)}
+								>
+									<div class="text-neutral-content">
+										{showAdd ? 'Cancel' : 'Add Images'}
+									</div>
+								</button>
+								{#if showAdd}
+									{#each ['Just One', 'Many'] as item, idx}
+										<div class="flex items-center justify-start h-4 text-sm">
+											<a
+												class="text-secondary-focus"
+												class:underline={tab === idx}
+												on:click={() => (tab = idx)}
+												href={''}
+											>
+												{item}
+											</a>
+										</div>
 										<!-- <a class="tab" class:active={tab === 2} on:click={() => (tab = 2)} href={''}> from Google Drive </a> -->
-									{/if}
-								</span></button
-							>
+									{/each}
+								{/if}
+							</div>
+							{#if viewerTab !== 0}
+								<button
+									class="w-48 transition-all btn btn-xs btn-warning btn-outline"
+									on:click={() => {
+										clear(viewerTabOptions[viewerTab].name.toLowerCase())
+									}}
+								>
+									<span class="">
+										Clear {viewerTabOptions[viewerTab].name} selections
+									</span>
+								</button>
+							{/if}
 						</div>
 						{#if showAdd}
 							<div
