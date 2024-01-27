@@ -29,3 +29,4 @@ interface UserPref {
 	carouselTransitionTime: number
 	tiles: boolean
 }
+
