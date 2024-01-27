@@ -50,6 +50,9 @@
 		tab = 1,
 		disableNow = false
 
+	let allusers: User[] = [],
+		viewerId: string
+
 	let showHover = -1
 
 	const resetImage = () => {
@@ -76,32 +79,31 @@
 	})
 
 	function setup() {
+		viewerId = $dbUser?.uid
 		getImages()
 		getDoc(doc(db, 'viewers', $dbUser?.uid)).then(doc => {
 			show = doc.data()
 		})
 		getPrefs()
+		if ($dbUser.role === 'admin') {
+			getDocs(collection(db, 'users')).then(querySnapshot => {
+				allusers = [...querySnapshot.docs].map(doc => ({ ...doc.data(), id: doc.id }))
+			})
+		}
 	}
 
 	let unsubAllImages
 
-	async function getImages() {
-		if ($dbUser?.uid) {
-			const querySnapshot = query(collection(db, 'viewers', $dbUser.uid, 'images'))
-			// debugger
-			// images = [...querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))]
-			unsubAllImages = onSnapshot(querySnapshot, snap => {
-				images = [...snap.docs]
-					.map(doc => ({ ...doc.data(), id: doc.id }))
-					.sort((a, b) => a.added - b.added)
-			})
-			resetImage()
+	const selectViewerId = e => {}
 
-			// unsubGallery = onSnapshot(g, snap => {
-			// 	gallery = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id }))
-			// 	setChange()
-			// })
-		}
+	async function getImages() {
+		const querySnapshot = query(collection(db, 'viewers', viewerId, 'images'))
+		unsubAllImages = onSnapshot(querySnapshot, snap => {
+			images = [...snap.docs]
+				.map(doc => ({ ...doc.data(), id: doc.id }))
+				.sort((a, b) => a.added - b.added)
+		})
+		resetImage()
 	}
 
 	const addOne = async (incoming: Image) => {
@@ -261,7 +263,12 @@
 		updateDoc(doc(db, 'users', $dbUser?.uid), { pref: pref })
 	}
 
-	// $: if (pref != $dbUser.pref) debugger
+	const viewerTabOptions = [
+		{ name: 'Carousel', value: 0 },
+		{ name: 'Gallery', value: 1 },
+		{ name: 'All', value: 2 },
+	]
+	let viewerTab = 0
 </script>
 
 <svelte:window
@@ -276,7 +283,7 @@
 	<div class="" />
 {:else}
 	<div class="flex flex-col gap-10">
-		<span class="">
+		<div class="flex justify-between">
 			<p class="flex flex-row items-center font-semibold">
 				Use this url to see the live show:
 				<button
@@ -297,7 +304,14 @@
 					</button>
 				{/if}
 			</p>
-		</span>
+			{#if $dbUser?.role === 'admin'}
+				<select class="w-full max-w-xs select">
+					{#each allusers as user}
+						<option value={user.id}>{user.name}</option>
+					{/each}
+				</select>
+			{/if}
+		</div>
 		<div class="flex flex-row items-start justify-around w-full h-16 gap-16 my-10">
 			<button
 				name="carousel"
@@ -513,8 +527,21 @@
 					</button>
 				</div>
 			</div>
+			<div role="tablist" class="gap-4 tabs tabs-bordered">
+				{#each viewerTabOptions as option}
+					<a
+						class="tab"
+						class:unselected={viewerTab !== option.value}
+						class:active={viewerTab === option.value}
+						on:click={() => (viewerTab = option.value)}
+						href={''}
+					>
+						{option.name}
+					</a>
+				{/each}
+			</div>
 			{#if images?.length > 0}
-				<div id="list-container" class="w-full" transition:fly>
+				<div id="list-container" class="w-full p-4 border border-secondary" transition:fly>
 					{#if pref.tiles}
 						<div
 							id="list-cont"
@@ -555,18 +582,18 @@
 										on:load={e => updateImage({ e, idx })}
 									/>
 									<!-- <a href={image.url} class="" target="_blank">
-									<div class="relative">
-										<button
-											class="absolute top-0 right-0 z-10 p-1 transition-all hover:bg-red-900"
-											on:click={() => imageDelete(image, idx)}>❌</button
-										>
-										<img
-											src={url}
-											alt="image"
-											class="z-0 object-cover object-top w-48 h-36 rounded-2xl"
-										/>
-									</div>
-								</a> -->
+										<div class="relative">
+											<button
+												class="absolute top-0 right-0 z-10 p-1 transition-all hover:bg-red-900"
+												on:click={() => imageDelete(image, idx)}>❌</button
+											>
+											<img
+												src={url}
+												alt="image"
+												class="z-0 object-cover object-top w-48 h-36 rounded-2xl"
+											/>
+										</div>
+									</a> -->
 									<div class="flex items-center justify-start gap-2 py-4">
 										<button
 											class="p-1 transition-all hover:bg-blue-600"
@@ -602,7 +629,10 @@
 											class:unselected={!image.carousel}
 											class:btn-primary={image.carousel}
 											on:click={() =>
-												parameter({ ...image, carousel: !image.carousel })}
+												parameter({
+													...image,
+													carousel: !image.carousel,
+												})}
 										>
 											<span class="label-text">Carousel</span>
 										</button>
@@ -634,7 +664,6 @@
 						>
 							{#each images as image, idx (image.id)}
 								{@const url = debug ? 'https://dummyimage.com/32' : image.url}
-
 								<!-- svelte-ignore a11y-img-redundant-alt -->
 								<li
 									class="relative flex flex-row items-center gap-4 p-2 border-t border-stone-700"
@@ -707,7 +736,10 @@
 											class:unselected={!image.carousel}
 											class:btn-primary={image.carousel}
 											on:click={() =>
-												parameter({ ...image, carousel: !image.carousel })}
+												parameter({
+													...image,
+													carousel: !image.carousel,
+												})}
 										>
 											<span class="label-text">Carousel</span>
 										</button>
@@ -718,8 +750,8 @@
 											on:click={() => setGalleryItem(image)}
 										>
 											<!-- on:click={() =>
-												parameter({ ...image, gallery: !image.gallery })
-												} -->
+													parameter({ ...image, gallery: !image.gallery })
+													} -->
 											<span class="label-text">Gallery</span>
 										</button>
 										<button
@@ -749,14 +781,14 @@
 	</div>
 {/if}
 
-<style>
+<style lang="postcss">
 	button {
 		@apply text-gray-800;
 	}
 	.unselected {
-		@apply btn-neutral text-gray-200;
+		@apply hover:bg-neutral-focus bg-neutral text-neutral-content rounded-t-lg transition-opacity;
 	}
 	.active {
-		@apply bg-neutral tab-active rounded-t-lg;
+		@apply bg-secondary-focus tab-active rounded-t-lg text-secondary-content;
 	}
 </style>
