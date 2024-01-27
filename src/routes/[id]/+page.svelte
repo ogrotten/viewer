@@ -29,6 +29,7 @@
 			carouselTime: 0,
 			carouselTransitionTime: 0,
 			tiles: false,
+			favorites: [],
 		}
 
 	let newImg: Image = {
@@ -163,6 +164,12 @@
 	}
 
 	const clear = (incoming: string) => {
+		if (incoming === 'favorites') {
+			pref.favorites = []
+			updatePrefs()
+			return
+		}
+
 		const filteredImages = images
 			.filter(image => image[incoming])
 			.forEach(image => {
@@ -262,13 +269,19 @@
 
 	const updatePrefs = () => {
 		updateDoc(doc(db, 'users', $dbUser?.uid), { pref: pref })
+		changeViewerTab(viewerTabOptions[viewerTab])
 	}
 
 	const viewerTabOptions = [
-		{ name: 'All', value: 0 },
-		{ name: 'Carousel', value: 1 },
-		{ name: 'Gallery', value: 2 },
+		{ name: 'All' },
+		{ name: 'Favorites' },
+		{ name: 'Carousel' },
+		{ name: 'Gallery' },
 	]
+
+	$: viewerTabOptions.forEach((option, idx) => {
+		option.value = idx
+	})
 
 	let viewerTab: number = 0,
 		viewerImages = []
@@ -276,9 +289,21 @@
 	function changeViewerTab(tab) {
 		console.log(`LOG..+page: tab`, tab)
 		viewerTab = tab?.value ?? 0
-		viewerTab === 0
-			? (viewerImages = [...images])
-			: (viewerImages = [...images.filter(image => image[tab?.name?.toLowerCase()])])
+
+		if (viewerTab === 0) viewerImages = [...images]
+
+		if (viewerTab === 1)
+			viewerImages = [...images].filter(image => pref.favorites.includes(image.id))
+
+		if (viewerTab > 1)
+			viewerImages = [...images.filter(image => image[tab?.name?.toLowerCase()])]
+	}
+
+	const imageFave = (image, idx) => {
+		if (pref.favorites.includes(image.id)) {
+			pref.favorites = pref.favorites.filter(id => id !== image.id)
+		} else pref = { ...pref, favorites: [...pref.favorites, image.id] }
+		updatePrefs()
 	}
 </script>
 
@@ -493,7 +518,7 @@
 									}}
 								>
 									<span class="">
-										Clear {viewerTabOptions[viewerTab].name} selections
+										Clear {viewerTabOptions[viewerTab].name}
 									</span>
 								</button>
 							{/if}
@@ -582,7 +607,13 @@
 								>
 									<!-- transition:fly|local={{ x: -20 }} -->
 									<div class="flex justify-between">
-										<br />
+										<button class="" on:click={() => imageFave(image, idx)}>
+											{#if pref.favorites?.includes(image.id)}
+												<p class="">❤️</p>
+											{:else}
+												<p class="">🖤</p>
+											{/if}
+										</button>
 										<button
 											class="p-1"
 											on:click={() => imageDelete(image, idx)}

@@ -28,5 +28,6 @@ interface UserPref {
 	carouselTime: number
 	carouselTransitionTime: number
 	tiles: boolean
+	favorites: string[]
 }
 
