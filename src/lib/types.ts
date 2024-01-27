@@ -23,3 +23,9 @@ interface Changed {
 	added: boolean
 	id: string
 }
+
+interface UserPref {
+	carouselTime: number
+	carouselTransitionTime: number
+	tiles: boolean
+}

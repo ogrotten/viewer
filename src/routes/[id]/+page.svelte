@@ -25,9 +25,9 @@
 		idcopied = false
 
 	let images: Image[],
-		pref = {
+		pref: UserPref = {
 			carouselTime: 0,
-			carouselTransition: 0,
+			carouselTransitionTime: 0,
 			tiles: false,
 		}
 
@@ -80,6 +80,7 @@
 		getDoc(doc(db, 'viewers', $dbUser?.uid)).then(doc => {
 			show = doc.data()
 		})
+		getPrefs()
 	}
 
 	let unsubAllImages
@@ -240,15 +241,27 @@
 		carousel: images?.filter(image => image.carousel),
 		gallery: images?.filter(image => image.gallery),
 	}
-
-	// $: console.log(imgLists?.gallery?.map(img => img.index))
-
 	const updateImage = ({ e, idx }) => {
 		if (images[idx].width) return
 		images[idx].width = e.target.naturalWidth
 		images[idx].height = e.target.naturalHeight
 		updateDoc(doc(db, 'viewers', $dbUser?.uid, 'images', images[idx].id), images[idx])
 	}
+
+	const getPrefs = () => {
+		if (!$dbUser?.uid) return
+		getDoc(doc(db, 'users', $dbUser?.uid)).then(doc => {
+			// debugger
+			pref = doc.data().pref || pref
+			console.log(`LOG..+page: `)
+		})
+	}
+
+	const updatePrefs = () => {
+		updateDoc(doc(db, 'users', $dbUser?.uid), { pref: pref })
+	}
+
+	// $: if (pref != $dbUser.pref) debugger
 </script>
 
 <svelte:window
@@ -392,7 +405,7 @@
 						{:else if tab === 1}
 							<div class="flex flex-col gap-4" in:fly>
 								<div class="">
-									Enter a list, one per line (title optional):
+									<p class="">Enter a list, one per line (title optional):</p>
 									<pre
 										data-prefix=""
 										class="p-1 mt-2 text-sm bg-black border rounded-lg border-cyan-900 w-fit"><code> <span
@@ -416,6 +429,11 @@
 						{:else if tab === 2}
 							<!--  -->
 						{/if}
+						<p class="">
+							<span class="font-bold">Image URL</span> should have a file extension (.jpg,
+							.png, etc.) and be a direct link to the image. If you're using Google Drive,
+							make sure the link is public.
+						</p>
 					</div>
 				</div>
 			{/if}
@@ -442,18 +460,18 @@
 								type="number"
 								placeholder="Image URL"
 								class="w-full max-w-xs input-sm input input-bordered input-neutral"
-								bind:value={pref.carouselTransition}
+								bind:value={pref.carouselTime}
 							/>
 						</div>
 					</span>
 					<span class="">
-						<span class="pl-1 label-text">Transition</span>
+						<span class="pl-1 label-text">Transition time</span>
 						<div class="w-20 form-control">
 							<input
 								type="number"
 								placeholder="Image URL"
 								class="w-full max-w-xs input-sm input input-bordered input-neutral"
-								bind:value={pref.carouselTransition}
+								bind:value={pref.carouselTransitionTime}
 							/>
 						</div>
 					</span>
@@ -469,6 +487,7 @@
 							type="checkbox"
 							class="toggle toggle-xs bg-primary"
 							bind:checked={pref.tiles}
+							on:change={updatePrefs}
 						/>
 						<span class="label-text">{pref.tiles ? 'Tiles' : 'List'}</span>
 					</label>
@@ -511,8 +530,11 @@
 								>
 									<div class="flex justify-between">
 										<br />
-										<button class="p-1" on:click={() => imageDelete(image, idx)}
-											><svg
+										<button
+											class="p-1"
+											on:click={() => imageDelete(image, idx)}
+										>
+											<svg
 												xmlns="http://www.w3.org/2000/svg"
 												viewBox="0 0 24 24"
 												fill="currentColor"
