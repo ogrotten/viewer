@@ -27,7 +27,8 @@ interface Changed {
 interface UserPref {
 	carouselTime: number
 	carouselTransitionTime: number
-	tiles: boolean
 	favorites: string[]
+	sort: boolean
+	tiles: boolean
 }
 

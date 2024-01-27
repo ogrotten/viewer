@@ -30,6 +30,7 @@
 			carouselTransitionTime: 0,
 			tiles: false,
 			favorites: [],
+			sort: false,
 		}
 
 	let newImg: Image = {
@@ -305,6 +306,10 @@
 		} else pref = { ...pref, favorites: [...pref.favorites, image.id] }
 		updatePrefs()
 	}
+
+	$: pref.sort
+		? (viewerImages = [...viewerImages].sort((a, b) => b.added - a.added))
+		: (viewerImages = [...viewerImages].sort((a, b) => b.index - a.index))
 </script>
 
 <svelte:window
@@ -592,6 +597,19 @@
 						{/if}
 					</div>
 					<!-- {/if} -->
+					<div class="flex items-center justify-start gap-2 pb-4 cursor-pointer">
+						<input
+							type="checkbox"
+							class="toggle toggle-xs bg-primary"
+							bind:checked={pref.sort}
+							on:change={updatePrefs}
+						/>
+						<p class="text-sm">
+							Sort by: <span class="font-bold">
+								{pref.sort ? 'Recent' : 'Added'}
+							</span>
+						</p>
+					</div>
 					{#if pref.tiles}
 						<div
 							id="list-cont"
