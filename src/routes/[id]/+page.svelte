@@ -433,8 +433,7 @@
 				<div role="tablist" class="gap-4 tabs tabs-lifted tabs-xs">
 					{#each viewerTabOptions as option}
 						<a
-							class="tab"
-							class:unselected={viewerTab !== option.value}
+							class="border rounded-t-lg opacity-75 tab border-secondary-focus hover:text-secondary-focus hover:opacity-100"
 							class:active={viewerTab === option.value}
 							on:click={() => changeViewerTab(option)}
 							href={''}
@@ -444,125 +443,135 @@
 					{/each}
 				</div>
 			</div>
-			{#if viewerImages?.length > 0}
+			{#if viewerImages}
 				<!-- {@const viewerImages = getViewerImages(viewerTab)} -->
 				<div id="list-container" class="w-full p-4 border border-secondary" transition:fly>
-					{#if viewerTab !== 0}
-						<button
-							class="mb-10 transition-all border w-fit border-warning btn-outline btn-warning btn-xs"
-							on:click={() => {
-								clear(viewerTabOptions[viewerTab].name.toLowerCase())
-							}}
+					<!-- {#if viewerTab !== 0} -->
+					<!-- <button
+						class="mb-10 transition-all border w-fit border-warning btn-outline btn-warning btn-xs"
+						on:click={() => {
+							clear(viewerTabOptions[viewerTab].name.toLowerCase())
+						}}
+					>
+						<span class="">
+							Clear all {viewerTabOptions[viewerTab].name} selections
+						</span>
+					</button> -->
+					<!-- {:else} -->
+					<div id="add-images" class="mb-8">
+						<div
+							class="flex flex-row items-center justify-start gap-8 p-4 min-h-8 rounded-t-xl tabs bg-neutral-focus"
+							class:rounded-b-xl={!showAdd}
 						>
-							<span class="">
-								Clear all {viewerTabOptions[viewerTab].name} selections
-							</span>
-						</button>
-					{:else}
-						<div id="add-images" class="mb-8">
-							<div
-								class="flex flex-row items-center justify-start gap-4 px-8 min-h-8 rounded-t-xl tabs bg-neutral-focus"
-								class:rounded-b-xl={!showAdd}
+							<button
+								class="w-48 transition-all btn btn-xs btn-neutral"
+								on:click={() => {
+									clear(viewerTabOptions[viewerTab].name.toLowerCase())
+								}}
+								disabled={viewerTab === 0}
+								class:disable-clear={viewerTab === 0}
 							>
-								<button
-									class=" btn btn-xs btn-neutral"
-									on:click={() => (showAdd = !showAdd)}
-								>
-									<span class="text-gray-200">Add Images...</span>
-								</button>
-								{#if showAdd}
-									<a
-										class="tab"
-										class:active={tab === 0}
-										on:click={() => (tab = 0)}
-										href={''}
-									>
-										Just One
-									</a>
-									<a
-										class="tab"
-										class:active={tab === 1}
-										on:click={() => (tab = 1)}
-										href={''}
-									>
-										Many
-									</a>
-									<!-- <a class="tab" class:active={tab === 2} on:click={() => (tab = 2)} href={''}> from Google Drive </a> -->
-								{/if}
-							</div>
-							{#if showAdd}
-								<div
-									class="w-full rounded-t-none shadow-xl card bg-neutral"
-									transition:fly={{ y: -10 }}
-									class:h-0={!showAdd}
-								>
-									<div class="card-body">
-										{#if tab === 0}
-											<div
-												class="flex items-center justify-start gap-2"
-												in:fly
-											>
-												<input
-													type="title"
-													placeholder="Title (optional)"
-													class="w-full max-w-xs input-sm input input-bordered input-neutral"
-													bind:value={newImg.title}
-												/>
-												<input
-													type="url"
-													placeholder="Image URL"
-													class="w-full max-w-xs input-sm input input-bordered input-neutral"
-													bind:value={newImg.url}
-												/>
-
-												<button
-													class="btn btn-primary btn-sm"
-													disabled={!urlValid}
-													on:click={() => addOne(newImg)}
-												>
-													Add One
-												</button>
-											</div>
-										{:else if tab === 1}
-											<div class="flex flex-col gap-4" in:fly>
-												<div class="">
-													<p class="">
-														Enter a list, one per line (title optional):
-													</p>
-													<pre
-														data-prefix=""
-														class="p-1 mt-2 text-sm bg-black border rounded-lg border-cyan-900 w-fit"><code> <span
-																class="font-bold">URL, Title</span
-															> </code></pre>
-												</div>
-												<textarea
-													rows="5"
-													class="textarea textarea-bordered"
-													placeholder=""
-													bind:value={many}
-												/>
-												<button
-													class="self-end btn btn-primary btn-sm"
-													disabled={manyFiltered.length === 0}
-													on:click={addMany}
-												>
-													Add Many
-												</button>
-											</div>
-										{:else if tab === 2}
-											<!--  -->
-										{/if}
-										<p class="">
-											<span class="font-bold">Image URL</span> should have a file
-											extension (.jpg, .png, etc.) and be a direct link to the
-											image. If you're using Google Drive, make sure the link is
-											public.
-										</p>
-									</div>
-								</div>
-							{/if}
+								<span class="text-neutral-content">
+									Clear {viewerTabOptions[viewerTab].name} selections
+								</span>
+							</button>
+							<button
+								class=" btn btn-xs btn-neutral"
+								on:click={() => (showAdd = !showAdd)}
+							>
+								<span class="text-neutral-content">
+									{showAdd ? 'Cancel' : 'Add Images'}
+									{#if showAdd}
+										<a
+											class="tab"
+											class:active={tab === 0}
+											on:click={() => (tab = 0)}
+											href={''}
+										>
+											Just One
+										</a>
+										<a
+											class="tab"
+											class:active={tab === 1}
+											on:click={() => (tab = 1)}
+											href={''}
+										>
+											Many
+										</a>
+										<!-- <a class="tab" class:active={tab === 2} on:click={() => (tab = 2)} href={''}> from Google Drive </a> -->
+									{/if}
+								</span></button
+							>
 						</div>
-					{/if}
+						{#if showAdd}
+							<div
+								class="w-full rounded-t-none shadow-xl card bg-neutral"
+								transition:fly={{ y: -10 }}
+								class:h-0={!showAdd}
+							>
+								<div class="card-body">
+									{#if tab === 0}
+										<div class="flex items-center justify-start gap-2" in:fly>
+											<input
+												type="title"
+												placeholder="Title (optional)"
+												class="w-full max-w-xs input-sm input input-bordered input-neutral"
+												bind:value={newImg.title}
+											/>
+											<input
+												type="url"
+												placeholder="Image URL"
+												class="w-full max-w-xs input-sm input input-bordered input-neutral"
+												bind:value={newImg.url}
+											/>
+
+											<button
+												class="btn btn-primary btn-sm"
+												disabled={!urlValid}
+												on:click={() => addOne(newImg)}
+											>
+												Add One
+											</button>
+										</div>
+									{:else if tab === 1}
+										<div class="flex flex-col gap-4" in:fly>
+											<div class="">
+												<p class="">
+													Enter a list, one per line (title optional):
+												</p>
+												<pre
+													data-prefix=""
+													class="p-1 mt-2 text-sm bg-black border rounded-lg border-cyan-900 w-fit"><code> <span
+															class="font-bold">URL, Title</span
+														> </code></pre>
+											</div>
+											<textarea
+												rows="5"
+												class="textarea textarea-bordered"
+												placeholder=""
+												bind:value={many}
+											/>
+											<button
+												class="self-end btn btn-primary btn-sm"
+												disabled={manyFiltered.length === 0}
+												on:click={addMany}
+											>
+												Add Many
+											</button>
+										</div>
+									{:else if tab === 2}
+										<!--  -->
+									{/if}
+									<p class="">
+										<span class="font-bold">Image URL</span> should have a file extension
+										(.jpg, .png, etc.) and be a direct link to the image. If you're
+										using Google Drive, make sure the link is public.
+									</p>
+								</div>
+							</div>
+						{/if}
+					</div>
+					<!-- {/if} -->
 					{#if pref.tiles}
 						<div
 							id="list-cont"
@@ -575,8 +584,8 @@
 								<span
 									id="list-tiles"
 									class="flex flex-col p-4 border bg-stone-800 border-stone-600"
-									transition:fly={{ x: -20 }}
 								>
+									<!-- transition:fly|local={{ x: -20 }} -->
 									<div class="flex justify-between">
 										<br />
 										<button
@@ -804,9 +813,14 @@
 		@apply text-gray-800;
 	}
 	.unselected {
-		@apply hover:bg-neutral-focus bg-neutral text-neutral-content rounded-t-lg transition-opacity;
+		@apply hover:bg-neutral-focus bg-neutral text-primary-content rounded-t-lg transition-opacity border-none opacity-75 hover:opacity-100;
+		/* @apply btn-outline rounded-t-lg; */
 	}
 	.active {
-		@apply bg-secondary-focus tab-active rounded-t-lg text-secondary-content;
+		@apply bg-secondary-focus tab-active rounded-t-lg text-secondary-content border-none opacity-100;
+	}
+
+	.disable-clear {
+		@apply pointer-events-none opacity-50;
 	}
 </style>
