@@ -153,6 +153,8 @@
 				}
 			})
 		}
+		image.index = Date.now()
+
 		updateDoc(doc(db, 'viewers', $dbUser?.uid, 'images', image.id), image).then(() => {
 			getImages()
 		})
@@ -193,10 +195,8 @@
 	const setGalleryItem = (image: Image) => {
 		if (image.gallery) {
 			image.gallery = false
-			image.index = 0
 		} else {
 			image.gallery = true
-			image.index = Date.now()
 		}
 		return parameter(image)
 	}
@@ -256,6 +256,7 @@
 		if (images[idx].width) return
 		images[idx].width = e.target.naturalWidth
 		images[idx].height = e.target.naturalHeight
+
 		updateDoc(doc(db, 'viewers', $dbUser?.uid, 'images', images[idx].id), images[idx])
 	}
 
@@ -288,7 +289,6 @@
 		viewerImages = []
 
 	function changeViewerTab(tab) {
-		console.log(`LOG..+page: tab`, tab)
 		viewerTab = tab?.value ?? 0
 
 		if (viewerTab === 0) viewerImages = [...images]
@@ -303,13 +303,26 @@
 	const imageFave = (image, idx) => {
 		if (pref.favorites.includes(image.id)) {
 			pref.favorites = pref.favorites.filter(id => id !== image.id)
-		} else pref = { ...pref, favorites: [...pref.favorites, image.id] }
+		} else {
+			throbId = image.id
+			throb = true
+			pref = { ...pref, favorites: [...pref.favorites, image.id] }
+		}
 		updatePrefs()
 	}
 
 	$: pref.sort
 		? (viewerImages = [...viewerImages].sort((a, b) => b.added - a.added))
 		: (viewerImages = [...viewerImages].sort((a, b) => b.index - a.index))
+
+	let throbId
+	$: if (throb) {
+		setTimeout(() => {
+			throb = false
+		}, 100)
+	}
+
+	let throb = false
 </script>
 
 <svelte:window
@@ -606,7 +619,7 @@
 						/>
 						<p class="text-sm">
 							Sort by: <span class="font-bold">
-								{pref.sort ? 'Recent' : 'Added'}
+								{pref.sort ? 'Added' : 'Recent'}
 							</span>
 						</p>
 					</div>
@@ -625,11 +638,23 @@
 								>
 									<!-- transition:fly|local={{ x: -20 }} -->
 									<div class="flex justify-between">
-										<button class="" on:click={() => imageFave(image, idx)}>
+										<button
+											class="relative"
+											on:click={() => imageFave(image, idx)}
+										>
 											{#if pref.favorites?.includes(image.id)}
-												<p class="">❤️</p>
+												<p class="z-10">❤️</p>
+												{#if throbId === image.id}
+													<p
+														class="absolute left-0 z-0 top-1"
+														class:throbOn={throb}
+														class:throbOff={!throb}
+													>
+														🩷
+													</p>
+												{/if}
 											{:else}
-												<p class="">🖤</p>
+												<p class="z-10">🖤</p>
 											{/if}
 										</button>
 										<button
@@ -861,10 +886,18 @@
 		/* @apply btn-outline rounded-t-lg; */
 	}
 	.active {
-		@apply bg-secondary-focus tab-active rounded-t-lg text-secondary-content border-none opacity-100;
+		@apply bg-secondary-focus tab-active rounded-t-lg text-secondary-content hover:text-secondary-content border-none opacity-100;
 	}
 
 	.disable-clear {
 		@apply pointer-events-none opacity-50;
+	}
+
+	.throbOn {
+		@apply scale-100 opacity-100;
+	}
+
+	.throbOff {
+		@apply scale-[200%] opacity-0 transition-all duration-[1000ms] ease-out;
 	}
 </style>
