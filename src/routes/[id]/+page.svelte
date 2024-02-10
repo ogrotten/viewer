@@ -769,35 +769,49 @@
 								<li
 									class="relative flex flex-row items-center gap-4 p-2 border-t border-stone-700"
 								>
-									<button
-										class="p-1 transition-all hover:bg-blue-600"
-										class:bg-blue-700={showTitleEdit === idx}
-										on:click={() => {
-											showTitleEdit === -1
-												? (showTitleEdit = idx)
-												: (showTitleEdit = -1)
-										}}>✏️</button
-									>
+									<button class="relative" on:click={() => imageFave(image, idx)}>
+										{#if pref.favorites?.includes(image.id)}
+											<p class="z-10">❤️</p>
+											{#if throbId === image.id}
+												<p
+													class="absolute left-0 z-0 top-1"
+													class:throbOn={throb}
+													class:throbOff={!throb}
+												>
+													🩷
+												</p>
+											{/if}
+										{:else}
+											<p class="z-10">🖤</p>
+										{/if}
+									</button>
 									{#if showTitleEdit !== idx}
-										<a
-											href={image.url}
-											class="flex flex-row items-center gap-2"
-											target="_blank"
-										>
-											<img
-												src={url}
-												alt="image"
-												class="object-cover object-top w-8 h-8 rounded"
-												on:mouseenter={() => {
-													showHover = idx
-												}}
-												on:mouseout={() => {
-													showHover = -1
-												}}
-												on:load={e => updateImage({ e, idx })}
-											/>
+										<span class="flex flex-row items-center gap-2">
+											<a href={image.url} class="" target="_blank">
+												<img
+													src={url}
+													alt="image"
+													class="object-cover object-top w-8 h-8 rounded"
+													on:mouseenter={() => {
+														showHover = idx
+													}}
+													on:mouseout={() => {
+														showHover = -1
+													}}
+													on:load={e => updateImage({ e, idx })}
+												/>
+											</a>
+											<button
+												class="p-1 transition-all opacity-50 hover:opacity-100"
+												class:bg-blue-700={showTitleEdit === idx}
+												on:click={() => {
+													showTitleEdit === -1
+														? (showTitleEdit = idx)
+														: (showTitleEdit = -1)
+												}}>✏️</button
+											>
 											<p class="w-28 font-md">{image.title || ''}</p>
-										</a>
+										</span>
 									{:else}
 										<span class="flex flex-row items-center gap-2">
 											<img
@@ -806,6 +820,14 @@
 												class="object-cover object-top w-8 h-8 rounded"
 												on:load={e => updateImage({ e, idx })}
 											/>
+											<button
+												class="w-8 h-8 p-1 transition-all opacity-50 hover:opacity-100"
+												on:click={() => {
+													showTitleEdit === -1
+														? (showTitleEdit = idx)
+														: (showTitleEdit = -1)
+												}}>✅</button
+											>
 											<form on:submit={() => titleEdit(image)} class="">
 												<input
 													autofocus
