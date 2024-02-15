@@ -784,12 +784,12 @@
 						<!-- svelte-ignore a11y-mouse-events-have-key-events -->
 						<ul
 							id="list-list"
-							class="flex flex-wrap justify-start divide-y divide-stone-700 gap-x-12"
+							class="flex flex-wrap justify-start gap-6 divide-stone-700"
 						>
 							{#each viewerImages as image, idx (image.id)}
 								{@const url = debug ? 'https://dummyimage.com/32' : image.url}
 								<li
-									class="relative flex flex-row items-center gap-4 p-2 border-t border-stone-700"
+									class="relative flex flex-row items-center w-[540px] gap-4 p-2 border border-stone-700"
 								>
 									<button class="relative" on:click={() => imageFave(image, idx)}>
 										{#if pref.favorites?.includes(image.id)}

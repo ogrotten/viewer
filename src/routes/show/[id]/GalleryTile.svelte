@@ -163,17 +163,19 @@
 		const el = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
 		const item = mu?.getItem(el[0])
 
+		item.getElement().classList.repl
+
 		if (changed.added) mu?.show([item])
-		else mu?.hide([item])
+		else {
+			mu?.hide([item])
+		}
 
 		changed = null
+		mu.refreshItems(mu.getItems(), true)
+		mu.layout()
 	}
 
-	$: if (changed) {
-		setItemVis()
-	}
-
-	$: if (orient && mu) {
+	$: if ((orient || changed) && mu) {
 		const elements = mu.getItems().map(i => i.getElement())
 		elements.forEach((outer: HTMLDivElement) => {
 			const inner = outer.children as HTMLCollectionOf<HTMLDivElement>
@@ -183,9 +185,13 @@
 			setOrient(fromImages, outer, img)
 		})
 
+		if (changed?.id) setItemVis()
 		mu.refreshItems(mu.getItems(), true)
 		mu.layout()
 	}
+
+	// $: if (orient && mu) {
+	// }
 </script>
 
 <div class="" transition:fade>

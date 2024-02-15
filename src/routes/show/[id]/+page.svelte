@@ -379,9 +379,14 @@
 		<div
 			id="carousel"
 			class=""
-			transition:fade={{
+			in:fade={{
 				delay: 0,
 				duration: 3000,
+				easing: cubicInOut,
+			}}
+			out:fade={{
+				delay: 0,
+				duration: 300,
 				easing: cubicInOut,
 			}}
 		>
