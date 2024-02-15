@@ -14,9 +14,10 @@
 		gallery: Image[] = [],
 		presentGallery: Image[] = [],
 		changed = null,
-		attach
+		attach,
+		changedBool = false
 
-	export let changedBool = false
+	export let orient, tile
 
 	let images: HTMLDivElement[] = [],
 		imagesAll: HTMLDivElement[] = [],
@@ -62,10 +63,7 @@
 		}
 
 		outer.setAttribute('data-muuri-id', incoming.id)
-
-		const w: number = incoming.width as number
-		const h: number = incoming.height as number
-		const ratio = w / h
+		outer.setAttribute('title', incoming.title)
 
 		// const scratio = size / Math.max(w, h)
 		// outer.style.width = `${w * scratio}px`
@@ -73,31 +71,62 @@
 		// outer.style.height = `${h * scratio}px`
 		// img.style.height = `${h * scratio}px`
 
-		if (ratio > 1.25) {
-			// wide
-			outer.style.width = `${size * 2}px`
-			img.style.width = `${size * 2}px`
-			outer.style.height = `${size}px`
-			img.style.height = `${size}px`
-		} else if (ratio < 0.75) {
-			// tall
-			outer.style.width = `${size}px`
-			img.style.width = `${size}px`
-			outer.style.height = `${size * 2}px`
-			img.style.height = `${size * 2}px`
-		} else {
-			// square
-			outer.style.width = `${size}px`
-			img.style.width = `${size}px`
-			outer.style.height = `${size}px`
-			img.style.height = `${size}px`
-		}
+		setOrient(incoming, outer, img)
+
 		if (incoming.title)
 			img.innerHTML = `<div class="absolute bottom-0 right-0 p-1 text-xl font-bold text-white bg-black bg-opacity-50">${incoming.title}</div>`
 		inner.appendChild(img)
 		outer.appendChild(inner)
 
 		return outer
+	}
+
+	const setOrient = (incoming, outer, img) => {
+		const w: number = incoming.width as number
+		const h: number = incoming.height as number
+		const ratio = w / h
+
+		let dimensions = { width: w, height: h }
+
+		switch (orient) {
+			case 'grid':
+				if (ratio > 1.25) {
+					// wide
+					dimensions.width = size * 2
+					dimensions.height = size
+				} else if (ratio < 0.75) {
+					// tall
+					dimensions.width = size
+					dimensions.height = size * 2
+				} else {
+					// square
+					dimensions.width = size
+					dimensions.height = size
+				}
+				break
+			case 'square':
+				dimensions.width = size
+				dimensions.height = size
+				break
+			case 'wide':
+				dimensions.width = tile.FWD
+				dimensions.height = tile.FHT / presentGallery.length
+				break
+			case 'tall':
+				dimensions.width = tile.FWD / presentGallery.length
+				dimensions.height = tile.FHT
+				break
+			default:
+				dimensions.width = w
+				dimensions.height = h
+
+				break
+		}
+
+		outer.style.width = `${dimensions.width}px`
+		img.style.width = `${dimensions.width}px`
+		outer.style.height = `${dimensions.height}px`
+		img.style.height = `${dimensions.height}px`
 	}
 
 	const initLayout = async incoming => {
@@ -134,41 +163,35 @@
 		const el = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
 		const item = mu?.getItem(el[0])
 
+		item.getElement().classList.repl
+
 		if (changed.added) mu?.show([item])
-		else mu?.hide([item])
+		else {
+			mu?.hide([item])
+		}
 
 		changed = null
+		mu.refreshItems(mu.getItems(), true)
+		mu.layout()
 	}
 
-	$: if (changed) {
-		setItemVis()
+	$: if ((orient || changed) && mu) {
+		const elements = mu.getItems().map(i => i.getElement())
+		elements.forEach((outer: HTMLDivElement) => {
+			const inner = outer.children as HTMLCollectionOf<HTMLDivElement>
+			const img = inner[0].children[0] as HTMLImageElement
+			const fromImages = galleryAll.find(i => i.id === outer.getAttribute('data-muuri-id'))
+			console.log(`LOG..GalleryTile: `)
+			setOrient(fromImages, outer, img)
+		})
+
+		if (changed?.id) setItemVis()
+		mu.refreshItems(mu.getItems(), true)
+		mu.layout()
 	}
 
-	/* $: if (changedBool && mu) {
-		const toShow = gallery?.filter(item => item.gallery).map(item => item.id)
-		mu?.filter(item => toShow.includes(item.getElement().getAttribute('data-muuri-id')))
-		changedBool = false
-
-		// const toShow = gallery?.filter(item => item.gallery).map(item => item.id)
-
-		// mu?.getItems.forEach(item => {
-		// 	mu.hide([item])
-		// 	if (toShow.includes(item.getElement().getAttribute('data-muuri-id'))) mu.show([item])
-		// })
-		// changedBool = false
-	} */
-
-	// $: if (presentGallery.length === 0) {
-	// 	console.log(`LOG..GalleryTile: presentGallery.length`, presentGallery.length)
-	// 	mu?.getItems().forEach(i => mu.hide([i]))
+	// $: if (orient && mu) {
 	// }
-
-	// $: console.log(`\nLOG..+page: COUNTS`, {
-	// 	items: mu?.getItems().length,
-	// 	gal: gallery.length,
-	// 	PGal: presentGallery?.length,
-	// 	visible: mu?.getItems().filter(i => i.isVisible()).length,
-	// })
 </script>
 
 <div class="" transition:fade>
@@ -178,14 +201,14 @@
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<div class="m-auto">
 			<div class="hidden">
-				<div bind:this={itemDiv} class="item">
-					<div bind:this={itemContentDiv} class="item-content">
+				<div bind:this={itemDiv} class="item" id="outer">
+					<div bind:this={itemContentDiv} class="item-content" id="inner">
 						<!--  -->
 					</div>
 				</div>
 				<div
 					bind:this={imgBase}
-					id="brickitem"
+					id="img"
 					class="transition-all bg-center bg-no-repeat bg-cover border-2 border-black hover:scale-95"
 				>
 					<!--  -->
