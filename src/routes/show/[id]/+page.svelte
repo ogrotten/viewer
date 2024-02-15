@@ -197,6 +197,8 @@
 			}
 		})
 	}
+
+	$: console.log(`LOG..+page: viewer`, viewer)
 </script>
 
 <div class="">
@@ -228,7 +230,7 @@
 				}}
 				out:fadeScale={{
 					delay: 0,
-					duration: 2000,
+					duration: 500,
 					easing: cubicIn,
 					baseScale: 0.85,
 				}}
