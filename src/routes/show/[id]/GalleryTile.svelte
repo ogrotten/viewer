@@ -89,7 +89,7 @@
 		let dimensions = { width: w, height: h }
 
 		switch (orient) {
-			case 'masonry':
+			case 'grid':
 				if (ratio > 1.25) {
 					// wide
 					dimensions.width = size * 2
@@ -104,17 +104,17 @@
 					dimensions.height = size
 				}
 				break
-			case 'portrait':
-				dimensions.width = tile.FWD / presentGallery.length
-				dimensions.height = tile.FHT
-				break
-			case 'landscape':
-				dimensions.width = tile.FWD
-				dimensions.height = tile.FHT / presentGallery.length
-				break
 			case 'square':
 				dimensions.width = size
 				dimensions.height = size
+				break
+			case 'wide':
+				dimensions.width = tile.FWD
+				dimensions.height = tile.FHT / presentGallery.length
+				break
+			case 'tall':
+				dimensions.width = tile.FWD / presentGallery.length
+				dimensions.height = tile.FHT
 				break
 			default:
 				dimensions.width = w

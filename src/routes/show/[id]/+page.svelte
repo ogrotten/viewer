@@ -14,9 +14,6 @@
 		type DocumentData,
 	} from 'firebase/firestore'
 	import { db } from '$lib/firebase'
-	import { dbUser } from '$lib/firestore'
-	import Masonry from 'svelte-bricks'
-	import { flip } from 'svelte/animate'
 	import GalleryTile from './GalleryTile.svelte'
 	import type { PageData } from './$types'
 
@@ -69,7 +66,7 @@
 	let changed: Changed | null = null
 	let changedBool = false
 
-	let orient: Orient = 'masonry'
+	let orient: Orient = 'grid'
 	$: orient = viewer.orient
 
 	async function setup(incoming: string) {

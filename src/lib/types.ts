@@ -32,4 +32,4 @@ interface UserPref {
 	tiles: boolean
 }
 
-type Orient = 'masonry' | 'square' | 'landscape' | 'portrait'
+type Orient = 'grid' | 'square' | 'wide' | 'tall'
