@@ -66,8 +66,11 @@
 		FWD: 0,
 	}
 
+	$: console.log(`LOG..+page: viewer`, viewer.orient)
 	let changed: Changed | null = null
 	let changedBool = false
+
+	let orient: Orient = 'masonry'
 
 	async function setup(incoming: string) {
 		unsubViewer = onSnapshot(doc(db, 'viewers', incoming), doc => {
@@ -330,6 +333,7 @@
 					{gallery}
 					{attach}
 					{galleryAll}
+					{orient}
 					bind:changedBool
 					bind:changed
 					on:localNow={({ detail }) => {

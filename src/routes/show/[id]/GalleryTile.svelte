@@ -14,9 +14,10 @@
 		gallery: Image[] = [],
 		presentGallery: Image[] = [],
 		changed = null,
-		attach
+		attach,
+		changedBool = false
 
-	export let changedBool = false
+	export let orient
 
 	let images: HTMLDivElement[] = [],
 		imagesAll: HTMLDivElement[] = [],
@@ -162,14 +163,14 @@
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<div class="m-auto">
 			<div class="hidden">
-				<div bind:this={itemDiv} class="item">
-					<div bind:this={itemContentDiv} class="item-content">
+				<div bind:this={itemDiv} class="item" id="outer">
+					<div bind:this={itemContentDiv} class="item-content" id="inner">
 						<!--  -->
 					</div>
 				</div>
 				<div
 					bind:this={imgBase}
-					id="brickitem"
+					id="img"
 					class="transition-all bg-center bg-no-repeat bg-cover border-2 border-black hover:scale-95"
 				>
 					<!--  -->

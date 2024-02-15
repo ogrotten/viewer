@@ -48,9 +48,17 @@
 		manyFiltered: Image[],
 		google = ''
 
-	let show = { gallery: false, now: false, carousel: false, galleryTile: false },
+	let show = {
+			gallery: false,
+			now: false,
+			carousel: false,
+			galleryTile: false,
+			orient: 'masonry',
+		},
 		tab = 1,
 		disableNow = false
+
+	let orientOptions = ['masonry', 'square', 'landscape', 'portrait']
 
 	let allusers: User[] = [],
 		viewerId: string
@@ -162,7 +170,8 @@
 
 	function updateShow(e: Event & { target: HTMLButtonElement }) {
 		const { name } = e.target
-		show[name] = !show[name]
+		if (name === 'orient') show[name] = e.target.value
+		else show[name] = !show[name]
 		updateDoc(doc(db, 'viewers', $dbUser?.uid), { [name]: show[name] })
 	}
 
@@ -385,7 +394,20 @@
 					Gallery
 				</button>
 				<div class="form-control">
-					<label class="flex items-center justify-center gap-2 cursor-pointer label">
+					<div class="join">
+						{#each orientOptions as option}
+							<button
+								class="btn btn-xs join-item btn-outline btn-secondary"
+								name="orient"
+								class:btn-accent={show.orient === option}
+								on:click={updateShow}
+								value={option}
+							>
+								{option}
+							</button>
+						{/each}
+					</div>
+					<!-- <label class="flex items-center justify-center gap-2 cursor-pointer label">
 						<input
 							name="galleryTile"
 							id="galleryTile"
@@ -395,7 +417,7 @@
 							on:click={updateShow}
 						/>
 						<span class="font-semibold">Tile</span>
-					</label>
+					</label> -->
 				</div>
 			</span>
 			<button
