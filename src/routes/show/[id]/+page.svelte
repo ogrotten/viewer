@@ -66,15 +66,15 @@
 		FWD: 0,
 	}
 
-	$: console.log(`LOG..+page: viewer`, viewer.orient)
 	let changed: Changed | null = null
 	let changedBool = false
 
 	let orient: Orient = 'masonry'
+	$: orient = viewer.orient
 
 	async function setup(incoming: string) {
 		unsubViewer = onSnapshot(doc(db, 'viewers', incoming), doc => {
-			viewer = doc.data()
+			viewer = doc.data() as DocumentData
 			showGallery = viewer.gallery
 			galleryTile = viewer.galleryTile
 			showNow = viewer.now
@@ -199,27 +199,6 @@
 				connect = ''
 			}
 		})
-	}
-
-	const setChange = () => {
-		let galleryIds = gallery.map(x => x.id)
-		let presentGalleryIds = presentGallery.map(x => x.id)
-
-		if (presentGallery?.length !== 0) {
-			if (gallery?.length < presentGallery?.length && !loading) {
-				let removed = presentGallery.filter(x => !galleryIds.includes(x.id))[0]
-				presentGallery
-					.splice(presentGallery.indexOf(removed), 1)
-					.sort((a, b) => b.index - a.index)
-				changed = { id: removed.id, added: false }
-			} else if (gallery?.length > presentGallery?.length && !loading) {
-				let added = gallery.filter(x => !presentGalleryIds.includes(x.id))[0]
-				presentGallery = [...gallery]
-				changed = { id: added.id, added: true }
-			} else {
-				changed = null
-			}
-		} else presentGallery = [...gallery]
 	}
 </script>
 

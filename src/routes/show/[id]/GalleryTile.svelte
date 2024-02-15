@@ -65,41 +65,64 @@
 		outer.setAttribute('data-muuri-id', incoming.id)
 		outer.setAttribute('title', incoming.title)
 
-		const w: number = incoming.width as number
-		const h: number = incoming.height as number
-		const ratio = w / h
-
 		// const scratio = size / Math.max(w, h)
 		// outer.style.width = `${w * scratio}px`
 		// img.style.width = `${w * scratio}px`
 		// outer.style.height = `${h * scratio}px`
 		// img.style.height = `${h * scratio}px`
 
-		if (ratio > 1.25) {
-			// wide
-			outer.style.width = `${size * 2}px`
-			img.style.width = `${size * 2}px`
-			outer.style.height = `${size}px`
-			img.style.height = `${size}px`
-		} else if (ratio < 0.75) {
-			// tall
-			outer.style.width = `${size}px`
-			img.style.width = `${size}px`
-			outer.style.height = `${size * 2}px`
-			img.style.height = `${size * 2}px`
-		} else {
-			// square
-			outer.style.width = `${size}px`
-			img.style.width = `${size}px`
-			outer.style.height = `${size}px`
-			img.style.height = `${size}px`
-		}
+		setOrient(incoming, outer, img)
+
 		if (incoming.title)
 			img.innerHTML = `<div class="absolute bottom-0 right-0 p-1 text-xl font-bold text-white bg-black bg-opacity-50">${incoming.title}</div>`
 		inner.appendChild(img)
 		outer.appendChild(inner)
 
 		return outer
+	}
+
+	const setOrient = (incoming, outer, img) => {
+		const w: number = incoming.width as number
+		const h: number = incoming.height as number
+		const ratio = w / h
+		const portrait = { w, h: size }
+		const landscape = { w: size, h: size * 2 }
+
+		switch (orient) {
+			case 'masonry':
+				if (ratio > 1.25) {
+					// wide
+					outer.style.width = `${size * 2}px`
+					img.style.width = `${size * 2}px`
+					outer.style.height = `${size}px`
+					img.style.height = `${size}px`
+				} else if (ratio < 0.75) {
+					// tall
+					outer.style.width = `${size}px`
+					img.style.width = `${size}px`
+					outer.style.height = `${size * 2}px`
+					img.style.height = `${size * 2}px`
+				} else {
+					// square
+					outer.style.width = `${size}px`
+					img.style.width = `${size}px`
+					outer.style.height = `${size}px`
+					img.style.height = `${size}px`
+				}
+				break
+			case 'portrait':
+				outer.style.width = `${size * 2}px`
+				img.style.width = `${size * 2}px`
+				outer.style.height = `${size}px`
+				img.style.height = `${size}px`
+				break
+			case 'landscape':
+				break
+			case 'square':
+				break
+			default:
+				break
+		}
 	}
 
 	const initLayout = async incoming => {
@@ -146,13 +169,18 @@
 		setItemVis()
 	}
 
-	$: if (mu) {
+	$: if (orient && mu) {
 		const elements = mu.getItems().map(i => i.getElement())
 		elements.forEach((outer: HTMLDivElement) => {
 			const inner = outer.children as HTMLCollectionOf<HTMLDivElement>
 			const img = inner[0].children[0] as HTMLImageElement
+			const fromImages = galleryAll.find(i => i.id === outer.getAttribute('data-muuri-id'))
 			console.log(`LOG..GalleryTile: `)
+			setOrient(fromImages, outer, img)
 		})
+
+		mu.refreshItems(mu.getItems(), true)
+		mu.layout()
 	}
 </script>
 
