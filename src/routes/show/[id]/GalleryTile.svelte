@@ -62,6 +62,7 @@
 		}
 
 		outer.setAttribute('data-muuri-id', incoming.id)
+		outer.setAttribute('title', incoming.title)
 
 		const w: number = incoming.width as number
 		const h: number = incoming.height as number
@@ -144,31 +145,14 @@
 		setItemVis()
 	}
 
-	/* $: if (changedBool && mu) {
-		const toShow = gallery?.filter(item => item.gallery).map(item => item.id)
-		mu?.filter(item => toShow.includes(item.getElement().getAttribute('data-muuri-id')))
-		changedBool = false
-
-		// const toShow = gallery?.filter(item => item.gallery).map(item => item.id)
-
-		// mu?.getItems.forEach(item => {
-		// 	mu.hide([item])
-		// 	if (toShow.includes(item.getElement().getAttribute('data-muuri-id'))) mu.show([item])
-		// })
-		// changedBool = false
-	} */
-
-	// $: if (presentGallery.length === 0) {
-	// 	console.log(`LOG..GalleryTile: presentGallery.length`, presentGallery.length)
-	// 	mu?.getItems().forEach(i => mu.hide([i]))
-	// }
-
-	// $: console.log(`\nLOG..+page: COUNTS`, {
-	// 	items: mu?.getItems().length,
-	// 	gal: gallery.length,
-	// 	PGal: presentGallery?.length,
-	// 	visible: mu?.getItems().filter(i => i.isVisible()).length,
-	// })
+	$: if (mu) {
+		const elements = mu.getItems().map(i => i.getElement())
+		elements.forEach((outer: HTMLDivElement) => {
+			const inner = outer.children as HTMLCollectionOf<HTMLDivElement>
+			const img = inner[0].children[0] as HTMLImageElement
+			console.log(`LOG..GalleryTile: `)
+		})
+	}
 </script>
 
 <div class="" transition:fade>
