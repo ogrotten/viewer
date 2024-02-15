@@ -383,7 +383,7 @@
 				>
 					Carousel
 				</button>
-				<div class="">
+				<div class="flex flex-col items-center gap-2">
 					<button
 						name="gallery"
 						id="gallery"
@@ -397,9 +397,9 @@
 						<div class="join">
 							{#each orientOptions as option}
 								<button
-									class="btn btn-xs join-item btn-outline btn-secondary"
+									class="btn btn-xs join-item btn-secondary"
 									name="orient"
-									class:btn-accent={show.orient === option}
+									class:btn-outline={show.orient !== option}
 									on:click={updateShow}
 									value={option}
 								>
@@ -592,34 +592,38 @@
 						transition:fly
 					>
 						<!-- {/if} -->
-						<div class="flex items-center justify-start gap-2">
+						<div class="flex items-center justify-start gap-8">
 							<div class="cursor-pointer w">
-								<input
-									type="checkbox"
-									class="toggle toggle-xs bg-primary"
-									bind:checked={pref.sort}
-									on:change={updatePrefs}
-								/>
-								<p class="text-sm">
-									Sort by: <span class="font-bold">
-										{pref.sort ? 'Added' : 'Recent'}
+								<label class="items-center gap-2 cursor-pointer label">
+									<input
+										type="checkbox"
+										class="toggle toggle-xs bg-primary"
+										bind:checked={pref.sort}
+										on:change={updatePrefs}
+									/>
+									<span class="label-text">
+										Sorting by: <span class="font-bold">
+											{pref.sort ? 'Added' : 'Recent'}
+										</span>
 									</span>
-								</p>
+								</label>
 							</div>
-							<div class="flex justify-start w-24">
-								<div class="form-control">
-									<label class="items-center gap-2 cursor-pointer label">
-										<input
-											type="checkbox"
-											class="toggle toggle-xs bg-primary"
-											bind:checked={pref.tiles}
-											on:change={updatePrefs}
-										/>
-										<span class="label-text"
-											>{pref.tiles ? 'Tiles' : 'List'}</span
-										>
-									</label>
-								</div>
+							<div class="flex justify-start w-fit">
+								<!-- <div class="form-control"> -->
+								<label class="items-center gap-2 cursor-pointer label">
+									<input
+										type="checkbox"
+										class="toggle toggle-xs bg-primary"
+										bind:checked={pref.tiles}
+										on:change={updatePrefs}
+									/>
+									<span class="label-text">
+										Showing as: <span class="font-bold">
+											{pref.tiles ? 'Tiles' : 'List'}
+										</span>
+									</span>
+								</label>
+								<!-- </div> -->
 							</div>
 						</div>
 						{#if pref.tiles}
