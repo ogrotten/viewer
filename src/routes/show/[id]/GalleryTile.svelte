@@ -85,8 +85,8 @@
 		const w: number = incoming.width as number
 		const h: number = incoming.height as number
 		const ratio = w / h
-		const portrait = { w, h: size }
-		const landscape = { w: size, h: size * 2 }
+		const portrait = { w: w / presentGallery.length, h }
+		const landscape = { w, h: h / presentGallery.length }
 
 		switch (orient) {
 			case 'masonry':
@@ -111,12 +111,16 @@
 				}
 				break
 			case 'portrait':
-				outer.style.width = `${size * 2}px`
-				img.style.width = `${size * 2}px`
-				outer.style.height = `${size}px`
-				img.style.height = `${size}px`
+				outer.style.width = `${portrait.w}px`
+				img.style.width = `${portrait.w}px`
+				outer.style.height = `${portrait.h}px`
+				img.style.height = `${portrait.h}px`
 				break
 			case 'landscape':
+				outer.style.width = `${landscape.w}px`
+				img.style.width = `${landscape.w}px`
+				outer.style.height = `${landscape.h}px`
+				img.style.height = `${landscape.h}px`
 				break
 			case 'square':
 				break
