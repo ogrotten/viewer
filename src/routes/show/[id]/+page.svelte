@@ -58,10 +58,10 @@
 		intervalId
 
 	let tile = {
-		HT: 0,
-		WD: 0,
-		SHT: 0,
-		SWD: 0,
+		// HT: 0,
+		// WD: 0,
+		// SHT: 0,
+		// SWD: 0,
 		FHT: 0,
 		FWD: 0,
 	}
@@ -161,10 +161,10 @@
 
 	onMount(() => {
 		tile = {
-			HT: Math.floor(window.innerHeight / 1.8),
-			WD: Math.floor(window.innerWidth / 4),
-			SHT: screen.height / 2,
-			SWD: screen.width / 4,
+			// HT: Math.floor(window.innerHeight / 1.8),
+			// WD: Math.floor(window.innerWidth / 4),
+			// SHT: screen.height / 2,
+			// SWD: screen.width / 4,
 			FHT: window.innerHeight,
 			FWD: window.innerWidth,
 		}
@@ -313,6 +313,7 @@
 					{attach}
 					{galleryAll}
 					{orient}
+					{tile}
 					bind:changedBool
 					bind:changed
 					on:localNow={({ detail }) => {

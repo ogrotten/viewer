@@ -17,7 +17,7 @@
 		attach,
 		changedBool = false
 
-	export let orient
+	export let orient, tile
 
 	let images: HTMLDivElement[] = [],
 		imagesAll: HTMLDivElement[] = [],
@@ -85,48 +85,48 @@
 		const w: number = incoming.width as number
 		const h: number = incoming.height as number
 		const ratio = w / h
-		const portrait = { w: w / presentGallery.length, h }
-		const landscape = { w, h: h / presentGallery.length }
+
+		let dimensions = { width: w, height: h }
 
 		switch (orient) {
 			case 'masonry':
 				if (ratio > 1.25) {
 					// wide
-					outer.style.width = `${size * 2}px`
-					img.style.width = `${size * 2}px`
-					outer.style.height = `${size}px`
-					img.style.height = `${size}px`
+					dimensions.width = size * 2
+					dimensions.height = size
 				} else if (ratio < 0.75) {
 					// tall
-					outer.style.width = `${size}px`
-					img.style.width = `${size}px`
-					outer.style.height = `${size * 2}px`
-					img.style.height = `${size * 2}px`
+					dimensions.width = size
+					dimensions.height = size * 2
 				} else {
 					// square
-					outer.style.width = `${size}px`
-					img.style.width = `${size}px`
-					outer.style.height = `${size}px`
-					img.style.height = `${size}px`
+					dimensions.width = size
+					dimensions.height = size
 				}
 				break
 			case 'portrait':
-				outer.style.width = `${portrait.w}px`
-				img.style.width = `${portrait.w}px`
-				outer.style.height = `${portrait.h}px`
-				img.style.height = `${portrait.h}px`
+				dimensions.width = tile.FWD / presentGallery.length
+				dimensions.height = tile.FHT
 				break
 			case 'landscape':
-				outer.style.width = `${landscape.w}px`
-				img.style.width = `${landscape.w}px`
-				outer.style.height = `${landscape.h}px`
-				img.style.height = `${landscape.h}px`
+				dimensions.width = tile.FWD
+				dimensions.height = tile.FHT / presentGallery.length
 				break
 			case 'square':
+				dimensions.width = size
+				dimensions.height = size
 				break
 			default:
+				dimensions.width = w
+				dimensions.height = h
+
 				break
 		}
+
+		outer.style.width = `${dimensions.width}px`
+		img.style.width = `${dimensions.width}px`
+		outer.style.height = `${dimensions.height}px`
+		img.style.height = `${dimensions.height}px`
 	}
 
 	const initLayout = async incoming => {
