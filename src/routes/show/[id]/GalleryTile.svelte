@@ -25,7 +25,9 @@
 		itemDiv: HTMLDivElement,
 		itemContentDiv: HTMLDivElement
 
-	const size = 360
+	let size = 360
+
+	$: size = window.innerWidth / 4
 
 	let Muuri, mu: any
 	onMount(async () => {

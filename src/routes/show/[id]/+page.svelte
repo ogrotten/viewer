@@ -312,6 +312,7 @@
 					{attach}
 					{galleryAll}
 					{orient}
+					{zoom}
 					{tile}
 					bind:changedBool
 					bind:changed
