@@ -15,7 +15,8 @@
 		presentGallery: Image[] = [],
 		changed = null,
 		attach,
-		changedBool = false
+		changedBool = false,
+		zoom = 8
 
 	export let orient, tile
 
@@ -27,7 +28,7 @@
 
 	let size = 360
 
-	$: size = window.innerWidth / 4
+	$: size = window.innerWidth / zoom
 
 	let Muuri, mu: any
 	onMount(async () => {
@@ -177,7 +178,7 @@
 		mu.layout()
 	}
 
-	$: if ((orient || changed) && mu) {
+	$: if ((orient || changed || zoom) && mu) {
 		const elements = mu.getItems().map(i => i.getElement())
 		elements.forEach((outer: HTMLDivElement) => {
 			const inner = outer.children as HTMLCollectionOf<HTMLDivElement>

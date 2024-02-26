@@ -30,7 +30,8 @@
 		unsubViewer,
 		showGallery = false,
 		showNow = false,
-		galleryTile = false
+		galleryTile = false,
+		zoom = 8
 
 	let gallery: Image[] = [],
 		now: Image[],
@@ -76,6 +77,7 @@
 			galleryTile = viewer.galleryTile
 			showNow = viewer.now
 			showCarousel = viewer.carousel
+			zoom = viewer.zoom
 		})
 
 		const c = query(

@@ -341,7 +341,7 @@
 	}
 
 	$: console.log(`LOG..+page: zoomRange?.current`, zoomRange.outgoing)
-	const zoom = e => {
+	const changeZoom = e => {
 		zoomRange.outgoing = zoomRange.max - e.target.value + zoomRange.min
 		updateShow(e)
 	}
@@ -423,15 +423,13 @@
 					</div>
 					<div class="flex flex-col w-full gap-1">
 						<div class="flex items-center justify-between">
+							<p class="scale-50 label-text">🟩</p>
 							<p class="scale-75 label-text">🟩</p>
-							<p class="scale-75 label-text">•</p>
-							<p class="scale-75 label-text">•</p>
-							<p class="scale-75 label-text">•</p>
-							<p class="label-text">Zoom</p>
-							<p class="scale-75 label-text">•</p>
-							<p class="scale-75 label-text">•</p>
-							<p class="scale-75 label-text">•</p>
+							<!-- <p class="scale-100 label-text">🟩</p>
+							<p class="label-text">Zoom</p> -->
+							<p class="scale-100 label-text">🟩</p>
 							<p class="scale-125 label-text">🟩</p>
+							<p class="scale-150 label-text">🟩</p>
 						</div>
 						<input
 							type="range"
@@ -440,7 +438,7 @@
 							max={zoomRange.max}
 							value={zoomRange.current}
 							class="w-full range range-secondary"
-							on:mouseup={zoom}
+							on:mouseup={changeZoom}
 							step={1}
 						/>
 					</div>
