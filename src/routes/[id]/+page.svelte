@@ -171,6 +171,7 @@
 	function updateShow(e: Event & { target: HTMLButtonElement }) {
 		const { name } = e.target
 		if (name === 'orient') show[name] = e.target.value
+		else if (name === 'zoom') show[name] = zoomRange.outgoing
 		else show[name] = !show[name]
 		updateDoc(doc(db, 'viewers', $dbUser?.uid), { [name]: show[name] })
 	}
@@ -332,6 +333,18 @@
 	}
 
 	let throb = false
+	let zoomRange = {
+		min: 4,
+		max: 12,
+		current: 8,
+		outgoing: 8,
+	}
+
+	$: console.log(`LOG..+page: zoomRange?.current`, zoomRange.outgoing)
+	const changeZoom = e => {
+		zoomRange.outgoing = zoomRange.max - e.target.value + zoomRange.min
+		updateShow(e)
+	}
 </script>
 
 <svelte:window
@@ -383,7 +396,7 @@
 				>
 					Carousel
 				</button>
-				<div class="flex flex-col items-center gap-2">
+				<div class="flex flex-col items-center gap-4">
 					<button
 						name="gallery"
 						id="gallery"
@@ -393,7 +406,7 @@
 					>
 						Gallery
 					</button>
-					<div class=" form-control">
+					<div class="gap-4 form-control">
 						<div class="join">
 							{#each orientOptions as option}
 								<button
@@ -407,6 +420,27 @@
 								</button>
 							{/each}
 						</div>
+					</div>
+					<div class="flex flex-col w-full gap-1">
+						<div class="flex items-center justify-between">
+							<p class="scale-50 label-text">🟩</p>
+							<p class="scale-75 label-text">🟩</p>
+							<!-- <p class="scale-100 label-text">🟩</p>
+							<p class="label-text">Zoom</p> -->
+							<p class="scale-100 label-text">🟩</p>
+							<p class="scale-125 label-text">🟩</p>
+							<p class="scale-150 label-text">🟩</p>
+						</div>
+						<input
+							type="range"
+							name="zoom"
+							min={zoomRange.min}
+							max={zoomRange.max}
+							value={zoomRange.current}
+							class="w-full range range-secondary"
+							on:mouseup={changeZoom}
+							step={1}
+						/>
 					</div>
 				</div>
 				<button
