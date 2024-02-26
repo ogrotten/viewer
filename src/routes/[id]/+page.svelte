@@ -387,16 +387,20 @@
 				</p>
 			</div>
 			<div class="space-y-8">
-				<button
-					name="carousel"
-					id="carousel"
-					class:btn-outline={!show.carousel}
-					class="w-full h-12 btn btn-outline btn-info"
-					on:click={updateShow}
+				<div class="p-8 bg-opacity-25 rounded bg-primary">
+					<button
+						name="carousel"
+						id="carousel"
+						class:btn-outline={!show.carousel}
+						class="w-full h-12 btn btn-outline btn-info"
+						on:click={updateShow}
+					>
+						Carousel
+					</button>
+				</div>
+				<div
+					class="flex flex-col items-center gap-4 p-8 bg-opacity-25 rounded bg-secondary"
 				>
-					Carousel
-				</button>
-				<div class="flex flex-col items-center gap-4">
 					<button
 						name="gallery"
 						id="gallery"
@@ -443,15 +447,17 @@
 						/>
 					</div>
 				</div>
-				<button
-					name="now"
-					id="now"
-					class:btn-outline={!show.now}
-					class="w-full h-12 btn btn-outline btn-accent"
-					on:click={updateShow}
-				>
-					Now
-				</button>
+				<div class="p-8 bg-opacity-25 rounded bg-accent">
+					<button
+						name="now"
+						id="now"
+						class:btn-outline={!show.now}
+						class="w-full h-12 btn btn-outline btn-accent"
+						on:click={updateShow}
+					>
+						Now
+					</button>
+				</div>
 			</div>
 			<div id="add-images" class="mb-8">
 				<div class="flex items-center justify-between p-4 rounded bg-neutral-focus">
