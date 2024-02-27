@@ -425,7 +425,10 @@
 							{/each}
 						</div>
 					</div>
-					<div class="flex flex-col w-full gap-1">
+					<div
+						class="flex flex-col w-full gap-1"
+						class:opacity-30={show.orient === 'wide' || show.orient === 'tall'}
+					>
 						<div class="flex items-center justify-between">
 							<p class="scale-50 label-text">🟩</p>
 							<p class="scale-75 label-text">🟩</p>
@@ -438,10 +441,13 @@
 						<input
 							type="range"
 							name="zoom"
+							disabled={show.orient === 'wide' || show.orient === 'tall'}
 							min={zoomRange.min}
 							max={zoomRange.max}
 							value={zoomRange.current}
-							class="w-full range range-secondary"
+							class="w-full range"
+							class:range-secondary={show.orient === 'grid' ||
+								show.orient === 'square'}
 							on:mouseup={changeZoom}
 							step={1}
 						/>
