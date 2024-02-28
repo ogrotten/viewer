@@ -36,8 +36,16 @@
 		console.log(`LOG..GalleryTile: here`)
 	})
 
-	let mousedown = false
-	let drag = false
+	let mouse = {
+		drag: false,
+		down: false,
+		up: false,
+		move: false,
+		over: false,
+		x: 0,
+		y: 0,
+		diff: 0,
+	}
 
 	const setupNode = incoming => {
 		// debugger
@@ -49,30 +57,46 @@
 		img.style.backgroundImage = `url(${incoming.url})`
 
 		outer.style.display = 'none'
+
 		outer.onmouseup = () => {
-			console.log(`LOG..GalleryTile: up`)
-			if (!drag) dispatch('localNow', { id: incoming.id })
-			drag = false
-		}
-		outer.onmousemove = () => {
-			console.log(`LOG..GalleryTile: move`)
-			drag = true
+			console.log(`LOG..GalleryTile: up`, mouse.diff)
+			if (!mouse.drag) dispatch('localNow', { id: incoming.id })
+			mouse.drag = false
 		}
 
-		outer.onmousedown = () => {
-			console.log(`LOG..GalleryTile: down`)
-			mousedown = true
-			drag = false
+		outer.onmousemove = e => {
+			console.log(`LOG..GalleryTile: move`, mouse.down, mouse.drag)
+			mouse.diff = Math.abs(mouse.x - e.clientX) + Math.abs(mouse.y - e.clientY)
+
+			if (mouse.down && mouse.diff > 100) {
+				mouse.drag = true
+			} else {
+				mouse.drag = false
+			}
+		}
+
+		outer.onmousedown = e => {
+			console.log(`LOG..GalleryTile: down`, mouse.diff)
+
+			mouse.down = true
+
+			mouse.x = e.clientX
+			mouse.y = e.clientY
+			e.stopPropagation()
+		}
+
+		outer.onmouseenter = () => {
+			console.log(`LOG..GalleryTile: enter`, mouse.diff)
+			mouse.over = true
+		}
+
+		outer.onmouseleave = () => {
+			console.log(`LOG..GalleryTile: leave`, mouse.diff)
+			mouse.over = false
 		}
 
 		outer.setAttribute('data-muuri-id', incoming.id)
 		outer.setAttribute('title', incoming.title)
-
-		// const scratio = size / Math.max(w, h)
-		// outer.style.width = `${w * scratio}px`
-		// img.style.width = `${w * scratio}px`
-		// outer.style.height = `${h * scratio}px`
-		// img.style.height = `${h * scratio}px`
 
 		setOrient(incoming, outer, img)
 
@@ -151,9 +175,9 @@
 		})
 		mu.add([...images])
 
-		mu.on('mouseDown', () => {
-			dispatch('localNow', { id: incoming.id })
-		})
+		// mu.on('mouseDown', () => {
+		// 	dispatch('localNow', { id: incoming.id })
+		// })
 
 		if (changedBool) {
 			const toShow = gallery?.filter(item => item.gallery).map(item => item.id)
