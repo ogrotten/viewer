@@ -45,7 +45,6 @@
 		x: 0,
 		y: 0,
 		diff: 0,
-		Odiff: 0,
 	}
 
 	const setupNode = incoming => {
@@ -79,11 +78,7 @@
 		outer.onmousedown = e => {
 			console.log(`LOG..GalleryTile: down`, mouse.diff)
 
-			mouse.Odiff = Math.abs(mouse.x - e.clientX) + Math.abs(mouse.y - e.clientY)
 			mouse.down = true
-
-			// if (Math.abs(mouse.diff - mouse.Odiff) > 100) mouse.drag = true
-			// else mouse.drag = false
 
 			mouse.x = e.clientX
 			mouse.y = e.clientY
@@ -102,12 +97,6 @@
 
 		outer.setAttribute('data-muuri-id', incoming.id)
 		outer.setAttribute('title', incoming.title)
-
-		// const scratio = size / Math.max(w, h)
-		// outer.style.width = `${w * scratio}px`
-		// img.style.width = `${w * scratio}px`
-		// outer.style.height = `${h * scratio}px`
-		// img.style.height = `${h * scratio}px`
 
 		setOrient(incoming, outer, img)
 
