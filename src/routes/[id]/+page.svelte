@@ -654,15 +654,19 @@
 							<span class="space-y-4">
 								<p class="mt-4 text-lg font-bold">Load some images</p>
 								<ul>
-									<li>Left sidebar > Add Images > Many</li>
+									<li class="italic">Left sidebar > Add Images</li>
 									<li>
-										Images need to be hosted somewhere (like imgur, etc.) and
-										have a direct link to the image.
+										Images need to be hosted somewhere and have a direct link to
+										the image. Imgur works flawlessly.
 									</li>
-									<li>char.show does not host the images.</li>
 									<li>
-										Image url must have an extension. (still figuring this out)
+										For now, the image url must be formatted as url and file
+										with extension:
+										<span class="font-mono text-sm">
+											https://i.imgur.com/bUIMpp4.jpg
+										</span>
 									</li>
+									<li>char.show does not host the images..</li>
 									<li class="">
 										You can add a title to the image, but it's optional.
 									</li>
@@ -738,25 +742,68 @@
 								<p class="mt-4 text-lg font-bold">Known Issues</p>
 								<ul>
 									<li class="">
-										When you add images, and select them for a View you'll need
-										to manually reload the View page
+										The top navigation bar is a clunky. I'll probably remove it
+										entirely.
+									</li>
+									<li class="">
+										When you add images, and select them for a View, you'll need
+										to manually reload the View page.
 									</li>
 									<li class="">
 										<span class="font-bold">Manage > List View</span>
 										would be better listing as vertical first, but I haven't really
-										figured out how to do it
+										figured out how to do it.
 									</li>
 									<li class="">
 										<span class="font-bold">Images > Add Many</span>
 										planned to accept a google photos album. Any other ideas? (besides
-										arbitrary image urls)
+										arbitrary image urls).
 									</li>
 									<li class="">
 										<span class="font-bold">Images > Add</span>
 										can take the exact same url multiple times. It needs to be unique.
 									</li>
 								</ul>
-							</span>
+								<br />
+								<p class="mt-4 text-lg font-bold">Demo Images</p>
+								<ul>
+									<li class="">
+										You can use these urls to test the site if you don't have
+										your own images or it's a pita to format the urls. These are
+										Safe For Work images, Fallout themed.
+									</li>
+									<li class="">
+										Copy the list and paste it into Add Images > Many
+									</li>
+									<li class="font-mono text-sm whitespace-pre-line">
+										https://i.imgur.com/0hMWPdQ.jpg?1
+										https://i.imgur.com/ktczK2w.jpg?1
+										https://i.imgur.com/4Xl0u9W.jpg?1
+										https://i.imgur.com/JHXtIJJ.jpg?1
+										https://i.imgur.com/avMpuaB.jpg?1
+										https://i.imgur.com/bUIMpp4.jpg
+										https://i.imgur.com/KaBH2vT.png
+										https://i.imgur.com/aqj6S6W.png
+										https://i.imgur.com/mcW6Auv.png
+										https://i.imgur.com/CYkTzWX.png
+										https://i.imgur.com/KCzyGmp.png
+										https://i.imgur.com/27njUkZ.png?1
+										https://i.imgur.com/85xDtry.jpg
+										https://i.imgur.com/03JQqiB.png
+										https://i.imgur.com/QNFQdIP.png
+										https://i.imgur.com/IOar7h3.png
+										https://i.imgur.com/egsolyN.jpg
+										https://i.imgur.com/o7E8Rsn.jpg?1
+										https://i.imgur.com/dYOp8Fs.jpg
+										https://i.imgur.com/9e6LKB4.jpg?1
+										https://i.imgur.com/OQzayn9.jpg
+										https://i.imgur.com/CpH0282.jpg
+										https://i.imgur.com/s9luDyo.png
+										https://i.imgur.com/6di2icQ.jpg
+										https://i.imgur.com/Bdcj7cq.jpg?1
+									</li>
+								</ul></span
+							>
 							<!-- </div> -->
 						{:else}
 							<div class="flex items-center justify-start gap-8">
