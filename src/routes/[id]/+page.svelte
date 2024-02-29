@@ -295,10 +295,10 @@
 		option.value = idx
 	})
 
-	let viewerTab: number = viewerTabOptions.length - 1,
+	let viewerTab: number = 99,
 		viewerImages = []
 
-	$: if (viewerImages.lenght === 0) viewerTab = 99
+	$: if (viewerImages.length === 0) viewerTab = 99
 
 	function changeViewerTab(tab) {
 		viewerTab = tab?.value ?? 0
@@ -363,7 +363,6 @@
 	<div class="grid grid-flow-col grid-cols-12 gap-10">
 		<div class="relative col-span-3 space-y-16 2xl:col-span-2 min-w-md">
 			<div class="m-auto">
-				<p class="">Start here</p>
 				<button
 					class="z-50 transition-all border border-success btn-outline btn-success btn-xs"
 					on:click={() => {
@@ -651,14 +650,110 @@
 					>
 						<!-- {/if} -->
 						{#if viewerTab === 99}
-							<div class="p-4 bg-opacity-25 rounded bg-primary">
-								<p class="text-xs">
-									Click on the image to edit the title. Click on the heart to
-									favorite an image. Click on the trash can to delete an image.
-									Click on the 🩷 to throb an image. Click on the ✏️ to edit the
-									title.
+							<!-- <div class="p-4 text-base bg-opacity-25 rounded bg-primary"> -->
+							<span class="space-y-4">
+								<br />
+								<p class="mt-4 text-lg font-bold">Load some images</p>
+								<ul>
+									<li>Left sidebar > Add Images > Many</li>
+									<li>
+										Images need to be hosted somewhere (like imgur, etc.) and
+										have a direct link to the image.
+									</li>
+									<li>char.show does not host the images.</li>
+									<li>
+										Image url must have an extension. (still figuring this out)
+									</li>
+								</ul>
+
+								<p class="">You can add a title to the image, but it's optional.</p>
+								<br />
+								<p class="mt-4 text-lg font-bold">
+									Use the "Click to copy" button.
 								</p>
-							</div>
+								<ul>
+									<li>This leads to the "View" page.</li>
+									<li>
+										For testing, open it in a new browser window (not tab) and
+										position the windows so you can see them both.
+									</li>
+									<li>
+										In the Real World, you'll give that link to your players OR
+										cast it to another screen.
+									</li>
+								</ul>
+								<p class="">
+									The "View" page can be viewed on any browser including mobile.
+									The changes you make on this Manage window will immediately
+									happen on the View page.
+								</p>
+
+								<br />
+								<p class="mt-4 text-lg font-bold">Select images</p>
+								<ul>
+									<li>
+										Use the main panel to select images for the different views.
+									</li>
+									<li>
+										The tabs and various buttonage should be self explanatory
+									</li>
+								</ul>
+								<br />
+								<p class="mt-4 text-lg font-bold">Manage Views</p>
+								<ul>
+									<li>
+										Carousel: slideshow the selected the images on a 30sec pause
+									</li>
+									<li>Now: Choose one image to show right Now</li>
+									<li>
+										Gallery: Show all Gallery selected images on a single
+										screen.
+										<ul>
+											<li>
+												Grid: fit the pieces together brick-style based on
+												size
+											</li>
+											<li>Square: make all images squares</li>
+											<li>
+												Wide/Tall: fit all images spanned in one direction.
+												wide for scenery, tall for characters.
+											</li>
+										</ul>
+									</li>
+								</ul>
+
+								<p class="">The views are non-destructive to each other.</p>
+								<br />
+								<p class="mt-4 text-lg font-bold">View Page.</p>
+								<ul>
+									<li class="">
+										Drag images to whatever order (does not save... yet)
+									</li>
+									<li class="">
+										Click image to get your own Now. Any user can do this
+										affecting their view only.
+									</li>
+								</ul>
+								<br />
+								<p class="mt-4 text-lg font-bold">Known Issue</p>
+								<p class="">
+									When you add images, and select them for a View you'll need to
+									manually reload the View page
+								</p>
+								<p class="">
+									Manage > List View would be better listing as vertical first,
+									but I haven't really figured out how to do that
+								</p>
+								<p class="">
+									Images > Add Many planned to accept a google photos album. Any
+									other ideas? (besides arbitrary image urls)
+								</p>
+								<p class="">
+									Images > Add can take the exact same url multiple times. It
+									needs to be unique.
+								</p>
+							</span>
+							<!-- </div> -->
 						{:else}
 							<div class="flex items-center justify-start gap-8">
 								<div class="cursor-pointer w">
@@ -971,8 +1066,9 @@
 												<button
 													class="p-1 transition-all hover:bg-red-900"
 													on:click={() => imageDelete(image, idx)}
-													>❌</button
 												>
+													❌
+												</button>
 											</div>
 										</li>
 									{/each}
@@ -987,6 +1083,16 @@
 {/if}
 
 <style lang="postcss">
+	.help p {
+		@apply mt-4;
+	}
+
+	li {
+		@apply ml-8 list-inside mt-2;
+	}
+	.help .headr {
+		@apply text-lg font-bold mt-10;
+	}
 	button {
 		@apply text-gray-800;
 	}
