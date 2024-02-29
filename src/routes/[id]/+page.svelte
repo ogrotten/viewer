@@ -295,8 +295,10 @@
 		option.value = idx
 	})
 
-	let viewerTab: number = 0,
+	let viewerTab: number = viewerTabOptions.length - 1,
 		viewerImages = []
+
+	$: if (viewerImages.lenght === 0) viewerTab = 99
 
 	function changeViewerTab(tab) {
 		viewerTab = tab?.value ?? 0
@@ -309,6 +311,8 @@
 		if (viewerTab > 1)
 			viewerImages = [...images.filter(image => image[tab?.name?.toLowerCase()])]
 	}
+
+	$: console.log(`LOG..+page: viewerImages`, viewerImages)
 
 	const imageFave = (image, idx) => {
 		if (pref.favorites.includes(image.id)) {
@@ -617,7 +621,7 @@
 							</a>
 						{/each}
 					</div>
-					{#if viewerTab !== 0}
+					{#if viewerTab !== 0 && viewerTab !== 99}
 						<button
 							class="w-48 transition-all btn btn-xs btn-warning btn-outline"
 							on:click={() => {
@@ -629,6 +633,14 @@
 							</span>
 						</button>
 					{/if}
+					<a
+						class="border rounded-t-lg opacity-75 tab border-secondary-focus hover:text-secondary-focus hover:opacity-100"
+						class:active={viewerTab === 99}
+						on:click={() => (viewerTab = 99)}
+						href={''}
+					>
+						Help
+					</a>
 				</div>
 				{#if viewerImages}
 					<!-- {@const viewerImages = getViewerImages(viewerTab)} -->
@@ -638,55 +650,203 @@
 						transition:fly
 					>
 						<!-- {/if} -->
-						<div class="flex items-center justify-start gap-8">
-							<div class="cursor-pointer w">
-								<label class="items-center gap-2 cursor-pointer label">
-									<input
-										type="checkbox"
-										class="toggle toggle-xs bg-primary"
-										bind:checked={pref.sort}
-										on:change={updatePrefs}
-									/>
-									<span class="label-text">
-										Sorting by: <span class="font-bold">
-											{pref.sort ? 'Added' : 'Recent'}
-										</span>
-									</span>
-								</label>
+						{#if viewerTab === 99}
+							<div class="p-4 bg-opacity-25 rounded bg-primary">
+								<p class="text-xs">
+									Click on the image to edit the title. Click on the heart to
+									favorite an image. Click on the trash can to delete an image.
+									Click on the 🩷 to throb an image. Click on the ✏️ to edit the
+									title.
+								</p>
 							</div>
-							<div class="flex justify-start w-fit">
-								<!-- <div class="form-control"> -->
-								<label class="items-center gap-2 cursor-pointer label">
-									<input
-										type="checkbox"
-										class="toggle toggle-xs bg-primary"
-										bind:checked={pref.tiles}
-										on:change={updatePrefs}
-									/>
-									<span class="label-text">
-										Showing as: <span class="font-bold">
-											{pref.tiles ? 'Tiles' : 'List'}
+						{:else}
+							<div class="flex items-center justify-start gap-8">
+								<div class="cursor-pointer w">
+									<label class="items-center gap-2 cursor-pointer label">
+										<input
+											type="checkbox"
+											class="toggle toggle-xs bg-primary"
+											bind:checked={pref.sort}
+											on:change={updatePrefs}
+										/>
+										<span class="label-text">
+											Sorting by: <span class="font-bold">
+												{pref.sort ? 'Added' : 'Recent'}
+											</span>
 										</span>
-									</span>
-								</label>
-								<!-- </div> -->
+									</label>
+								</div>
+								<div class="flex justify-start w-fit">
+									<!-- <div class="form-control"> -->
+									<label class="items-center gap-2 cursor-pointer label">
+										<input
+											type="checkbox"
+											class="toggle toggle-xs bg-primary"
+											bind:checked={pref.tiles}
+											on:change={updatePrefs}
+										/>
+										<span class="label-text">
+											Showing as: <span class="font-bold">
+												{pref.tiles ? 'Tiles' : 'List'}
+											</span>
+										</span>
+									</label>
+									<!-- </div> -->
+								</div>
 							</div>
-						</div>
-						{#if pref.tiles}
-							<div
-								id="list-cont"
-								class="flex flex-row flex-wrap justify-start w-full gap-6"
-							>
-								{#each viewerImages as image, idx (image.id)}
-									{@const url = debug ? 'https://dummyimage.com/144' : image.url}
-									<!-- <Icon src={XMark} class="w-4 h-4 mr-2 font-bold text-red-600" /> -->
-									<!-- svelte-ignore a11y-img-redundant-alt -->
-									<span
-										id="list-tiles"
-										class="flex flex-col p-4 border bg-stone-800 border-stone-600"
-									>
-										<!-- transition:fly|local={{ x: -20 }} -->
-										<div class="flex justify-between">
+							{#if pref.tiles}
+								<div
+									id="list-cont"
+									class="flex flex-row flex-wrap justify-start w-full gap-6"
+								>
+									{#each viewerImages as image, idx (image.id)}
+										{@const url = debug
+											? 'https://dummyimage.com/144'
+											: image.url}
+										<!-- <Icon src={XMark} class="w-4 h-4 mr-2 font-bold text-red-600" /> -->
+										<!-- svelte-ignore a11y-img-redundant-alt -->
+										<span
+											id="list-tiles"
+											class="flex flex-col p-4 border bg-stone-800 border-stone-600"
+										>
+											<!-- transition:fly|local={{ x: -20 }} -->
+											<div class="flex justify-between">
+												<button
+													class="relative"
+													on:click={() => imageFave(image, idx)}
+												>
+													{#if pref.favorites?.includes(image.id)}
+														<p class="z-10">❤️</p>
+														{#if throbId === image.id}
+															<p
+																class="absolute left-0 z-0 top-1"
+																class:throbOn={throb}
+																class:throbOff={!throb}
+															>
+																🩷
+															</p>
+														{/if}
+													{:else}
+														<p class="z-10">🖤</p>
+													{/if}
+												</button>
+												<button
+													class="p-1"
+													on:click={() => imageDelete(image, idx)}
+												>
+													<svg
+														xmlns="http://www.w3.org/2000/svg"
+														viewBox="0 0 24 24"
+														fill="currentColor"
+														class="w-6 h-6 p-0.5 text-gray-500 transition-all rounded hover:bg-red-800 hover:text-white"
+													>
+														<path
+															fill-rule="evenodd"
+															d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
+															clip-rule="evenodd"
+														/>
+													</svg>
+												</button>
+											</div>
+											<img
+												src={url}
+												alt="image"
+												class="z-0 object-cover object-top w-48 h-36 rounded-2xl"
+												on:load={e => updateImage({ e, idx })}
+											/>
+											<!-- <a href={image.url} class="" target="_blank">
+										<div class="relative">
+											<button
+												class="absolute top-0 right-0 z-10 p-1 transition-all hover:bg-red-900"
+												on:click={() => imageDelete(image, idx)}>❌</button
+											>
+											<img
+												src={url}
+												alt="image"
+												class="z-0 object-cover object-top w-48 h-36 rounded-2xl"
+											/>
+										</div>
+									</a> -->
+											<div class="flex items-center justify-start gap-2 py-4">
+												<button
+													class="p-1 transition-all hover:bg-blue-600"
+													class:bg-blue-700={showTitleEdit === idx}
+													on:click={() => {
+														showTitleEdit === -1
+															? (showTitleEdit = idx)
+															: (showTitleEdit = -1)
+													}}>✏️</button
+												>
+												{#if showTitleEdit !== idx}
+													<a class="font-md w-28">{image.title || ''}</a>
+												{:else}
+													<form
+														on:submit={() => titleEdit(image)}
+														class=""
+													>
+														<input
+															autofocus
+															type="text"
+															placeholder="Title"
+															class="input input-xs input-bordered input-neutral w-28"
+															bind:value={image.title}
+															on:keydown={e => {
+																if (e.key === 'Escape') {
+																	showTitleEdit = -1
+																}
+															}}
+														/>
+													</form>
+												{/if}
+											</div>
+											<div class="flex flex-row justify-between gap-2">
+												<button
+													class="font-normal text-gray-800 capitalize btn btn-xs font-xs"
+													class:unselected={!image.carousel}
+													class:btn-primary={image.carousel}
+													on:click={() =>
+														parameter({
+															...image,
+															carousel: !image.carousel,
+														})}
+												>
+													<span class="label-text">Carousel</span>
+												</button>
+												<button
+													class="font-normal text-gray-800 capitalize btn btn-xs font-xs"
+													class:unselected={!image.gallery}
+													class:btn-secondary={image.gallery}
+													on:click={() => setGalleryItem(image)}
+												>
+													<span class="label-text">Gallery</span>
+												</button>
+												<button
+													class="font-normal text-gray-800 capitalize btn btn-xs font-xs"
+													class:unselected={!image.now}
+													class:btn-accent={image.now}
+													on:click={() =>
+														parameter({ ...image, now: !image.now })}
+												>
+													<span class="label-text">Now</span>
+												</button>
+											</div>
+										</span>
+									{/each}
+								</div>
+							{:else}
+								<!-- svelte-ignore a11y-img-redundant-alt -->
+								<!-- svelte-ignore a11y-mouse-events-have-key-events -->
+								<ul
+									id="list-list"
+									class="flex flex-wrap justify-start gap-6 divide-stone-700"
+								>
+									{#each viewerImages as image, idx (image.id)}
+										{@const url = debug
+											? 'https://dummyimage.com/32'
+											: image.url}
+										<li
+											class="relative flex flex-row items-center w-[540px] gap-4 p-2 border border-stone-700"
+										>
 											<button
 												class="relative"
 												on:click={() => imageFave(image, idx)}
@@ -706,244 +866,118 @@
 													<p class="z-10">🖤</p>
 												{/if}
 											</button>
-											<button
-												class="p-1"
-												on:click={() => imageDelete(image, idx)}
-											>
-												<svg
-													xmlns="http://www.w3.org/2000/svg"
-													viewBox="0 0 24 24"
-													fill="currentColor"
-													class="w-6 h-6 p-0.5 text-gray-500 transition-all rounded hover:bg-red-800 hover:text-white"
-												>
-													<path
-														fill-rule="evenodd"
-														d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z"
-														clip-rule="evenodd"
-													/>
-												</svg>
-											</button>
-										</div>
-										<img
-											src={url}
-											alt="image"
-											class="z-0 object-cover object-top w-48 h-36 rounded-2xl"
-											on:load={e => updateImage({ e, idx })}
-										/>
-										<!-- <a href={image.url} class="" target="_blank">
-										<div class="relative">
-											<button
-												class="absolute top-0 right-0 z-10 p-1 transition-all hover:bg-red-900"
-												on:click={() => imageDelete(image, idx)}>❌</button
-											>
-											<img
-												src={url}
-												alt="image"
-												class="z-0 object-cover object-top w-48 h-36 rounded-2xl"
-											/>
-										</div>
-									</a> -->
-										<div class="flex items-center justify-start gap-2 py-4">
-											<button
-												class="p-1 transition-all hover:bg-blue-600"
-												class:bg-blue-700={showTitleEdit === idx}
-												on:click={() => {
-													showTitleEdit === -1
-														? (showTitleEdit = idx)
-														: (showTitleEdit = -1)
-												}}>✏️</button
-											>
 											{#if showTitleEdit !== idx}
-												<a class="font-md w-28">{image.title || ''}</a>
-											{:else}
-												<form on:submit={() => titleEdit(image)} class="">
-													<input
-														autofocus
-														type="text"
-														placeholder="Title"
-														class="input input-xs input-bordered input-neutral w-28"
-														bind:value={image.title}
-														on:keydown={e => {
-															if (e.key === 'Escape') {
-																showTitleEdit = -1
-															}
-														}}
-													/>
-												</form>
-											{/if}
-										</div>
-										<div class="flex flex-row justify-between gap-2">
-											<button
-												class="font-normal text-gray-800 capitalize btn btn-xs font-xs"
-												class:unselected={!image.carousel}
-												class:btn-primary={image.carousel}
-												on:click={() =>
-													parameter({
-														...image,
-														carousel: !image.carousel,
-													})}
-											>
-												<span class="label-text">Carousel</span>
-											</button>
-											<button
-												class="font-normal text-gray-800 capitalize btn btn-xs font-xs"
-												class:unselected={!image.gallery}
-												class:btn-secondary={image.gallery}
-												on:click={() => setGalleryItem(image)}
-											>
-												<span class="label-text">Gallery</span>
-											</button>
-											<button
-												class="font-normal text-gray-800 capitalize btn btn-xs font-xs"
-												class:unselected={!image.now}
-												class:btn-accent={image.now}
-												on:click={() =>
-													parameter({ ...image, now: !image.now })}
-											>
-												<span class="label-text">Now</span>
-											</button>
-										</div>
-									</span>
-								{/each}
-							</div>
-						{:else}
-							<!-- svelte-ignore a11y-img-redundant-alt -->
-							<!-- svelte-ignore a11y-mouse-events-have-key-events -->
-							<ul
-								id="list-list"
-								class="flex flex-wrap justify-start gap-6 divide-stone-700"
-							>
-								{#each viewerImages as image, idx (image.id)}
-									{@const url = debug ? 'https://dummyimage.com/32' : image.url}
-									<li
-										class="relative flex flex-row items-center w-[540px] gap-4 p-2 border border-stone-700"
-									>
-										<button
-											class="relative"
-											on:click={() => imageFave(image, idx)}
-										>
-											{#if pref.favorites?.includes(image.id)}
-												<p class="z-10">❤️</p>
-												{#if throbId === image.id}
-													<p
-														class="absolute left-0 z-0 top-1"
-														class:throbOn={throb}
-														class:throbOff={!throb}
+												<span class="flex flex-row items-center gap-2">
+													<a href={image.url} class="" target="_blank">
+														<img
+															src={url}
+															alt="image"
+															class="object-cover object-top w-8 h-8 rounded"
+															on:mouseenter={() => {
+																showHover = idx
+															}}
+															on:mouseout={() => {
+																showHover = -1
+															}}
+															on:load={e => updateImage({ e, idx })}
+														/>
+													</a>
+													<button
+														class="p-1 transition-all opacity-50 hover:opacity-100"
+														class:bg-blue-700={showTitleEdit === idx}
+														on:click={() => {
+															showTitleEdit === -1
+																? (showTitleEdit = idx)
+																: (showTitleEdit = -1)
+														}}>✏️</button
 													>
-														🩷
-													</p>
-												{/if}
+													<p class="w-28 font-md">{image.title || ''}</p>
+												</span>
 											{:else}
-												<p class="z-10">🖤</p>
-											{/if}
-										</button>
-										{#if showTitleEdit !== idx}
-											<span class="flex flex-row items-center gap-2">
-												<a href={image.url} class="" target="_blank">
+												<span class="flex flex-row items-center gap-2">
 													<img
 														src={url}
 														alt="image"
 														class="object-cover object-top w-8 h-8 rounded"
-														on:mouseenter={() => {
-															showHover = idx
-														}}
-														on:mouseout={() => {
-															showHover = -1
-														}}
 														on:load={e => updateImage({ e, idx })}
 													/>
-												</a>
-												<button
-													class="p-1 transition-all opacity-50 hover:opacity-100"
-													class:bg-blue-700={showTitleEdit === idx}
-													on:click={() => {
-														showTitleEdit === -1
-															? (showTitleEdit = idx)
-															: (showTitleEdit = -1)
-													}}>✏️</button
-												>
-												<p class="w-28 font-md">{image.title || ''}</p>
-											</span>
-										{:else}
-											<span class="flex flex-row items-center gap-2">
+													<button
+														class="w-8 h-8 p-1 transition-all opacity-50 hover:opacity-100"
+														on:click={() => {
+															showTitleEdit === -1
+																? (showTitleEdit = idx)
+																: (showTitleEdit = -1)
+														}}>✅</button
+													>
+													<form
+														on:submit={() => titleEdit(image)}
+														class=""
+													>
+														<input
+															autofocus
+															type="text"
+															placeholder="Title"
+															class="w-28 input input-sm input-bordered input-neutral"
+															bind:value={image.title}
+															on:keydown={e => {
+																if (e.key === 'Escape') {
+																	showTitleEdit = -1
+																}
+															}}
+														/>
+													</form>
+												</span>
+											{/if}
+											{#if showHover === idx}
 												<img
 													src={url}
 													alt="image"
-													class="object-cover object-top w-8 h-8 rounded"
-													on:load={e => updateImage({ e, idx })}
+													class="absolute z-10 object-cover object-top w-48 h-48 left-28 rounded-2xl"
 												/>
+											{/if}
+											<span title={image.id}>
 												<button
-													class="w-8 h-8 p-1 transition-all opacity-50 hover:opacity-100"
-													on:click={() => {
-														showTitleEdit === -1
-															? (showTitleEdit = idx)
-															: (showTitleEdit = -1)
-													}}>✅</button
+													class="text-gray-800 btn btn-xs font-xs"
+													class:unselected={!image.carousel}
+													class:btn-primary={image.carousel}
+													on:click={() =>
+														parameter({
+															...image,
+															carousel: !image.carousel,
+														})}
 												>
-												<form on:submit={() => titleEdit(image)} class="">
-													<input
-														autofocus
-														type="text"
-														placeholder="Title"
-														class="w-28 input input-sm input-bordered input-neutral"
-														bind:value={image.title}
-														on:keydown={e => {
-															if (e.key === 'Escape') {
-																showTitleEdit = -1
-															}
-														}}
-													/>
-												</form>
+													<span class="label-text">Carousel</span>
+												</button>
+												<button
+													class="text-gray-800 btn btn-xs font-xs"
+													class:unselected={!image.gallery}
+													class:btn-secondary={image.gallery}
+													on:click={() => setGalleryItem(image)}
+												>
+													<span class="label-text">Gallery</span>
+												</button>
+												<button
+													class="text-gray-800 btn btn-xs font-xs"
+													class:unselected={!image.now}
+													class:btn-accent={image.now}
+													on:click={() =>
+														parameter({ ...image, now: !image.now })}
+												>
+													<span class="label-text">Now</span>
+												</button>
 											</span>
-										{/if}
-										{#if showHover === idx}
-											<img
-												src={url}
-												alt="image"
-												class="absolute z-10 object-cover object-top w-48 h-48 left-28 rounded-2xl"
-											/>
-										{/if}
-										<span title={image.id}>
-											<button
-												class="text-gray-800 btn btn-xs font-xs"
-												class:unselected={!image.carousel}
-												class:btn-primary={image.carousel}
-												on:click={() =>
-													parameter({
-														...image,
-														carousel: !image.carousel,
-													})}
-											>
-												<span class="label-text">Carousel</span>
-											</button>
-											<button
-												class="text-gray-800 btn btn-xs font-xs"
-												class:unselected={!image.gallery}
-												class:btn-secondary={image.gallery}
-												on:click={() => setGalleryItem(image)}
-											>
-												<span class="label-text">Gallery</span>
-											</button>
-											<button
-												class="text-gray-800 btn btn-xs font-xs"
-												class:unselected={!image.now}
-												class:btn-accent={image.now}
-												on:click={() =>
-													parameter({ ...image, now: !image.now })}
-											>
-												<span class="label-text">Now</span>
-											</button>
-										</span>
-										<!-- </div> -->
-										<div class="flex justify-between">
-											<button
-												class="p-1 transition-all hover:bg-red-900"
-												on:click={() => imageDelete(image, idx)}>❌</button
-											>
-										</div>
-									</li>
-								{/each}
-							</ul>
+											<!-- </div> -->
+											<div class="flex justify-between">
+												<button
+													class="p-1 transition-all hover:bg-red-900"
+													on:click={() => imageDelete(image, idx)}
+													>❌</button
+												>
+											</div>
+										</li>
+									{/each}
+								</ul>
+							{/if}
 						{/if}
 					</div>
 				{/if}
