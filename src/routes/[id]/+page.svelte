@@ -198,7 +198,7 @@
 			carousel: false,
 			gallery: false,
 			now: false,
-			galleryTile: false,
+			// galleryTile: true,
 		})
 	}
 
@@ -361,7 +361,7 @@
 	<div class="" />
 {:else}
 	<div class="grid grid-flow-col grid-cols-12 gap-10">
-		<div class="relative col-span-3 space-y-16 2xl:col-span-2 min-w-md">
+		<div class="relative col-span-3 space-y-8 2xl:col-span-2 min-w-md">
 			<div class="m-auto">
 				<button
 					class="z-50 transition-all border border-success btn-outline btn-success btn-xs"
@@ -381,16 +381,9 @@
 					</button>
 				{/if}
 			</div>
-			<div id="reset" class="flex items-center gap-2">
-				<button class="btn btn-error btn-outline btn-xs" on:click={resetShowStates}>
-					wtf...
-				</button>
-				<p class="text-xs">
-					Click to reset if it's being stupid. Won't reset image selections below.
-				</p>
-			</div>
-			<div class="space-y-8">
-				<div class="p-8 bg-opacity-25 rounded bg-primary">
+
+			<div class="">
+				<div class="p-8 bg-opacity-25 rounded-t-lg bg-primary">
 					<button
 						name="carousel"
 						id="carousel"
@@ -401,9 +394,7 @@
 						Carousel
 					</button>
 				</div>
-				<div
-					class="flex flex-col items-center gap-4 p-8 bg-opacity-25 rounded bg-secondary"
-				>
+				<div class="flex flex-col items-center gap-4 p-8 bg-opacity-25 bg-secondary">
 					<button
 						name="gallery"
 						id="gallery"
@@ -456,7 +447,7 @@
 						/>
 					</div>
 				</div>
-				<div class="p-8 bg-opacity-25 rounded bg-accent">
+				<div class="p-8 bg-opacity-25 rounded-b-lg bg-accent">
 					<button
 						name="now"
 						id="now"
@@ -562,6 +553,15 @@
 					</div>
 				{/if}
 			</div>
+
+			<div id="reset" class="flex items-center gap-2">
+				<button class="btn btn-error btn-outline btn-xs" on:click={resetShowStates}>
+					wtf...
+				</button>
+				<p class="text-xs">
+					Click to reset if it's being stupid. Won't reset image selections below.
+				</p>
+			</div>
 		</div>
 
 		<div class="flex flex-col col-span-9 gap-10 2xl:col-span-10">
@@ -652,7 +652,6 @@
 						{#if viewerTab === 99}
 							<!-- <div class="p-4 text-base bg-opacity-25 rounded bg-primary"> -->
 							<span class="space-y-4">
-								<br />
 								<p class="mt-4 text-lg font-bold">Load some images</p>
 								<ul>
 									<li>Left sidebar > Add Images > Many</li>
@@ -664,9 +663,11 @@
 									<li>
 										Image url must have an extension. (still figuring this out)
 									</li>
+									<li class="">
+										You can add a title to the image, but it's optional.
+									</li>
 								</ul>
 
-								<p class="">You can add a title to the image, but it's optional.</p>
 								<br />
 								<p class="mt-4 text-lg font-bold">
 									Use the "Click to copy" button.
@@ -674,19 +675,19 @@
 								<ul>
 									<li>This leads to the "View" page.</li>
 									<li>
-										For testing, open it in a new browser window (not tab) and
-										position the windows so you can see them both.
+										For testing, use that link in a new browser window (not tab)
+										and position the windows so you can see them both.
 									</li>
 									<li>
 										In the Real World, you'll give that link to your players OR
 										cast it to another screen.
 									</li>
+									<li class="">
+										The "View" page can be viewed on any browser including
+										mobile. The changes you make on this Manage window will
+										immediately happen on the View page.
+									</li>
 								</ul>
-								<p class="">
-									The "View" page can be viewed on any browser including mobile.
-									The changes you make on this Manage window will immediately
-									happen on the View page.
-								</p>
 
 								<br />
 								<p class="mt-4 text-lg font-bold">Select images</p>
@@ -722,7 +723,6 @@
 									</li>
 								</ul>
 
-								<p class="">The views are non-destructive to each other.</p>
 								<br />
 								<p class="mt-4 text-lg font-bold">View Page.</p>
 								<ul>
@@ -735,23 +735,27 @@
 									</li>
 								</ul>
 								<br />
-								<p class="mt-4 text-lg font-bold">Known Issue</p>
-								<p class="">
-									When you add images, and select them for a View you'll need to
-									manually reload the View page
-								</p>
-								<p class="">
-									Manage > List View would be better listing as vertical first,
-									but I haven't really figured out how to do that
-								</p>
-								<p class="">
-									Images > Add Many planned to accept a google photos album. Any
-									other ideas? (besides arbitrary image urls)
-								</p>
-								<p class="">
-									Images > Add can take the exact same url multiple times. It
-									needs to be unique.
-								</p>
+								<p class="mt-4 text-lg font-bold">Known Issues</p>
+								<ul>
+									<li class="">
+										When you add images, and select them for a View you'll need
+										to manually reload the View page
+									</li>
+									<li class="">
+										<span class="font-bold">Manage > List View</span>
+										would be better listing as vertical first, but I haven't really
+										figured out how to do it
+									</li>
+									<li class="">
+										<span class="font-bold">Images > Add Many</span>
+										planned to accept a google photos album. Any other ideas? (besides
+										arbitrary image urls)
+									</li>
+									<li class="">
+										<span class="font-bold">Images > Add</span>
+										can take the exact same url multiple times. It needs to be unique.
+									</li>
+								</ul>
 							</span>
 							<!-- </div> -->
 						{:else}

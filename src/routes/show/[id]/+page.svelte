@@ -307,7 +307,7 @@
 	{:else if showGallery}
 		<div id={'svelte-bricks'} class="relative">
 			<!-- {#if galleryTile && gallery.length > 1} -->
-			{#if galleryTile && !localShowNow}
+			{#if !localShowNow}
 				<GalleryTile
 					{presentGallery}
 					{gallery}
@@ -323,58 +323,6 @@
 						localShowNow = true
 					}}
 				/>
-			{:else}
-				<div
-					id="gallery notile"
-					class="box-border absolute flex flex-row w-full h-full"
-					out:fadeScale={{
-						delay: 0,
-						duration: 500,
-						easing: cubicInOut,
-						baseScale: 0.85,
-					}}
-					in:fadeScale={{
-						delay: 500,
-						duration: 500,
-						easing: cubicInOut,
-						baseScale: 0.85,
-					}}
-				>
-					{#each presentGallery as img, idx (img.id)}
-						<!-- svelte-ignore a11y-click-events-have-key-events -->
-						<!-- svelte-ignore a11y-no-static-element-interactions -->
-						<!-- animate:flip={{
-								delay: 0,
-								duration: 500,
-								easing: cubicInOut,
-							}} -->
-						<div
-							transition:fadeScale={{
-								delay: 0,
-								duration: 500,
-								easing: cubicInOut,
-								baseScale: 0.85,
-							}}
-							class="h-screen transition-all duration-500 origin-center scale-100 bg-center bg-no-repeat hover:scale-95 group"
-							class:bg-contain={gallery.length <= 2}
-							class:bg-cover={gallery.length > 2}
-							style="width: {100 / gallery.length}%; background-image: url({img.url})"
-							on:click={() => {
-								localNow[0] = img
-								localShowNow = true
-							}}
-						>
-							{#if img.title}
-								<p
-									class="absolute bottom-0 left-0 w-full p-2 py-2 text-2xl font-bold text-center transition-all duration-500 opacity-50 group-hover:opacity-100 text-cyan-50"
-									style="text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;"
-								>
-									{img.title}
-								</p>
-							{/if}
-						</div>
-					{/each}
-				</div>
 			{/if}
 		</div>
 	{:else if showCarousel}
@@ -410,13 +358,9 @@
 		<div class="flex items-center justify-center w-screen h-screen">
 			<span class="w-fit">
 				<!-- <p style="font-size: 400px" class="invert opacity-20 grayscale">🎥</p> -->
-				<p
-					style="font-size: 44px"
-					class="absolute invert opacity-15 grayscale bottom-10 left-10 animate-pulse"
-				>
-					No images selected.
+				<p style="font-size: 44px" class="absolute opacity-20 grayscale bottom-10 left-10">
+					📸 No images selected.
 				</p>
-				<!-- <p style="font-size: 400px" class="opacity-20 grayscale">📸</p> -->
 			</span>
 		</div>
 	{/if}
