@@ -21,6 +21,10 @@
 	<TopNav />
 {/if}
 
-<div class="w-full h-full min-h-screen overflow-hidden" class:bg-red-800={debug} class:p-10={!show}>
+<div
+	class="relative w-full h-full min-h-screen overflow-hidden"
+	class:bg-red-800={debug}
+	class:p-10={!show}
+>
 	<slot />
 </div>
