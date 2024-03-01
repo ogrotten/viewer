@@ -18,6 +18,8 @@
 	}
 </script>
 
-<h2>Login</h2>
+<!-- <h2>Login</h2> -->
 
-<button class="btn btn-primary" on:click={signInWithGoogle}>Sign in with Google</button>
+<button class="btn btn-primary hover:btn-neutral" on:click={signInWithGoogle}>
+	Sign in with Google
+</button>
