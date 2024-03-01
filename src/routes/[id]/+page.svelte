@@ -364,7 +364,9 @@
 />
 
 {#if loading && unsubAllImages}
-	<div class="" />
+	<div class="flex items-center justify-center w-screen">
+		<div class="m-auto loading loading-bars loading-lg" />
+	</div>
 {:else}
 	<div class="flex flex-row gap-10">
 		<div class="space-y-8 min-w-[300px]">
