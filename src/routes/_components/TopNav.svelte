@@ -9,13 +9,17 @@
 <div class="border-b navbar border-accent">
 	<div class="flex-1">
 		<p class="ml-8 font-bold btn-neutral-content">char.show</p>
-		<!-- <ul class="px-1 menu menu-horizontal">
+		<ul class="px-1 menu menu-horizontal">
+			<li class="" />
+		</ul>
+		<ul class="px-1 menu menu-horizontal">
 			{#if $dbUser && !manage}
-				<li><a href="/">Home</a></li>
+				<!-- <li><a href="/">Home</a></li> -->
 				<li><a href={$dbUser.id}>Manage</a></li>
-				<li><a href={`/show/${$dbUser.id}`}>Show</a></li>
+				<li><a href="/docs">Docs</a></li>
+				<!-- <li><a href={`/show/${$dbUser.id}`}>Show</a></li> -->
 			{/if}
-		</ul> -->
+		</ul>
 	</div>
 	<div class="flex-none">
 		<ul class="px-1 menu menu-horizontal">
