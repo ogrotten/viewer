@@ -426,12 +426,15 @@
 					>
 						<div class="flex items-center justify-between">
 							<p class="scale-50 label-text">🟩</p>
-							<p class="scale-75 label-text">🟩</p>
-							<!-- <p class="scale-100 label-text">🟩</p>
-							<p class="label-text">Zoom</p> -->
+							<p class=" label-text">·</p>
+							<p class=" label-text">·</p>
+							<p class=" label-text">·</p>
+							<p class="-ml-3 -mr-3 scale-75 label-text">Zoom</p>
+							<!-- <p class="scale-75 label-text">🟩</p> -->
+							<p class=" label-text">·</p>
+							<p class=" label-text">·</p>
+							<p class=" label-text">·</p>
 							<p class="scale-100 label-text">🟩</p>
-							<p class="scale-125 label-text">🟩</p>
-							<p class="scale-150 label-text">🟩</p>
 						</div>
 						<input
 							type="range"
