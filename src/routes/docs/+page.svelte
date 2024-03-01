@@ -33,6 +33,39 @@
 </script>
 
 <span class="space-y-4">
+	<div class="card card-body bg-warning-content text-warning">
+		<p class="text-lg font-bold">Known Issues</p>
+		<ul class="list-disc">
+			<li class="">
+				Now is a bit wonky. Reloading the Show screen will reset.
+				<ul class="list-decimal">
+					<li>
+						If you change the image while Now is active, the image will not change until
+						the page is reloaded.
+					</li>
+					<li>Clicking off Now does not reliably return to Carousel or Gallery.</li>
+				</ul>
+			</li>
+			<li class="">
+				When you add images, and select them for a View, you'll need to manually reload the
+				View page.
+			</li>
+			<li class="">
+				<span class="font-bold">Manage > List View</span>
+				would be better listing as vertical first, but I haven't really figured out how to do
+				it.
+			</li>
+			<li class="">
+				<span class="font-bold">Images > Add Many</span>
+				planned to accept a google photos album. Any other ideas? (besides arbitrary image urls).
+			</li>
+			<li class="">
+				<span class="font-bold">Images > Add</span>
+				can take the exact same url multiple times. It will eventually complain if added images
+				are not unique.
+			</li>
+		</ul>
+	</div>
 	<p class="mt-4 text-lg font-bold">Load some images</p>
 	<ul>
 		<li class="italic">Left sidebar > Add Images</li>
@@ -98,26 +131,7 @@
 		</li>
 	</ul>
 	<br />
-	<p class="mt-4 text-lg font-bold">Known Issues</p>
-	<ul>
-		<li class="">The top navigation bar is a clunky. I'll probably remove it entirely.</li>
-		<li class="">
-			When you add images, and select them for a View, you'll need to manually reload the View
-			page.
-		</li>
-		<li class="">
-			<span class="font-bold">Manage > List View</span>
-			would be better listing as vertical first, but I haven't really figured out how to do it.
-		</li>
-		<li class="">
-			<span class="font-bold">Images > Add Many</span>
-			planned to accept a google photos album. Any other ideas? (besides arbitrary image urls).
-		</li>
-		<li class="">
-			<span class="font-bold">Images > Add</span>
-			can take the exact same url multiple times. It needs to be unique.
-		</li>
-	</ul>
+
 	<br />
 	<p class="mt-4 text-lg font-bold">Demo Images</p>
 	<ul>

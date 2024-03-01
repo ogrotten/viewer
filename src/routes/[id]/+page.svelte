@@ -364,11 +364,11 @@
 />
 
 {#if loading && unsubAllImages}
-	<div class="flex items-center justify-center w-screen">
+	<div transition:fade|local class="flex items-center justify-center w-screen">
 		<div class="m-auto loading loading-bars loading-lg" />
 	</div>
 {:else}
-	<div class="flex flex-row gap-10">
+	<div transition:fade|local class="flex flex-row gap-10">
 		<div class="space-y-8 min-w-[300px]">
 			<div class="m-auto">
 				<button
