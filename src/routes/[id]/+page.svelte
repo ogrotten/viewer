@@ -16,8 +16,8 @@
 		query,
 		onSnapshot,
 	} from 'firebase/firestore'
-	import Help from './Help.svelte'
-	import type { User } from 'firebase/auth'
+
+	import type { UserWithMeta } from '$lib/types'
 
 	const debug = false
 	let setupLink = `${$page.url.origin}/show/`
@@ -62,7 +62,7 @@
 
 	let orientOptions = ['grid', 'square', 'wide', 'tall']
 
-	let allusers: User[] = [],
+	let allusers: UserWithMeta[] = [],
 		viewerId: string,
 		isAdmin = $dbUser?.role === 'admin'
 

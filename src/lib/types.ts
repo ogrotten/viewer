@@ -1,3 +1,11 @@
+import type { User } from 'firebase/auth'
+
+export interface UserWithMeta extends User {
+	role: string;
+	name: string;
+	id: string;
+}
+
 interface Viewer {
 	id: string;
 	images: string[];
