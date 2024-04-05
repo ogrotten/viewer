@@ -13,7 +13,7 @@ interface Viewer {
 	single: boolean;
 }
 
-interface Image {
+export interface Image {
 	added: number
 	carousel: boolean;
 	gallery: boolean;
@@ -32,12 +32,13 @@ interface Changed {
 	id: string
 }
 
-interface UserPref {
+export interface UserPref {
 	carouselTime: number
 	carouselTransitionTime: number
 	favorites: string[]
 	sort: boolean
 	tiles: boolean
+	sortType: "added" | "recent" | "title"
 }
 
 type Orient = 'grid' | 'square' | 'wide' | 'tall'

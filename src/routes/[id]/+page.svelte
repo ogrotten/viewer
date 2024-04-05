@@ -17,7 +17,7 @@
 		onSnapshot,
 	} from 'firebase/firestore'
 
-	import type { UserWithMeta } from '$lib/types'
+	import type { UserWithMeta, Image, UserPref } from '$lib/types'
 
 	const debug = false
 	let setupLink = `${$page.url.origin}/show/`
@@ -33,7 +33,13 @@
 			tiles: false,
 			favorites: [],
 			sort: false,
+			sortType: 'recent',
 		}
+	const sortTypes = [
+		{ name: 'Title Text', value: 'title' },
+		{ name: 'Date Added', value: 'added' },
+		{ name: 'Most Recent Activity', value: 'recent' },
+	]
 
 	let newImg: Image = {
 			url: '',
@@ -101,6 +107,7 @@
 			}),
 		]).then(() => {
 			loading = false
+			changeSort(pref.sortType)
 		})
 
 		if ($dbUser.role === 'admin') {
@@ -308,7 +315,7 @@
 	})
 
 	let viewerTab: number = 0,
-		viewerImages = []
+		viewerImages: Image[]
 
 	$: if (images?.length === 0 && !loading) viewerTab = 0
 
@@ -322,6 +329,8 @@
 
 		if (viewerTab > 1)
 			viewerImages = [...images.filter(image => image[tab?.name?.toLowerCase()])]
+
+		changeSort(pref.sortType)
 	}
 
 	const imageFave = (image, idx) => {
@@ -335,9 +344,30 @@
 		updatePrefs()
 	}
 
-	$: pref.sort
-		? (viewerImages = [...viewerImages].sort((a, b) => b.added - a.added))
-		: (viewerImages = [...viewerImages].sort((a, b) => b.index - a.index))
+	// $: pref.sort
+	// 	? (viewerImages = [...viewerImages].sort((a, b) => b.added - a.added))
+	// 	: (viewerImages = [...viewerImages].sort((a, b) => b.index - a.index))
+
+	const changeSort = value => {
+		// console.log(`LOG..+page: e.target.value`, e.target.value)
+
+		switch (value) {
+			case 'title':
+				viewerImages = viewerImages.sort((a, b) => a.title.localeCompare(b.title))
+				const notitles = viewerImages.filter(image => !image.title)
+				viewerImages = [...viewerImages.filter(image => image.title), ...notitles]
+				break
+			case 'added':
+				viewerImages = viewerImages.sort((a, b) => a.added - b.added)
+				break
+			case 'recent':
+				viewerImages = viewerImages.sort((a, b) => b.index - a.index)
+				break
+			default:
+				console.log(`LOG..+page: woops sort`)
+				break
+		}
+	}
 
 	let throbId
 	$: if (throb) {
@@ -362,7 +392,7 @@
 	$: if (!loading) console.time('load')
 	$: if (images?.length > 0) console.timeEnd('load')
 
-	$: console.log(`LOG..+page: allusers`, allusers)
+	$: console.log(`LOG..+page: `, pref.sortType)
 </script>
 
 <svelte:window
@@ -686,16 +716,34 @@
 						<div class="flex items-center justify-start gap-8">
 							<div class="cursor-pointer w">
 								<label class="items-center gap-2 cursor-pointer label">
-									<input
+									<!-- <input
 										type="checkbox"
 										class="toggle toggle-xs bg-primary"
 										bind:checked={pref.sort}
 										on:change={updatePrefs}
-									/>
+									/> -->
 									<span class="label-text">
-										Sorting by: <span class="font-bold">
+										Sort by: &nbsp;
+										<!-- <span class="font-bold">
 											{pref.sort ? 'Added' : 'Recent'}
-										</span>
+										</span> -->
+										<select
+											class="select select-bordered select-sm select-neutral"
+											on:change={e => {
+												console.log(`LOG..+page: `)
+												pref.sortType = e.target.value
+												updatePrefs()
+											}}
+										>
+											{#each sortTypes as t}
+												<option
+													value={t.value}
+													selected={pref.sortType === t.value}
+												>
+													{t.name}
+												</option>
+											{/each}
+										</select>
 									</span>
 								</label>
 							</div>
