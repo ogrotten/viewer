@@ -7,8 +7,10 @@ import { db } from '$lib/firebase'
 // import type { User } from 'firebase/auth'
 import { goto } from '$app/navigation'
 
-interface UserWithRole extends User {
+interface UserWithMeta extends User {
 	role: string;
+	name: string;
+	id: string;
 }
 
 /**
@@ -59,7 +61,7 @@ function userStore() {
 					}
 
 					const data = doc.data() as DocumentData
-					const userWithRole = user as UserWithRole;
+					const userWithRole = user as UserWithMeta;
 					userWithRole.role = data.role
 				})
 			}

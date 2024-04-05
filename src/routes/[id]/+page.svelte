@@ -106,6 +106,7 @@
 		if ($dbUser.role === 'admin') {
 			getDocs(collection(db, 'users')).then(querySnapshot => {
 				allusers = [...querySnapshot.docs].map(doc => ({ ...doc.data(), id: doc.id }))
+				allusers.sort((a, b) => a.name.localeCompare(b.name))
 			})
 		}
 	}
@@ -361,7 +362,7 @@
 	$: if (!loading) console.time('load')
 	$: if (images?.length > 0) console.timeEnd('load')
 
-	$: console.log(`LOG..+page: $dbUser`, $dbUser)
+	$: console.log(`LOG..+page: allusers`, allusers)
 </script>
 
 <svelte:window
@@ -639,7 +640,7 @@
 							>
 								<option value="">Select a user</option>
 								{#each allusers as user}
-									<option value={user.id}>{user.name}</option>
+									<option value={user.uid}>{user.name}</option>
 								{/each}
 							</select>
 						</div>
