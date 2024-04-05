@@ -99,7 +99,14 @@
 					presentGallery = [...gallery]
 					changed = { id: added.id, added: true }
 				} else if (change.type === 'modified') {
+					let modified = change.doc.data()
 					presentGallery = [...gallery]
+					changed = {
+						id: modified.id,
+						modded: true,
+						wider: modified.wider,
+						taller: modified.taller,
+					}
 				} else if (change.type === 'removed') {
 					let removed = change.doc.data()
 					presentGallery.splice(presentGallery.indexOf(removed), 1)

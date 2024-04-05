@@ -110,7 +110,6 @@
 
 		const wider = incoming.wider ? 1 : 0
 		const taller = incoming.taller ? 1 : 0
-		console.log(`LOG..GalleryTile: `, incoming.title, orient, wider, taller)
 
 		switch (orient) {
 			case 'grid':
@@ -190,7 +189,7 @@
 		item.getElement().classList.repl
 
 		if (changed.added) mu?.show([item])
-		else {
+		else if (changed.removed) {
 			mu?.hide([item])
 		}
 
@@ -205,6 +204,10 @@
 			const inner = outer.children as HTMLCollectionOf<HTMLDivElement>
 			const img = inner[0].children[0] as HTMLImageElement
 			const fromImages = galleryAll.find(i => i.id === outer.getAttribute('data-muuri-id'))
+			if (changed?.modded && changed.id === fromImages.id) {
+				fromImages.wider = changed.wider
+				fromImages.taller = changed.taller
+			}
 			setOrient(fromImages, outer, img)
 		})
 
