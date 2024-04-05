@@ -17,6 +17,7 @@
 		onSnapshot,
 	} from 'firebase/firestore'
 	import Help from './Help.svelte'
+	import type { User } from 'firebase/auth'
 
 	const debug = false
 	let setupLink = `${$page.url.origin}/show/`
@@ -62,7 +63,8 @@
 	let orientOptions = ['grid', 'square', 'wide', 'tall']
 
 	let allusers: User[] = [],
-		viewerId: string
+		viewerId: string,
+		isAdmin = $dbUser?.role === 'admin'
 
 	let showHover = -1
 
@@ -101,16 +103,19 @@
 			loading = false
 		})
 
-		// if ($dbUser.role === 'admin') {
-		// 	getDocs(collection(db, 'users')).then(querySnapshot => {
-		// 		allusers = [...querySnapshot.docs].map(doc => ({ ...doc.data(), id: doc.id }))
-		// 	})
-		// }
+		if ($dbUser.role === 'admin') {
+			getDocs(collection(db, 'users')).then(querySnapshot => {
+				allusers = [...querySnapshot.docs].map(doc => ({ ...doc.data(), id: doc.id }))
+			})
+		}
 	}
 
 	let unsubAllImages
 
-	const selectViewerId = e => {}
+	const selectViewerId = e => {
+		viewerId = e.target.value
+		getImages()
+	}
 
 	async function getImages() {
 		const querySnapshot = query(collection(db, 'viewers', viewerId, 'images'))
@@ -355,6 +360,8 @@
 
 	$: if (!loading) console.time('load')
 	$: if (images?.length > 0) console.timeEnd('load')
+
+	$: console.log(`LOG..+page: $dbUser`, $dbUser)
 </script>
 
 <svelte:window
@@ -369,212 +376,215 @@
 	</div>
 {:else}
 	<div transition:fade class="flex flex-row gap-10">
+		<!-- SIDE PANEL -->
 		<div class="space-y-8 min-w-[300px]">
-			<div class="m-auto">
-				<button
-					class="z-50 transition-all border border-success btn-outline btn-success btn-sm"
-					on:click={() => {
-						navigator.clipboard.writeText(setupLink).then(() => {})
-						linkcopied = true
-					}}
-				>
-					🔗 Click to copy live show link.
-				</button>
-				{#if linkcopied}
+			<div class="space-y-8">
+				<div class="m-auto">
 					<button
-						class="z-0 font-bold transition duration-200 border pointer-events-none border-success btn-outline btn-success btn-xs"
-						transition:fly={{ x: -20 }}
+						class="z-50 transition-all border border-success btn-outline btn-success btn-sm"
+						on:click={() => {
+							navigator.clipboard.writeText(setupLink).then(() => {})
+							linkcopied = true
+						}}
 					>
-						👍 Copied!
+						🔗 Click to copy live show link.
 					</button>
-				{/if}
-			</div>
-
-			<div class="">
-				<div class="p-8 bg-opacity-25 rounded-t-lg bg-primary">
-					<button
-						name="carousel"
-						id="carousel"
-						class:btn-outline={!show.carousel}
-						class="w-full h-12 btn btn-outline btn-info"
-						on:click={updateShow}
-					>
-						Carousel
-					</button>
-				</div>
-				<div class="flex flex-col items-center gap-4 p-8 bg-opacity-25 bg-secondary">
-					<button
-						name="gallery"
-						id="gallery"
-						class:btn-outline={!show.gallery}
-						class="w-full h-12 btn btn-outline btn-secondary"
-						on:click={updateShow}
-					>
-						Gallery
-					</button>
-					<div class="gap-4 form-control">
-						<div class="join">
-							{#each orientOptions as option}
-								<button
-									class="btn btn-xs join-item btn-secondary"
-									name="orient"
-									class:btn-outline={show.orient !== option}
-									on:click={updateShow}
-									value={option}
-								>
-									{option}
-								</button>
-							{/each}
-						</div>
-					</div>
-					<div
-						class="flex flex-col w-full gap-1"
-						class:opacity-30={show.orient === 'wide' || show.orient === 'tall'}
-					>
-						<div class="flex items-center justify-between">
-							<p class="scale-50 label-text">🟩</p>
-							<p class=" label-text">·</p>
-							<p class=" label-text">·</p>
-							<p class=" label-text">·</p>
-							<p class="-ml-3 -mr-3 scale-75 label-text">Zoom</p>
-							<!-- <p class="scale-75 label-text">🟩</p> -->
-							<p class=" label-text">·</p>
-							<p class=" label-text">·</p>
-							<p class=" label-text">·</p>
-							<p class="scale-100 label-text">🟩</p>
-						</div>
-						<input
-							type="range"
-							name="zoom"
-							disabled={show.orient === 'wide' || show.orient === 'tall'}
-							min={zoomRange.min}
-							max={zoomRange.max}
-							value={zoomRange.current}
-							class="w-full range"
-							class:range-secondary={show.orient === 'grid' ||
-								show.orient === 'square'}
-							on:mouseup={changeZoom}
-							step={1}
-						/>
-					</div>
-				</div>
-				<div class="p-8 bg-opacity-25 rounded-b-lg bg-accent">
-					<button
-						name="now"
-						id="now"
-						class:btn-outline={!show.now}
-						class="w-full h-12 btn btn-outline btn-accent"
-						on:click={updateShow}
-					>
-						Now
-					</button>
-				</div>
-			</div>
-			<div id="add-images" class="mb-8">
-				<div class="flex items-center justify-between p-4 rounded bg-neutral-focus">
-					<div class="flex flex-row items-center justify-start w-full gap-8">
+					{#if linkcopied}
 						<button
-							class=" btn btn-xs btn-neutral"
-							on:click={() => (showAdd = !showAdd)}
+							class="z-0 font-bold transition duration-200 border pointer-events-none border-success btn-outline btn-success btn-xs"
+							transition:fly={{ x: -20 }}
 						>
-							<div class="text-neutral-content">
-								{showAdd ? 'Cancel' : 'Add Images'}
-							</div>
+							👍 Copied!
 						</button>
-						{#if showAdd}
-							{#each ['Just One', 'Many'] as item, idx}
-								<div class="flex items-center justify-start h-4 text-sm">
-									<a
-										class="text-secondary-focus"
-										class:underline={tab === idx}
-										on:click={() => (tab = idx)}
-										href={''}
-									>
-										{item}
-									</a>
-								</div>
-								<!-- <a class="tab" class:active={tab === 2} on:click={() => (tab = 2)} href={''}> from Google Drive </a> -->
-							{/each}
-						{/if}
-					</div>
+					{/if}
 				</div>
-				{#if showAdd}
-					<div
-						class="w-full rounded-t-none shadow-xl card bg-neutral"
-						transition:fly={{ y: -10 }}
-						class:h-0={!showAdd}
-					>
-						<div class="p-4">
-							{#if tab === 0}
-								<div class="flex flex-col gap-4" in:fly>
-									<input
-										type="title"
-										placeholder="Title (optional)"
-										class="w-full max-w-xs input-sm input input-bordered input-neutral"
-										bind:value={newImg.title}
-									/>
-									<input
-										type="url"
-										placeholder="Image URL"
-										class="w-full max-w-xs input-sm input input-bordered input-neutral"
-										bind:value={newImg.url}
-									/>
-
+				<div class="">
+					<div class="p-8 bg-opacity-25 rounded-t-lg bg-primary">
+						<button
+							name="carousel"
+							id="carousel"
+							class:btn-outline={!show.carousel}
+							class="w-full h-12 btn btn-outline btn-info"
+							on:click={updateShow}
+						>
+							Carousel
+						</button>
+					</div>
+					<div class="flex flex-col items-center gap-4 p-8 bg-opacity-25 bg-secondary">
+						<button
+							name="gallery"
+							id="gallery"
+							class:btn-outline={!show.gallery}
+							class="w-full h-12 btn btn-outline btn-secondary"
+							on:click={updateShow}
+						>
+							Gallery
+						</button>
+						<div class="gap-4 form-control">
+							<div class="join">
+								{#each orientOptions as option}
 									<button
-										class="btn btn-primary btn-sm"
-										disabled={!urlValid}
-										on:click={() => addOne(newImg)}
+										class="btn btn-xs join-item btn-secondary"
+										name="orient"
+										class:btn-outline={show.orient !== option}
+										on:click={updateShow}
+										value={option}
 									>
-										Add One
+										{option}
 									</button>
-								</div>
-							{:else if tab === 1}
-								<div class="flex flex-col gap-4" in:fly>
-									<div class="">
-										<p class="">Enter a list, one per line (title optional):</p>
-										<pre
-											data-prefix=""
-											class="p-1 mt-2 text-sm bg-black border rounded-lg border-cyan-900 w-fit"><code> <span
-													class="font-bold">URL, Title</span
-												> </code></pre>
-									</div>
-									<textarea
-										rows="5"
-										class="textarea textarea-bordered"
-										placeholder=""
-										bind:value={many}
-									/>
-									<button
-										class="self-end btn btn-primary btn-sm"
-										disabled={manyFiltered.length === 0}
-										on:click={addMany}
-									>
-										Add Many
-									</button>
-								</div>
-							{:else if tab === 2}
-								<!--  -->
-							{/if}
-							<p class="pt-10">
-								<span class="font-bold">Image URL</span> should have a file extension
-								(.jpg, .png, etc.) and be a direct link to the image. If you're using
-								Google Drive, make sure the link is public.
-							</p>
+								{/each}
+							</div>
+						</div>
+						<div
+							class="flex flex-col w-full gap-1"
+							class:opacity-30={show.orient === 'wide' || show.orient === 'tall'}
+						>
+							<div class="flex items-center justify-between">
+								<p class="scale-50 label-text">🟩</p>
+								<p class=" label-text">·</p>
+								<p class=" label-text">·</p>
+								<p class=" label-text">·</p>
+								<p class="-ml-3 -mr-3 scale-75 label-text">Zoom</p>
+								<!-- <p class="scale-75 label-text">🟩</p> -->
+								<p class=" label-text">·</p>
+								<p class=" label-text">·</p>
+								<p class=" label-text">·</p>
+								<p class="scale-100 label-text">🟩</p>
+							</div>
+							<input
+								type="range"
+								name="zoom"
+								disabled={show.orient === 'wide' || show.orient === 'tall'}
+								min={zoomRange.min}
+								max={zoomRange.max}
+								value={zoomRange.current}
+								class="w-full range"
+								class:range-secondary={show.orient === 'grid' ||
+									show.orient === 'square'}
+								on:mouseup={changeZoom}
+								step={1}
+							/>
 						</div>
 					</div>
-				{/if}
-			</div>
-
-			<div id="reset" class="flex items-center gap-2">
-				<button class="btn btn-error btn-outline btn-xs" on:click={resetShowStates}>
-					wtf...
-				</button>
-				<p class="text-xs">
-					Click to reset if it's being stupid. Won't reset image selections below.
-				</p>
+					<div class="p-8 bg-opacity-25 rounded-b-lg bg-accent">
+						<button
+							name="now"
+							id="now"
+							class:btn-outline={!show.now}
+							class="w-full h-12 btn btn-outline btn-accent"
+							on:click={updateShow}
+						>
+							Now
+						</button>
+					</div>
+				</div>
+				<div id="add-images" class="mb-8">
+					<div class="flex items-center justify-between p-4 rounded-lg bg-neutral-focus">
+						<div class="flex flex-row items-center justify-start w-full gap-8">
+							<button
+								class=" btn btn-xs btn-neutral"
+								on:click={() => (showAdd = !showAdd)}
+							>
+								<div class="text-neutral-content">
+									{showAdd ? 'Cancel' : 'Add Images'}
+								</div>
+							</button>
+							{#if showAdd}
+								{#each ['Just One', 'Many'] as item, idx}
+									<div class="flex items-center justify-start h-4 text-sm">
+										<a
+											class="text-secondary-focus"
+											class:underline={tab === idx}
+											on:click={() => (tab = idx)}
+											href={''}
+										>
+											{item}
+										</a>
+									</div>
+									<!-- <a class="tab" class:active={tab === 2} on:click={() => (tab = 2)} href={''}> from Google Drive </a> -->
+								{/each}
+							{/if}
+						</div>
+					</div>
+					{#if showAdd}
+						<div
+							class="w-full rounded-t-none shadow-xl card bg-neutral"
+							transition:fly={{ y: -10 }}
+							class:h-0={!showAdd}
+						>
+							<div class="p-4">
+								{#if tab === 0}
+									<div class="flex flex-col gap-4" in:fly>
+										<input
+											type="title"
+											placeholder="Title (optional)"
+											class="w-full max-w-xs input-sm input input-bordered input-neutral"
+											bind:value={newImg.title}
+										/>
+										<input
+											type="url"
+											placeholder="Image URL"
+											class="w-full max-w-xs input-sm input input-bordered input-neutral"
+											bind:value={newImg.url}
+										/>
+										<button
+											class="btn btn-primary btn-sm"
+											disabled={!urlValid}
+											on:click={() => addOne(newImg)}
+										>
+											Add One
+										</button>
+									</div>
+								{:else if tab === 1}
+									<div class="flex flex-col gap-4" in:fly>
+										<div class="">
+											<p class="">
+												Enter a list, one per line (title optional):
+											</p>
+											<pre
+												data-prefix=""
+												class="p-1 mt-2 text-sm bg-black border rounded-lg border-cyan-900 w-fit"><code> <span
+														class="font-bold">URL, Title</span
+													> </code></pre>
+										</div>
+										<textarea
+											rows="5"
+											class="textarea textarea-bordered"
+											placeholder=""
+											bind:value={many}
+										/>
+										<button
+											class="self-end btn btn-primary btn-sm"
+											disabled={manyFiltered.length === 0}
+											on:click={addMany}
+										>
+											Add Many
+										</button>
+									</div>
+								{:else if tab === 2}
+									<!--  -->
+								{/if}
+								<p class="pt-10">
+									<span class="font-bold">Image URL</span> should have a file extension
+									(.jpg, .png, etc.) and be a direct link to the image. If you're using
+									Google Drive, make sure the link is public.
+								</p>
+							</div>
+						</div>
+					{/if}
+				</div>
+				<div id="reset" class="flex items-center gap-2">
+					<button class="btn btn-error btn-outline btn-xs" on:click={resetShowStates}>
+						wtf...
+					</button>
+					<p class="text-xs">
+						Click to reset if it's being stupid. Won't reset image selections below.
+					</p>
+				</div>
 			</div>
 		</div>
 
+		<!-- BODY -->
 		<div class="flex flex-col gap-10 shrink">
 			<div class="hidden shadow-xl card bg-neutral">
 				<div class="card-body">
@@ -617,6 +627,25 @@
 				</div>
 			</div>
 
+			{#if isAdmin}
+				<div class="w-full p-6 border-2 card border-warning">
+					<div class="flex items-center justify-start gap-4">
+						<div class="btn btn-primary btn-outline btn-xs">Admin</div>
+						<div class="flex items-center gap-4">
+							<p class="font-bold">All Users</p>
+							<select
+								class="select select-bordered select-neutral"
+								on:change={selectViewerId}
+							>
+								<option value="">Select a user</option>
+								{#each allusers as user}
+									<option value={user.id}>{user.name}</option>
+								{/each}
+							</select>
+						</div>
+					</div>
+				</div>
+			{/if}
 			<section id="image-list" class="">
 				<div class="flex items-center justify-between">
 					<div role="tablist" class="gap-4 tabs tabs-lifted tabs-xs">

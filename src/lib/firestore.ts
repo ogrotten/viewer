@@ -1,11 +1,15 @@
 import { writable } from 'svelte/store'
 import { auth } from '$lib/firebase'
-import { doc, getFirestore, onSnapshot, getDoc, setDoc } from "firebase/firestore"
-import { onAuthStateChanged } from 'firebase/auth'
+import { doc, getFirestore, onSnapshot, getDoc, setDoc, type DocumentData } from "firebase/firestore"
+import { onAuthStateChanged, type User } from 'firebase/auth'
 import { db } from '$lib/firebase'
 
 // import type { User } from 'firebase/auth'
 import { goto } from '$app/navigation'
+
+interface UserWithRole extends User {
+	role: string;
+}
 
 /**
  * @returns a store with the current firebase user
@@ -32,12 +36,13 @@ function userStore() {
 			}
 
 			user.id = user.uid
+
 			set(user)
 
 			const userRef = doc(db, `users/${user.uid}`)
 			const viewRef = doc(db, `viewers/${user.uid}`)
 			if (user) {
-				await getDoc(userRef).then((doc) => {
+				await getDoc(userRef).then(async (doc) => {
 					if (!doc.exists()) {
 						console.log('Creating user')
 						setDoc(userRef, {
@@ -52,6 +57,10 @@ function userStore() {
 							carousel: false,
 						})
 					}
+
+					const data = doc.data() as DocumentData
+					const userWithRole = user as UserWithRole;
+					userWithRole.role = data.role
 				})
 			}
 		})
