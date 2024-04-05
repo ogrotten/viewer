@@ -25,6 +25,9 @@ export interface Image {
 
 	height?: number;
 	width?: number;
+
+	taller?: boolean;
+	wider?: boolean;
 }
 
 interface Changed {

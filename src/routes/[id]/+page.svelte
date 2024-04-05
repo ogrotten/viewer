@@ -181,7 +181,7 @@
 			})
 		}
 		image.index = Date.now()
-
+		console.log(`LOG..+page: image`, image)
 		updateDoc(doc(db, 'viewers', $dbUser?.uid, 'images', image.id), image).then(() => {
 			getImages()
 		})
@@ -387,6 +387,12 @@
 	const changeZoom = e => {
 		zoomRange.outgoing = zoomRange.max - e.target.value + zoomRange.min
 		updateShow(e)
+	}
+
+	const modifyDimension = e => {
+		const { name } = e.target
+		const image = viewerImages.find(image => image.id === throbId)
+		// updateDoc(doc(db, 'viewers', $dbUser?.uid, 'images', image.id), image)
 	}
 
 	$: if (!loading) console.time('load')
@@ -823,19 +829,6 @@
 											class="z-0 object-cover object-top w-48 h-36 rounded-2xl"
 											on:load={e => updateImage({ e, idx })}
 										/>
-										<!-- <a href={image.url} class="" target="_blank">
-										<div class="relative">
-											<button
-												class="absolute top-0 right-0 z-10 p-1 transition-all hover:bg-red-900"
-												on:click={() => imageDelete(image, idx)}>❌</button
-											>
-											<img
-												src={url}
-												alt="image"
-												class="z-0 object-cover object-top w-48 h-36 rounded-2xl"
-											/>
-										</div>
-									</a> -->
 										<div class="flex items-center justify-start gap-2 py-4">
 											<button
 												class="p-1 transition-all hover:bg-blue-600"
@@ -895,6 +888,49 @@
 											>
 												<span class="label-text">Now</span>
 											</button>
+										</div>
+										<div class="flex flex-row justify-between mt-4">
+											<!-- <button
+												class="font-normal text-gray-800 capitalize btn btn-xs font-xs"
+												name="taller"
+												class:unselected={!image.taller}
+												class:btn-success={image.taller}
+												on:click={() =>
+													parameter({ ...image, taller: !image.taller })}
+											>
+											
+											</button> -->
+											<span class="flex items-center gap-2">
+												<input
+													type="checkbox"
+													class="transition-all toggle toggle-xs"
+													class:bg-primary={image.taller}
+													class:bg-neutral={!image.taller}
+													bind:checked={image.taller}
+													on:click={() =>
+														parameter({
+															...image,
+															taller: !image.taller,
+														})}
+												/>
+												<span class="label-text">Taller</span>
+											</span>
+											<span class="flex items-center gap-2">
+												<input
+													type="checkbox"
+													class="transition-all toggle toggle-xs"
+													class:bg-primary={image.wider}
+													class:bg-neutral={!image.wider}
+													bind:checked={image.wider}
+													on:click={() => {
+														parameter({
+															...image,
+															wider: !image.wider,
+														})
+													}}
+												/>
+												<span class="label-text">Wider</span>
+											</span>
 										</div>
 									</span>
 								{/each}
