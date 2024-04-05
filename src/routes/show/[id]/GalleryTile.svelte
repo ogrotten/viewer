@@ -33,7 +33,6 @@
 	let Muuri, mu: any
 	onMount(async () => {
 		initLayout(galleryAll)
-		console.log(`LOG..GalleryTile: here`)
 	})
 
 	let mouse = {
@@ -59,13 +58,11 @@
 		outer.style.display = 'none'
 
 		outer.onmouseup = () => {
-			console.log(`LOG..GalleryTile: up`, mouse.diff)
 			if (!mouse.drag) dispatch('localNow', { id: incoming.id })
 			mouse.drag = false
 		}
 
 		outer.onmousemove = e => {
-			console.log(`LOG..GalleryTile: move`, mouse.down, mouse.drag)
 			mouse.diff = Math.abs(mouse.x - e.clientX) + Math.abs(mouse.y - e.clientY)
 
 			if (mouse.down && mouse.diff > 100) {
@@ -76,8 +73,6 @@
 		}
 
 		outer.onmousedown = e => {
-			console.log(`LOG..GalleryTile: down`, mouse.diff)
-
 			mouse.down = true
 
 			mouse.x = e.clientX
@@ -86,12 +81,10 @@
 		}
 
 		outer.onmouseenter = () => {
-			console.log(`LOG..GalleryTile: enter`, mouse.diff)
 			mouse.over = true
 		}
 
 		outer.onmouseleave = () => {
-			console.log(`LOG..GalleryTile: leave`, mouse.diff)
 			mouse.over = false
 		}
 
@@ -115,25 +108,29 @@
 
 		let dimensions = { width: w, height: h }
 
+		const wider = incoming.wider ? 1 : 0
+		const taller = incoming.taller ? 1 : 0
+		console.log(`LOG..GalleryTile: `, incoming.title, orient, wider, taller)
+
 		switch (orient) {
 			case 'grid':
 				if (ratio > 1.25) {
 					// wide
-					dimensions.width = size * 2
-					dimensions.height = size
+					dimensions.width = size * (2 + wider)
+					dimensions.height = size * (1 + taller)
 				} else if (ratio < 0.75) {
 					// tall
-					dimensions.width = size
-					dimensions.height = size * 2
+					dimensions.width = size * (1 + wider)
+					dimensions.height = size * (2 + taller)
 				} else {
 					// square
-					dimensions.width = size
-					dimensions.height = size
+					dimensions.width = size * (1 + wider)
+					dimensions.height = size * (1 + taller)
 				}
 				break
 			case 'square':
-				dimensions.width = size
-				dimensions.height = size
+				dimensions.width = size * (1 + wider)
+				dimensions.height = size * (1 + taller)
 				break
 			case 'wide':
 				dimensions.width = tile.FWD
@@ -208,7 +205,6 @@
 			const inner = outer.children as HTMLCollectionOf<HTMLDivElement>
 			const img = inner[0].children[0] as HTMLImageElement
 			const fromImages = galleryAll.find(i => i.id === outer.getAttribute('data-muuri-id'))
-			console.log(`LOG..GalleryTile: `)
 			setOrient(fromImages, outer, img)
 		})
 

@@ -199,8 +199,6 @@
 			}
 		})
 	}
-
-	$: console.log(`LOG..+page: viewer`, viewer)
 </script>
 
 <div class="">
