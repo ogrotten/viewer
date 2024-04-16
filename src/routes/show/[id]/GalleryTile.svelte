@@ -5,6 +5,7 @@
 	import { createEventDispatcher } from 'svelte'
 	import { cubicInOut } from 'svelte/easing'
 	import { fade } from 'svelte/transition'
+	import type { Image } from '$lib/types'
 
 	const dispatch = createEventDispatcher()
 
@@ -14,7 +15,6 @@
 		gallery: Image[] = [],
 		presentGallery: Image[] = [],
 		changed = null,
-		attach,
 		changedBool = false,
 		zoom = 8
 

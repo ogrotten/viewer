@@ -222,12 +222,14 @@
 	}
 
 	const setGalleryItem = (image: Image) => {
+		// debugger
 		if (image.gallery) {
 			image.gallery = false
 		} else {
 			image.gallery = true
 		}
-		return parameter(image)
+		// return
+		parameter(image)
 	}
 
 	$: if ($dbUser?.id) setup()
