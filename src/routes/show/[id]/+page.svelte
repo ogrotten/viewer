@@ -16,6 +16,7 @@
 	import { db } from '$lib/firebase'
 	import GalleryTile from './GalleryTile.svelte'
 	import type { PageData } from './$types'
+	import type { Image, Changed, Orient } from '$lib/types'
 
 	export let data: PageData
 
@@ -85,26 +86,38 @@
 			where('carousel', '==', true),
 		)
 		unsubCarousel = onSnapshot(c, snap => {
-			carousel = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id }))
+			carousel = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id } as Image))
 		})
 
 		const g = query(collection(db, 'viewers', incoming, 'images'), where('gallery', '==', true))
 		unsubGallery = onSnapshot(g, snap => {
 			gallery = [...snap.docs]
-				.map(doc => ({ ...doc.data(), id: doc.id }))
+				.map(doc => ({ ...doc.data(), id: doc.id } as Image))
 				.sort((a, b) => b.index - a.index)
 			snap.docChanges().forEach(change => {
 				if (change.type === 'added') {
 					let added = change.doc.data()
 					presentGallery = [...gallery]
-					changed = { id: added.id, added: true }
+					changed = {
+						id: added.id,
+						added: true,
+						wider: added.wider,
+						taller: added.taller,
+					}
 				} else if (change.type === 'modified') {
+					let modified = change.doc.data()
 					presentGallery = [...gallery]
+					changed = {
+						id: modified.id,
+						modded: true,
+						wider: modified.wider,
+						taller: modified.taller,
+					}
 				} else if (change.type === 'removed') {
 					let removed = change.doc.data()
-					presentGallery.splice(presentGallery.indexOf(removed), 1)
-
-					changed = { id: removed.id, added: false }
+					// presentGallery.splice(presentGallery.indexOf(removed), 1)
+					presentGallery = [...presentGallery.filter(x => x.id !== removed.id)]
+					changed = { id: removed.id, removed: true }
 				} else changed = null
 			})
 		})
@@ -112,7 +125,7 @@
 		const n = query(collection(db, 'viewers', incoming, 'images'), where('now', '==', true))
 
 		unsubNow = onSnapshot(n, snap => {
-			now = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id }))
+			now = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id } as Image))
 		})
 
 		Promise.all([unsubViewer, unsubGallery, unsubNow, unsubCarousel]).then(() => {
@@ -137,6 +150,8 @@
 			}
 		},
 	})
+
+	$: if (presentGallery) console.log(`LOG..+page: changed`)
 
 	function runBg() {
 		intervalId = setInterval(() => {
@@ -199,8 +214,6 @@
 			}
 		})
 	}
-
-	$: console.log(`LOG..+page: viewer`, viewer)
 </script>
 
 <div class="">
@@ -311,7 +324,6 @@
 				<GalleryTile
 					{presentGallery}
 					{gallery}
-					{attach}
 					{galleryAll}
 					{orient}
 					{zoom}

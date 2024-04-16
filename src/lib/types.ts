@@ -1,3 +1,11 @@
+import type { User } from 'firebase/auth'
+
+export interface UserWithMeta extends User {
+	role: string;
+	name: string;
+	id: string;
+}
+
 interface Viewer {
 	id: string;
 	images: string[];
@@ -5,7 +13,7 @@ interface Viewer {
 	single: boolean;
 }
 
-interface Image {
+export interface Image {
 	added: number
 	carousel: boolean;
 	gallery: boolean;
@@ -17,6 +25,9 @@ interface Image {
 
 	height?: number;
 	width?: number;
+
+	taller?: boolean;
+	wider?: boolean;
 }
 
 interface Changed {
@@ -24,12 +35,13 @@ interface Changed {
 	id: string
 }
 
-interface UserPref {
+export interface UserPref {
 	carouselTime: number
 	carouselTransitionTime: number
 	favorites: string[]
 	sort: boolean
 	tiles: boolean
+	sortType: "added" | "recent" | "title"
 }
 
 type Orient = 'grid' | 'square' | 'wide' | 'tall'
