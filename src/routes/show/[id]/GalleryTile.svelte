@@ -235,7 +235,7 @@
 				<div
 					bind:this={imgBase}
 					id="img"
-					class="transition-all bg-center bg-no-repeat bg-cover border-2 border-black hover:scale-95"
+					class="transition-all bg-center bg-no-repeat bg-contain border-2 border-black hover:scale-95"
 				>
 					<!--  -->
 				</div>
