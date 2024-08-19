@@ -74,6 +74,15 @@
 
 	let showHover = -1
 
+	let nameFilter = ''
+
+	const filterByName = e => {
+		console.log(`LOG..+page: `)
+		viewerImages = images.filter(image =>
+			image.title.toLocaleLowerCase().includes(nameFilter.toLocaleLowerCase()),
+		)
+	}
+
 	const resetImage = () => {
 		newImg = {
 			url: '',
@@ -222,7 +231,6 @@
 	}
 
 	const setGalleryItem = (image: Image) => {
-		// debugger
 		if (image.gallery) {
 			image.gallery = false
 		} else {
@@ -294,7 +302,6 @@
 	const getPrefs = async () => {
 		if (!$dbUser?.uid) return
 		await getDoc(doc(db, 'users', $dbUser?.uid)).then(doc => {
-			// debugger
 			pref = doc.data().pref || pref
 			console.log(`LOG..+page: `)
 		})
@@ -360,7 +367,7 @@
 				viewerImages = [...viewerImages.filter(image => image.title), ...notitles]
 				break
 			case 'added':
-				viewerImages = viewerImages.sort((a, b) => a.added - b.added)
+				viewerImages = viewerImages.sort((a, b) => b.added - a.added)
 				break
 			case 'recent':
 				viewerImages = viewerImages.sort((a, b) => b.index - a.index)
@@ -369,6 +376,7 @@
 				console.log(`LOG..+page: woops sort`)
 				break
 		}
+		nameFilter = ''
 	}
 
 	let throbId
@@ -698,6 +706,7 @@
 								{option.name}
 							</a>
 						{/each}
+						{viewerImages.length} / {images.length}
 					</div>
 					{#if viewerTab !== 0 && viewerTab !== 99}
 						<button
@@ -721,6 +730,43 @@
 					>
 						<!-- {/if} -->
 
+						<div class="flex items-center justify-start min-w-fit">
+							<label
+								class="items-center gap-2 cursor-pointer label min-w-fit"
+								for="filterbyname"
+							>
+								<span class="min-w-max label-text">Filter by name: &nbsp;</span>
+							</label>
+							<input
+								id="filterbyname"
+								type="text"
+								class="w-64 max-w-lg input-sm input input-bordered input-neutral"
+								bind:value={nameFilter}
+								on:change={filterByName}
+								placeholder="Type partial match, press enter"
+							/>
+							{#if nameFilter.length}
+								<button
+									class="-ml-6"
+									on:click={() => {
+										nameFilter = ''
+										filterByName()
+									}}
+									>✖️
+								</button>
+							{/if}
+							<!-- <label class="items-center gap-2 cursor-pointer label">
+								<input
+									type="checkbox"
+									class="toggle toggle-xs bg-primary"
+									on:change={e => {
+										e.target.checked)
+									}}
+								/>
+								bind:checked={pref.tiles}
+								<span class="label-text"> Show Named Only </span>
+							</label> -->
+						</div>
 						<div class="flex items-center justify-start gap-8">
 							<div class="cursor-pointer w">
 								<label class="items-center gap-2 cursor-pointer label">
@@ -765,7 +811,8 @@
 										on:change={updatePrefs}
 									/>
 									<span class="label-text">
-										Showing as: <span class="font-bold">
+										Showing as:
+										<span class="font-bold">
 											{pref.tiles ? 'Tiles' : 'List'}
 										</span>
 									</span>
