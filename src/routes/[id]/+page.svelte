@@ -200,6 +200,7 @@
 		const { name } = e.target
 		if (name === 'orient') show[name] = e.target.value
 		else if (name === 'zoom') show[name] = zoomRange.outgoing
+		else if (name === 'carouselTime') show[name] = carouselTime.current
 		else show[name] = !show[name]
 		updateDoc(doc(db, 'viewers', $dbUser?.uid), { [name]: show[name] })
 	}
@@ -399,6 +400,17 @@
 		updateShow(e)
 	}
 
+	let carouselTime = {
+		min: 5,
+		max: 30,
+		current: 20,
+	}
+
+	const changeTime = e => {
+		carouselTime.current = e.target.value
+		updateShow(e)
+	}
+
 	const modifyDimension = e => {
 		const { name } = e.target
 		const image = viewerImages.find(image => image.id === throbId)
@@ -446,7 +458,9 @@
 					{/if}
 				</div>
 				<div class="">
-					<div class="p-8 bg-opacity-25 rounded-t-lg bg-primary">
+					<div
+						class="flex flex-col items-center gap-4 p-8 bg-opacity-25 rounded-t-lg bg-primary"
+					>
 						<button
 							name="carousel"
 							id="carousel"
@@ -456,6 +470,31 @@
 						>
 							Carousel
 						</button>
+						<div class="flex flex-col w-full gap-1">
+							<div class="flex items-center justify-between">
+								<p class="scale-75 label-text">:{carouselTime.min}</p>
+								<p class=" label-text">·</p>
+								<p class=" label-text">·</p>
+								<p class=" label-text">·</p>
+								<p class="-ml-3 -mr-3 scale-100 label-text">
+									{carouselTime.current} sec
+								</p>
+								<p class=" label-text">·</p>
+								<p class=" label-text">·</p>
+								<p class=" label-text">·</p>
+								<p class="scale-75 label-text">:{carouselTime.max}</p>
+							</div>
+							<input
+								type="range"
+								name="carouselTime"
+								min={carouselTime.min}
+								max={carouselTime.max}
+								bind:value={carouselTime.current}
+								class="w-full range range-info"
+								on:mouseup={changeTime}
+								step={1}
+							/>
+						</div>
 					</div>
 					<div class="flex flex-col items-center gap-4 p-8 bg-opacity-25 bg-secondary">
 						<button
@@ -504,7 +543,7 @@
 								disabled={show.orient === 'wide' || show.orient === 'tall'}
 								min={zoomRange.min}
 								max={zoomRange.max}
-								value={zoomRange.current}
+								bind:value={zoomRange.current}
 								class="w-full range"
 								class:range-secondary={show.orient === 'grid' ||
 									show.orient === 'square'}

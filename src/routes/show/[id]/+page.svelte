@@ -45,7 +45,8 @@
 
 	let carousel: Image[] = [],
 		unsubCarousel,
-		showCarousel = false
+		showCarousel = false,
+		carouselTime = 10
 
 	let connected = false,
 		connect = '',
@@ -78,6 +79,7 @@
 			galleryTile = viewer.galleryTile
 			showNow = viewer.now
 			showCarousel = viewer.carousel
+			carouselTime = viewer.carouselTime
 			zoom = viewer.zoom
 		})
 
@@ -153,10 +155,13 @@
 
 	$: if (presentGallery) console.log(`LOG..+page: changed`)
 
+	let transitionTime = 10000
+
 	function runBg() {
+		clearInterval(intervalId)
 		intervalId = setInterval(() => {
 			nextImg()
-		}, 30000)
+		}, transitionTime)
 	}
 
 	function nextImg() {
@@ -193,6 +198,14 @@
 		localShowNow = false
 	}
 
+	$: if (carouselTime !== transitionTime) {
+		console.log(`LOG..+page: carouselTime`, carouselTime)
+		if (carouselTime < 5) carouselTime = 5
+		else if (carouselTime > 30) carouselTime = 30
+		transitionTime = carouselTime * 1000
+		runBg()
+	}
+
 	$: if (showNow) {
 		localShowNow = false
 	}
@@ -214,6 +227,8 @@
 			}
 		})
 	}
+
+	$: console.log(`LOG..+page: transitionTime`, transitionTime)
 </script>
 
 <div class="">
