@@ -1,4 +1,8 @@
 <script lang="ts">
+	import type { Scene } from 'phaser'
+	import type { MainMenu } from '$game/scenes/MainMenu'
+	import PhaserGame, { type TPhaserRef } from '$game/PhaserGame.svelte'
+
 	import { fly, fade } from 'svelte/transition'
 	import { onMount } from 'svelte'
 	import { goto } from '$app/navigation'
@@ -261,7 +265,7 @@
 	$: {
 		manyFiltered = many
 			.split('\n')
-			.filter(item => item.length > 0)
+			.filter(item => item?.length > 0)
 			.map(item => {
 				const [url, title] = item.split(',')
 				return {
@@ -421,6 +425,18 @@
 	$: if (images?.length > 0) console.timeEnd('load')
 
 	$: console.log(`LOG..+page: `, pref.sortType)
+
+	/**
+	 *
+	 *   PHASER SHIT BELOW
+	 *
+	 */
+
+	let phaserRef: TPhaserRef = { game: null, scene: null }
+
+	const currentScene = (scene: Scene) => {
+		console.log(`LOG..nothing here`)
+	}
 </script>
 
 <svelte:window
@@ -641,7 +657,7 @@
 										/>
 										<button
 											class="self-end btn btn-primary btn-sm"
-											disabled={manyFiltered.length === 0}
+											disabled={manyFiltered?.length === 0}
 											on:click={addMany}
 										>
 											Add Many
@@ -672,6 +688,11 @@
 
 		<!-- BODY -->
 		<div class="flex flex-col gap-10 shrink">
+			<!--  -->
+			<!--  -->
+			<PhaserGame bind:phaserRef currentActiveScene={currentScene} />
+			<!--  -->
+			<!--  -->
 			<div class="hidden shadow-xl card bg-neutral">
 				<div class="card-body">
 					<div class="flex items-center justify-start gap-8">
@@ -745,7 +766,7 @@
 								{option.name}
 							</a>
 						{/each}
-						{viewerImages.length} / {images.length}
+						{viewerImages?.length} / {images?.length}
 					</div>
 					{#if viewerTab !== 0 && viewerTab !== 99}
 						<button
@@ -784,7 +805,7 @@
 								on:change={filterByName}
 								placeholder="Type partial match, press enter"
 							/>
-							{#if nameFilter.length}
+							{#if nameFilter?.length}
 								<button
 									class="-ml-6"
 									on:click={() => {
