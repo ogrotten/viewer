@@ -17,6 +17,8 @@
 	import GalleryTile from './GalleryTile.svelte'
 	import type { PageData } from './$types'
 	import type { Image, Changed, Orient } from '$lib/types'
+	import PhaserGame, { type TPhaserRef } from '$game/PhaserGame.svelte'
+	import { Scene } from 'phaser'
 
 	export let data: PageData
 
@@ -228,8 +230,20 @@
 		})
 	}
 
-	$: console.log(`LOG..+page: transitionTime`, transitionTime)
+	/**
+	 *
+	 *   PHASER SHIT BELOW
+	 *
+	 */
+
+	let phaserRef: TPhaserRef = { game: null, scene: null }
+
+	const currentScene = (scene: Scene) => {
+		console.log(`LOG..nothing here`)
+	}
 </script>
+
+<PhaserGame bind:phaserRef currentActiveScene={currentScene} />
 
 <div class="">
 	{#if !connected}
