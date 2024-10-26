@@ -45,3 +45,14 @@ export interface UserPref {
 }
 
 type Orient = 'grid' | 'square' | 'wide' | 'tall'
+
+export interface ShowStore {
+	attach: string
+	carouselTime: number
+	galleryTile: boolean
+	showCarousel: boolean
+	showGallery: boolean
+	showNow: boolean
+	viewer: any
+	zoom: number
+}
