@@ -14,12 +14,12 @@ const config: Phaser.Types.Core.GameConfig = {
     parent: 'phaser',
     backgroundColor: '#028af8',
     scene: [
-        Normal,
         Boot,
         Preloader,
         // MainMenu,
-        MainGame,
+        // MainGame,
         GameOver,
+        Normal,
     ]
 }
 

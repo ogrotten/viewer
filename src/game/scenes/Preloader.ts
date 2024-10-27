@@ -2,58 +2,21 @@ import { db } from '$lib/firebase'
 import { type DocumentData, onSnapshot, doc, query, collection, where } from 'firebase/firestore'
 import { Scene } from 'phaser'
 
-import type { Image, Changed } from '$lib/types'
+import type { Image } from '$lib/types'
 import { show } from '$stores/show'
 import { type ShowStore } from '$lib/types'
 
 export class Preloader extends Scene {
-	allImages: Image[]
-	changed: Changed | null
-
-	readyData: boolean
-	readyScene: boolean
+	gallery: Image[]
 
 	constructor() {
 		super('Preloader')
-		this.allImages = []
-		this.changed = null
-		this.readyData = false
-		this.readyScene = false
+		this.gallery = []
 	}
 
 	init() {
-		let uid = 'zjaWkJBzHaMydPkXk42nGJfftWv2'
-
-		const unsub = onSnapshot(query(collection(db, 'viewers', uid, 'images')), snap => {
-			this.allImages = [...snap.docs]
-				.map(doc => ({ ...doc.data(), id: doc.id } as Image))
-				.sort((a, b) => b.index - a.index)
-
-			snap.docChanges().forEach(change => {
-				if (change.type === 'added') {
-					let added = change.doc.data()
-					this.changed = {
-						id: added.id,
-						added: true,
-					}
-				} else if (change.type === 'modified') {
-					let modified = change.doc.data()
-					this.changed = {
-						id: modified.id,
-						modded: true,
-					}
-				} else if (change.type === 'removed') {
-					let removed = change.doc.data()
-					this.changed = {
-						id: removed.id,
-						removed: true
-					}
-				} else this.changed = null
-			})
-
-			this.dbReady()
-			console.log(`LOG..this. init`, this.allImages)
-		})
+		//  We loaded this image in our Boot Scene, so we can display it here
+		// this.add.image(512, 384, 'background');
 
 		//  A simple progress bar. This is the outline of the bar.
 		this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff)
@@ -71,23 +34,74 @@ export class Preloader extends Scene {
 	}
 
 	preload() {
+
+		let uid = 'zjaWkJBzHaMydPkXk42nGJfftWv2'
+		// show.subscribe((value: ShowStore) => {
+		// 	uid = value?.attach
+		// 	carouselTime = value?.carouselTime
+		// 	galleryTile = value?.galleryTile
+		// 	showCarousel = value?.showCarousel
+		// 	showGallery = value?.showGallery
+		// 	showNow = value?.showNow
+		// 	viewer = value?.viewer
+		// 	zoom = value?.zoom
+		// })
+
+		// let unsubState = onSnapshot(doc(db, 'viewers', uid), doc => {
+		// 	carouselTime = viewer.carouselTime
+		// 	galleryTile = viewer.galleryTile
+		// 	showCarousel = viewer.carousel
+		// 	showGallery = viewer.gallery
+		// 	showNow = viewer.now
+		// 	viewer = doc.data() as DocumentData
+		// 	zoom = viewer.zoom
+		// })
+
+		const unsubGallery = onSnapshot(query(collection(db, 'viewers', uid, 'images'), where('gallery', '==', true)), snap => {
+			this.gallery = [...snap.docs]
+				.map(doc => ({ ...doc.data(), id: doc.id } as Image))
+				.sort((a, b) => b.index - a.index)
+
+			console.log(`LOG..this.gallery 65`, this.gallery)
+			// snap.docChanges().forEach(change => {
+			// 	if (change.type === 'added') {
+			// 		let added = change.doc.data()
+			// 		presentGallery = [...gallery]
+			// 		changed = {
+			// 			id: added.id,
+			// 			added: true,
+			// 			wider: added.wider,
+			// 			taller: added.taller,
+			// 		}
+			// 	} else if (change.type === 'modified') {
+			// 		let modified = change.doc.data()
+			// 		presentGallery = [...gallery]
+			// 		changed = {
+			// 			id: modified.id,
+			// 			modded: true,
+			// 			wider: modified.wider,
+			// 			taller: modified.taller,
+			// 		}
+			// 	} else if (change.type === 'removed') {
+			// 		let removed = change.doc.data()
+			// 		// presentGallery.splice(presentGallery.indexOf(removed), 1)
+			// 		presentGallery = [...presentGallery.filter(x => x.id !== removed.id)]
+			// 		changed = { id: removed.id, removed: true }
+			// 	} else changed = null
+			// })
+		})
+
+		console.log(`LOG..this.gallery 94`, this.gallery, uid)
+
 		//  Load the assets for the game - Replace with your own assets
 	}
 
 	create() {
-		this.readyScene = true
-		if (this.readyData) {
-			console.log(`LOG..this.allImages create`, this.allImages)
-			this.scene.start('Normal')
-		}
-	}
+		//  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
+		//  For example, you can define global animations here, so we can use them in other scenes.
 
-	dbReady() {
-		this.readyData = true
-		if (this.readyScene) {
-			console.log(`LOG..this.allImages ready`, this.allImages)
-			this.scene.start('Normal')
-		}
+		//  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
+		this.scene.start('Normal')
 	}
 }
 
