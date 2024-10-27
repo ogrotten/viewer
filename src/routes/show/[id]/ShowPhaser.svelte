@@ -11,12 +11,4 @@
 	}
 </script>
 
-<PhaserGame
-	bind:phaserRef
-	currentActiveScene={currentScene}
-	{showNow}
-	{localShowNow}
-	{showGallery}
-	{showCarousel}
-	{attach}
-/>
+<PhaserGame bind:phaserRef currentActiveScene={currentScene} />

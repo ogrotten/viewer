@@ -6,7 +6,7 @@ export interface UserWithMeta extends User {
 	id: string
 }
 
-interface Viewer {
+export interface Viewer {
 	id: string
 	images: string[]
 	portraits: number[]
@@ -30,9 +30,12 @@ export interface Image {
 	wider?: boolean
 }
 
-interface Changed {
-	added: boolean
+export interface Changed {
+	added?: boolean
+	frame?: { x: number, y: number }
 	id: string
+	modded?: boolean
+	removed?: boolean
 }
 
 export interface UserPref {
