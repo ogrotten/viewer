@@ -7,11 +7,11 @@ import { show } from '$stores/show'
 import { type ShowStore } from '$lib/types'
 
 export class Preloader extends Scene {
-	gallery: Image[]
+	allImages: Image[] | null
 
 	constructor() {
 		super('Preloader')
-		this.gallery = []
+		this.allImages = null
 	}
 
 	init() {
@@ -34,35 +34,17 @@ export class Preloader extends Scene {
 	}
 
 	preload() {
-
 		let uid = 'zjaWkJBzHaMydPkXk42nGJfftWv2'
-		// show.subscribe((value: ShowStore) => {
-		// 	uid = value?.attach
-		// 	carouselTime = value?.carouselTime
-		// 	galleryTile = value?.galleryTile
-		// 	showCarousel = value?.showCarousel
-		// 	showGallery = value?.showGallery
-		// 	showNow = value?.showNow
-		// 	viewer = value?.viewer
-		// 	zoom = value?.zoom
-		// })
-
-		// let unsubState = onSnapshot(doc(db, 'viewers', uid), doc => {
-		// 	carouselTime = viewer.carouselTime
-		// 	galleryTile = viewer.galleryTile
-		// 	showCarousel = viewer.carousel
-		// 	showGallery = viewer.gallery
-		// 	showNow = viewer.now
-		// 	viewer = doc.data() as DocumentData
-		// 	zoom = viewer.zoom
-		// })
 
 		const unsubGallery = onSnapshot(query(collection(db, 'viewers', uid, 'images'), where('gallery', '==', true)), snap => {
-			this.gallery = [...snap.docs]
+			this.allImages = [...snap.docs]
 				.map(doc => ({ ...doc.data(), id: doc.id } as Image))
 				.sort((a, b) => b.index - a.index)
 
-			console.log(`LOG..this.gallery 65`, this.gallery)
+			this.registry.set('allImages', this.allImages)
+
+
+			console.log(`LOG..this.allimages 65`, this.allImages)
 			// snap.docChanges().forEach(change => {
 			// 	if (change.type === 'added') {
 			// 		let added = change.doc.data()
@@ -91,7 +73,7 @@ export class Preloader extends Scene {
 			// })
 		})
 
-		console.log(`LOG..this.gallery 94`, this.gallery, uid)
+		console.log(`LOG..this.allImages 76`, this.gallery, uid)
 
 		//  Load the assets for the game - Replace with your own assets
 	}
@@ -101,7 +83,11 @@ export class Preloader extends Scene {
 		//  For example, you can define global animations here, so we can use them in other scenes.
 
 		//  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-		this.scene.start('Normal')
+
+		if (this.allImages) {
+			console.log(`LOG..this.allImages 88`, this.gallery, uid)
+			this.scene.start('Normal')
+		}
 	}
 }
 

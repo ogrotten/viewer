@@ -6,7 +6,7 @@ import { EventBus } from '../EventBus'
 export class Normal extends Scene {
     // allImages: Image[]
     constructor() {
-        super('MainMenu')
+        super('Normal')
         // this.allImages = []
     }
 
@@ -21,7 +21,7 @@ export class Normal extends Scene {
         //     align: 'center'
         // }).setOrigin(0.5).setDepth(100)
 
-        console.log(`LOG..Normal`, this.allImages)
+        console.log(`LOG..Normal`, this.registry.get('allImages'))
 
         EventBus.emit('current-scene-ready', this)
     }
