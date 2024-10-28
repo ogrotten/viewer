@@ -7,13 +7,33 @@ import { show } from '$stores/show'
 import { type ShowStore } from '$lib/types'
 
 export class Preloader extends Scene {
+	allImages: Image[] | null
+	loaderCompleted: boolean
+	fireBaseCompleted: boolean
+
 	constructor() {
 		super('Preloader')
+		this.allImages = null
+		this.loaderCompleted = false
+		this.fireBaseCompleted = false
 	}
 
 	init() {
 		//  We loaded this image in our Boot Scene, so we can display it here
-		// this.add.image(512, 384, 'background');
+		const uid = 'zjaWkJBzHaMydPkXk42nGJfftWv2'
+		onSnapshot(query(collection(db, 'viewers', uid, 'images'), where('id', '!=', "")), snap => {
+			this.allImages = [...snap.docs]
+				.map(doc => ({ ...doc.data(), id: doc.id } as Image))
+				.sort((a, b) => b.index - a.index)
+
+			this.allImages.forEach(image => {
+				this.load.image(`${image.id}`, image.url)
+			})
+
+			this.registry.set('allImages', this.allImages)
+
+			this.fbResult()
+		})
 
 		//  A simple progress bar. This is the outline of the bar.
 		this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff)
@@ -31,23 +51,8 @@ export class Preloader extends Scene {
 	}
 
 	preload() {
-
-		let uid
-		show.subscribe((value: ShowStore) => {
-			uid = value.attach
-			carouselTime = value.carouselTime
-			galleryTile = value.galleryTile
-			showCarousel = value.showCarousel
-			showGallery = value.showGallery
-			showNow = value.showNow
-			viewer = value.viewer
-			zoom = value.zoom
-		})
-
-		setup(uid)
-
-
 		//  Load the assets for the game - Replace with your own assets
+
 	}
 
 	create() {
@@ -55,8 +60,28 @@ export class Preloader extends Scene {
 		//  For example, you can define global animations here, so we can use them in other scenes.
 
 		//  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-		this.scene.start('Normal')
+
+		this.loaderCompleted = true
+		if (this.fireBaseCompleted) {
+			this.scene.start('Normal')
+		}
 	}
+
+	// update() {
+	// 	let check = this.registry.get('all').getChildren().length
+	// 	console.log(`LOG..update`,)
+	// 	if (check > 0) {
+	// 		this.scene.start('Normal')
+	// 	}
+	// }
+
+	fbResult() {
+		this.fireBaseCompleted = true
+		if (this.loaderCompleted) {
+			this.scene.start('Normal')
+		}
+	}
+
 }
 
 export let showNow: boolean, localShowNow: boolean, showGallery: boolean, showCarousel: boolean, attach: string
