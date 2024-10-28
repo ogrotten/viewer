@@ -8,15 +8,32 @@ import { type ShowStore } from '$lib/types'
 
 export class Preloader extends Scene {
 	allImages: Image[] | null
+	loaderCompleted: boolean
+	fireBaseCompleted: boolean
 
 	constructor() {
 		super('Preloader')
 		this.allImages = null
+		this.loaderCompleted = false
+		this.fireBaseCompleted = false
 	}
 
 	init() {
 		//  We loaded this image in our Boot Scene, so we can display it here
-		// this.add.image(512, 384, 'background');
+		const uid = 'zjaWkJBzHaMydPkXk42nGJfftWv2'
+		onSnapshot(query(collection(db, 'viewers', uid, 'images'), where('id', '!=', "")), snap => {
+			this.allImages = [...snap.docs]
+				.map(doc => ({ ...doc.data(), id: doc.id } as Image))
+				.sort((a, b) => b.index - a.index)
+
+			this.allImages.forEach(image => {
+				this.load.image(`${image.id}`, image.url)
+			})
+
+			this.registry.set('allImages', this.allImages)
+
+			this.fbResult()
+		})
 
 		//  A simple progress bar. This is the outline of the bar.
 		this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff)
@@ -34,48 +51,8 @@ export class Preloader extends Scene {
 	}
 
 	preload() {
-		let uid = 'zjaWkJBzHaMydPkXk42nGJfftWv2'
-
-		const unsubGallery = onSnapshot(query(collection(db, 'viewers', uid, 'images'), where('gallery', '==', true)), snap => {
-			this.allImages = [...snap.docs]
-				.map(doc => ({ ...doc.data(), id: doc.id } as Image))
-				.sort((a, b) => b.index - a.index)
-
-			this.registry.set('allImages', this.allImages)
-
-
-			console.log(`LOG..this.allimages 65`, this.allImages)
-			// snap.docChanges().forEach(change => {
-			// 	if (change.type === 'added') {
-			// 		let added = change.doc.data()
-			// 		presentGallery = [...gallery]
-			// 		changed = {
-			// 			id: added.id,
-			// 			added: true,
-			// 			wider: added.wider,
-			// 			taller: added.taller,
-			// 		}
-			// 	} else if (change.type === 'modified') {
-			// 		let modified = change.doc.data()
-			// 		presentGallery = [...gallery]
-			// 		changed = {
-			// 			id: modified.id,
-			// 			modded: true,
-			// 			wider: modified.wider,
-			// 			taller: modified.taller,
-			// 		}
-			// 	} else if (change.type === 'removed') {
-			// 		let removed = change.doc.data()
-			// 		// presentGallery.splice(presentGallery.indexOf(removed), 1)
-			// 		presentGallery = [...presentGallery.filter(x => x.id !== removed.id)]
-			// 		changed = { id: removed.id, removed: true }
-			// 	} else changed = null
-			// })
-		})
-
-		console.log(`LOG..this.allImages 76`, this.gallery, uid)
-
 		//  Load the assets for the game - Replace with your own assets
+
 	}
 
 	create() {
@@ -84,11 +61,27 @@ export class Preloader extends Scene {
 
 		//  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
 
-		if (this.allImages) {
-			console.log(`LOG..this.allImages 88`, this.gallery, uid)
+		this.loaderCompleted = true
+		if (this.fireBaseCompleted) {
 			this.scene.start('Normal')
 		}
 	}
+
+	// update() {
+	// 	let check = this.registry.get('all').getChildren().length
+	// 	console.log(`LOG..update`,)
+	// 	if (check > 0) {
+	// 		this.scene.start('Normal')
+	// 	}
+	// }
+
+	fbResult() {
+		this.fireBaseCompleted = true
+		if (this.loaderCompleted) {
+			this.scene.start('Normal')
+		}
+	}
+
 }
 
 // export let showNow: boolean, localShowNow: boolean, showGallery: boolean, showCarousel: boolean, attach: string
