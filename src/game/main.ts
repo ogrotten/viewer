@@ -20,7 +20,8 @@ const config: Phaser.Types.Core.GameConfig = {
         // MainGame,
         GameOver,
         Normal,
-    ]
+    ],
+    loaderImageLoadType: "HTMLImageElement"
 }
 
 const StartGame = (parent: string) => {

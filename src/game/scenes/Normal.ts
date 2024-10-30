@@ -33,6 +33,10 @@ export class Normal extends Scene {
         // this.images?.forEach(image => {
         //     this.add.image(this.game.config.width / 2, this.game.config.width / 2, image.id)
         // })
+
+        // this.add.image(512, 384, all[0].id)
+        this.textures.addImage(all[0].id, all[0].url)
+
     }
 
 
