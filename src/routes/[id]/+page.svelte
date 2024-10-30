@@ -16,8 +16,10 @@
 		query,
 		onSnapshot,
 	} from 'firebase/firestore'
+	import { getStorage, ref, uploadBytes } from 'firebase/storage'
 
 	import type { UserWithMeta, Image, UserPref } from '$lib/types'
+	import FileUpload from '../_components/FileUpload.svelte'
 
 	const debug = false
 	let setupLink = `${$page.url.origin}/show/`
@@ -421,6 +423,26 @@
 	$: if (images?.length > 0) console.timeEnd('load')
 
 	$: console.log(`LOG..+page: `, pref.sortType)
+
+	/**
+	 *
+	 *  storage uploading
+	 *
+	 */
+
+	const storage = getStorage()
+
+	const upImages = files => {
+		console.log(`LOG..+page: files`, files)
+		const vRef = ref(storage, `viewers/${$dbUser?.uid}`)
+
+		files.forEach((f, idx) => {
+			const imgRef = ref(vRef, f.name)
+			uploadBytes(imgRef, f).then(snapshot => {
+				console.log('Uploaded file' + idx)
+			})
+		})
+	}
 </script>
 
 <svelte:window
@@ -664,8 +686,17 @@
 						wtf...
 					</button>
 					<p class="text-xs">
-						Click to reset if it's being stupid. Won't reset image selections below.
+						Click to reset if it's being stupid. Won't reset image selections.
 					</p>
+				</div>
+
+				<div class="min-h-max">
+					<FileUpload
+						on:change={() => console.log('Files changed')}
+						maxFiles={100}
+						callback={data => upImages(data)}
+						fixed={false}
+					/>
 				</div>
 			</div>
 		</div>
