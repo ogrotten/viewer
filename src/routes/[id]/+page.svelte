@@ -431,18 +431,27 @@
 	 */
 
 	const storage = getStorage()
+	let showUpload = true
+	let upPct = 0
+	let doReset = false
 
 	const upImages = files => {
+		showUpload = false
 		console.log(`LOG..+page: files`, files)
 		const vRef = ref(storage, `viewers/${$dbUser?.uid}`)
+		let count = 0
 
 		files.forEach((f, idx) => {
 			const imgRef = ref(vRef, f.name)
 			uploadBytes(imgRef, f).then(snapshot => {
-				console.log('Uploaded file' + idx)
+				console.log('Uploaded file ' + idx)
+				upPct = Math.ceil(((count + 1) / files.length) * 100)
+				count++
 			})
 		})
 	}
+
+	$: console.log(`LOG..+page: showUpload`, showUpload)
 </script>
 
 <svelte:window
@@ -691,12 +700,34 @@
 				</div>
 
 				<div class="min-h-max">
-					<FileUpload
-						on:change={() => console.log('Files changed')}
-						maxFiles={100}
-						callback={data => upImages(data)}
-						fixed={false}
-					/>
+					{#if showUpload}
+						<FileUpload
+							on:change={() => console.log('Files changed')}
+							maxFiles={100}
+							callback={data => upImages(data)}
+							fixed={false}
+							doneText="Complete!"
+							bind:reset={doReset}
+						/>
+					{:else}
+						<div class="flex items-center justify-between">
+							<progress
+								class="w-4/5 progress progress-primary"
+								value={upPct}
+								max="100"
+							/>
+							<button
+								class="btn btn-success btn-outline btn-xs"
+								disabled={upPct !== 100}
+								on:click={() => {
+									showUpload = true
+									doReset = true
+								}}
+							>
+								OK
+							</button>
+						</div>
+					{/if}
 				</div>
 			</div>
 		</div>
