@@ -16,7 +16,7 @@
 		query,
 		onSnapshot,
 	} from 'firebase/firestore'
-	import { getStorage, ref, uploadBytes } from 'firebase/storage'
+	import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 	import type { UserWithMeta, Image, UserPref } from '$lib/types'
 	import FileUpload from '../_components/FileUpload.svelte'
@@ -441,12 +441,22 @@
 		const vRef = ref(storage, `viewers/${$dbUser?.uid}`)
 		let count = 0
 
-		files.forEach((f, idx) => {
+		files.forEach(async (f, idx) => {
 			const imgRef = ref(vRef, f.name)
 			uploadBytes(imgRef, f).then(snapshot => {
 				console.log('Uploaded file ' + idx)
 				upPct = Math.ceil(((count + 1) / files.length) * 100)
 				count++
+			})
+			addOne({
+				url: await getDownloadURL(imgRef),
+				carousel: false,
+				gallery: false,
+				now: false,
+				title: '',
+				id: '',
+				index: Date.now(),
+				added: Date.now(),
 			})
 		})
 	}
