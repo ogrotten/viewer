@@ -17,6 +17,11 @@
 	import GalleryTile from './GalleryTile.svelte'
 	import type { PageData } from './$types'
 	import type { Image, Changed, Orient } from '$lib/types'
+	import PhaserGame, { type TPhaserRef } from '$game/PhaserGame.svelte'
+	import { Scene } from 'phaser'
+	import ShowPhaser from './ShowPhaser.svelte'
+
+	import { show } from '$stores/show'
 
 	export let data: PageData
 
@@ -27,11 +32,11 @@
 
 	const { galleryAll } = data
 
-	let viewer: DocumentData = {},
-		unsubViewer,
+	let galleryTile = false,
 		showGallery = false,
 		showNow = false,
-		galleryTile = false,
+		unsubViewer,
+		viewer: DocumentData = {},
 		zoom = 8
 
 	let gallery: Image[] = [],
@@ -72,68 +77,68 @@
 	let orient: Orient = 'grid'
 	$: orient = viewer.orient
 
-	async function setup(incoming: string) {
-		unsubViewer = onSnapshot(doc(db, 'viewers', incoming), doc => {
-			viewer = doc.data() as DocumentData
-			showGallery = viewer.gallery
-			galleryTile = viewer.galleryTile
-			showNow = viewer.now
-			showCarousel = viewer.carousel
-			carouselTime = viewer.carouselTime
-			zoom = viewer.zoom
-		})
+	// async function setup(incoming: string) {
+	// 	unsubViewer = onSnapshot(doc(db, 'viewers', incoming), doc => {
+	// 		viewer = doc.data() as DocumentData
+	// 		showGallery = viewer.gallery
+	// 		galleryTile = viewer.galleryTile
+	// 		showNow = viewer.now
+	// 		showCarousel = viewer.carousel
+	// 		carouselTime = viewer.carouselTime
+	// 		zoom = viewer.zoom
+	// 	})
 
-		const c = query(
-			collection(db, 'viewers', incoming, 'images'),
-			where('carousel', '==', true),
-		)
-		unsubCarousel = onSnapshot(c, snap => {
-			carousel = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id } as Image))
-		})
+	// 	const c = query(
+	// 		collection(db, 'viewers', incoming, 'images'),
+	// 		where('carousel', '==', true),
+	// 	)
+	// 	unsubCarousel = onSnapshot(c, snap => {
+	// 		carousel = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id } as Image))
+	// 	})
 
-		const g = query(collection(db, 'viewers', incoming, 'images'), where('gallery', '==', true))
-		unsubGallery = onSnapshot(g, snap => {
-			gallery = [...snap.docs]
-				.map(doc => ({ ...doc.data(), id: doc.id } as Image))
-				.sort((a, b) => b.index - a.index)
-			snap.docChanges().forEach(change => {
-				if (change.type === 'added') {
-					let added = change.doc.data()
-					presentGallery = [...gallery]
-					changed = {
-						id: added.id,
-						added: true,
-						wider: added.wider,
-						taller: added.taller,
-					}
-				} else if (change.type === 'modified') {
-					let modified = change.doc.data()
-					presentGallery = [...gallery]
-					changed = {
-						id: modified.id,
-						modded: true,
-						wider: modified.wider,
-						taller: modified.taller,
-					}
-				} else if (change.type === 'removed') {
-					let removed = change.doc.data()
-					// presentGallery.splice(presentGallery.indexOf(removed), 1)
-					presentGallery = [...presentGallery.filter(x => x.id !== removed.id)]
-					changed = { id: removed.id, removed: true }
-				} else changed = null
-			})
-		})
+	// 	const g = query(collection(db, 'viewers', incoming, 'images'), where('gallery', '==', true))
+	// 	unsubGallery = onSnapshot(g, snap => {
+	// 		gallery = [...snap.docs]
+	// 			.map(doc => ({ ...doc.data(), id: doc.id } as Image))
+	// 			.sort((a, b) => b.index - a.index)
+	// 		snap.docChanges().forEach(change => {
+	// 			if (change.type === 'added') {
+	// 				let added = change.doc.data()
+	// 				presentGallery = [...gallery]
+	// 				changed = {
+	// 					id: added.id,
+	// 					added: true,
+	// 					wider: added.wider,
+	// 					taller: added.taller,
+	// 				}
+	// 			} else if (change.type === 'modified') {
+	// 				let modified = change.doc.data()
+	// 				presentGallery = [...gallery]
+	// 				changed = {
+	// 					id: modified.id,
+	// 					modded: true,
+	// 					wider: modified.wider,
+	// 					taller: modified.taller,
+	// 				}
+	// 			} else if (change.type === 'removed') {
+	// 				let removed = change.doc.data()
+	// 				// presentGallery.splice(presentGallery.indexOf(removed), 1)
+	// 				presentGallery = [...presentGallery.filter(x => x.id !== removed.id)]
+	// 				changed = { id: removed.id, removed: true }
+	// 			} else changed = null
+	// 		})
+	// 	})
 
-		const n = query(collection(db, 'viewers', incoming, 'images'), where('now', '==', true))
+	// 	const n = query(collection(db, 'viewers', incoming, 'images'), where('now', '==', true))
 
-		unsubNow = onSnapshot(n, snap => {
-			now = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id } as Image))
-		})
+	// 	unsubNow = onSnapshot(n, snap => {
+	// 		now = [...snap.docs].map(doc => ({ ...doc.data(), id: doc.id } as Image))
+	// 	})
 
-		Promise.all([unsubViewer, unsubGallery, unsubNow, unsubCarousel]).then(() => {
-			loading = false
-		})
-	}
+	// 	Promise.all([unsubViewer, unsubGallery, unsubNow, unsubCarousel]).then(() => {
+	// 		loading = false
+	// 	})
+	// }
 
 	const [send, receive] = crossfade({
 		duration: d => Math.sqrt(d * 2000),
@@ -153,7 +158,7 @@
 		},
 	})
 
-	$: if (presentGallery) console.log(`LOG..+page: changed`)
+	// $: if (presentGallery) console.log(`LOG..+page: changed`)
 
 	let transitionTime = 10000
 
@@ -199,7 +204,7 @@
 	}
 
 	$: if (carouselTime !== transitionTime) {
-		console.log(`LOG..+page: carouselTime`, carouselTime)
+		// console.log(`LOG..+page: carouselTime`, carouselTime)
 		if (carouselTime < 5) carouselTime = 5
 		else if (carouselTime > 30) carouselTime = 30
 		transitionTime = carouselTime * 1000
@@ -220,7 +225,7 @@
 			if (doc.exists()) {
 				connected = true
 				connect = attach
-				setup(attach)
+				// setup(attach)
 			} else {
 				connected = false
 				connect = ''
@@ -228,9 +233,34 @@
 		})
 	}
 
-	$: console.log(`LOG..+page: transitionTime`, transitionTime)
+	$: {
+		$show = {
+			viewer,
+			showGallery,
+			galleryTile,
+			showNow,
+			showCarousel,
+			carouselTime,
+			zoom,
+			attach,
+		}
+	}
+
+	/**
+	 *
+	 *   PHASER SHIT BELOW
+	 *
+	 */
+
+	let phaserRef: TPhaserRef = { game: null, scene: null }
+
+	const currentScene = (scene: Scene) => {
+		console.log(`LOG..nothing here`)
+	}
 </script>
 
+<!-- <PhaserGame bind:phaserRef currentActiveScene={currentScene} /> -->
+<ShowPhaser {showNow} {localShowNow} {showGallery} {showCarousel} {attach} />
 <div class="">
 	{#if !connected}
 		<div class="flex items-center justify-center w-screen h-screen">
