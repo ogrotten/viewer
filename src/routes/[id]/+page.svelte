@@ -722,6 +722,7 @@
 								on:click={() => {
 									showUpload = true
 									doReset = true
+									upPct = 0
 								}}
 							>
 								OK

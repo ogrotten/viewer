@@ -39,6 +39,8 @@
 	export let listFiles = true
 
 	export let reset = false
+	export let bytes = 5
+	bytes = bytes * 1024 * 1024
 
 	$: files = [...inputFiles, ...dragZoneFiles]
 	$: {
@@ -79,8 +81,22 @@
 		e.preventDefault()
 		dragZone.classList.remove('dragging')
 		dragZoneFiles.push(
-			...[...e.dataTransfer.items].filter(i => i.kind === 'file').map(i => i.getAsFile()),
+			...[...e.dataTransfer.items] //
+				.filter(i => i.kind === 'file') //
+				// .filter(i => i.file.size < bytes) //
+				.map(i => i.getAsFile()),
 		)
+		const count = dragZoneFiles.length
+		dragZoneFiles = [...dragZoneFiles.filter(f => f.size < bytes)]
+
+		if (dragZoneFiles.length < count) {
+			descriptionText = `${dragZoneFiles.length} files. ${
+				count - dragZoneFiles.length
+			} files were too large (max ${formatBytes(bytes)})`
+		} else {
+			descriptionText = `${count + 1} files`
+		}
+
 		dragZoneFiles = [...dragZoneFiles]
 		dispatch('drop', e)
 		dispatch('change', files)
@@ -148,6 +164,17 @@
 	class={`${fixed ? 'fixed' : ''} fileUploader dragzone`}
 >
 	{#if files.length !== maxFiles}
+		{#if descriptionText}<span class="italic primary">{descriptionText}</span>{/if}
+		<div class="flex items-center justify-center gap-8">
+			<button on:click={trigger} class="btn btn-neutral">
+				{buttonText}
+			</button>
+			{#if doneButtonText && files.length}
+				<button class="btn btn-success" on:click={() => (doneCallback(), callback(files))}>
+					{doneButtonText}
+				</button>
+			{/if}
+		</div>
 		{#if listFiles}
 			<ul class="w-full">
 				{#each files.slice(0, maxFiles) as file}
@@ -179,17 +206,6 @@
 				{/each}
 			</ul>
 		{/if}
-		<div class="flex items-center justify-center gap-8">
-			<button on:click={trigger} class="btn btn-neutral">
-				{buttonText}
-			</button>
-			{#if doneButtonText && files.length}
-				<button class="btn btn-success" on:click={() => (doneCallback(), callback(files))}>
-					{doneButtonText}
-				</button>
-			{/if}
-		</div>
-		{#if descriptionText}<span class="italic primary">{descriptionText}</span>{/if}
 	{:else if maxFiles > 1}
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -227,7 +243,14 @@
 		{#if doneText}<span class="doneText">{doneText}</span>{/if}
 	{/if}
 </div>
-<input type="file" hidden bind:this={input} on:change={inputChanged} multiple={maxFiles > 1} />
+<input
+	type="file"
+	hidden
+	bind:this={input}
+	on:change={inputChanged}
+	multiple={maxFiles > 1}
+	accept=".png,.jpg,.jpeg,.gif"
+/>
 
 <style>
 	.dragzone {
@@ -290,7 +313,7 @@
 	}
 	.dragzone li .icon :global(svg) {
 		width: 20px;
-		color: #333;
+		/* color: #333; */
 	}
 	.deleteicon {
 		display: none;
