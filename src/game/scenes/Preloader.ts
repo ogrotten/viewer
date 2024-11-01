@@ -28,6 +28,7 @@ export class Preloader extends Scene {
 
 			this.allImages.forEach(image => {
 				this.load.image(`${image.id}`, image.url)
+				console.log(`LOG..Preloader: image.id`, image.id)
 			})
 
 			this.registry.set('allImages', this.allImages)

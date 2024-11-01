@@ -1,0 +1,12 @@
+[
+	{
+		"origin": [
+			"https://char.show",
+			"localhost:5173"
+		],
+		"method": [
+			"GET"
+		],
+		"maxAgeSeconds": 3600
+	}
+]

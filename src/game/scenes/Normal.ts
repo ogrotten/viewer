@@ -20,7 +20,7 @@ export class Normal extends Scene {
         //     align: 'center'
         // }).setOrigin(0.5).setDepth(100)
 
-        console.log(`LOG..Normal`, this.registry.get('allImages'))
+        // console.log(`LOG..Normal`, this.registry.get('allImages'))
 
         // EventBus.emit('current-scene-ready', this)
 
@@ -30,9 +30,15 @@ export class Normal extends Scene {
 
         // const imgs = all.getChildren()
 
-        // this.images?.forEach(image => {
+        // this.add.image(this.game.config.width / 2, this.game.config.height / 2, all[0].id)
+        console.log(`LOG..Normal: 1st image`, this.textures.get(all[0].id).getSourceImage())
+        console.log(`LOG..Normal: 1st image`, all[0])
+
+        // all.forEach(image => {
         //     this.add.image(this.game.config.width / 2, this.game.config.width / 2, image.id)
         // })
+
+        this.textures.addBase64(all[19].id, all[19].url)
     }
 
 
