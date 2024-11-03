@@ -21,13 +21,21 @@ const config = {
 		// 	precompress: true,
 		// 	strict: true
 		// })
-
 		adapter: adapter({
 			// pages: './.firebase/public',
 			// assets: './.firebase/public',
-			// fallback: 'index.html',
+			precompress: false,
+			fallback: 'index.html',
 		}),
-	}
+		alias: {
+			$components: './src/components',
+			$game: './src/game',
+			$lib: './src/lib',
+			$routes: './src/routes',
+			$src: './src',
+			$stores: './src/stores',
+		},
+	},
 }
 
 export default config
