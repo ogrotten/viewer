@@ -2,6 +2,7 @@
 	import type { Scene } from 'phaser'
 	import type { MainMenu } from '$game/scenes/MainMenu'
 	import PhaserGame, { type TPhaserRef } from '$game/PhaserGame.svelte'
+	// import { dexDB } from '$lib/dexie'
 
 	import { fly, fade } from 'svelte/transition'
 	import { onMount } from 'svelte'
@@ -20,7 +21,7 @@
 		query,
 		onSnapshot,
 	} from 'firebase/firestore'
-	import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+	import { getStorage, ref, uploadBytes, getDownloadURL, getBlob } from 'firebase/storage'
 
 	import type { UserWithMeta, Image, UserPref } from '$lib/types'
 	import FileUpload from '../_components/FileUpload.svelte'
@@ -452,7 +453,8 @@
 				upPct = Math.ceil(((count + 1) / files.length) * 100)
 				count++
 			})
-			addOne({
+
+			const one = {
 				url: await getDownloadURL(imgRef),
 				carousel: false,
 				gallery: false,
@@ -461,7 +463,9 @@
 				id: '',
 				index: Date.now(),
 				added: Date.now(),
-			})
+			}
+
+			addOne(one)
 		})
 	}
 

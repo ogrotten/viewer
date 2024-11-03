@@ -33,6 +33,7 @@
 	"type": "module",
 	"dependencies": {
 		"@js-temporal/polyfill": "^0.4.4",
+		"dexie": "^4.0.9",
 		"firebase": "^10.0.0",
 		"muuri": "^0.9.5",
 		"phaser": "^3.86.0",

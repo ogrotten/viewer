@@ -5,6 +5,8 @@ import { Scene } from 'phaser'
 import type { Image } from '$lib/types'
 import { show } from '$stores/show'
 import { type ShowStore } from '$lib/types'
+import { getBlob, getStorage, ref } from 'firebase/storage'
+import { downloadAndStoreImage } from '$lib/dexie'
 
 export class Preloader extends Scene {
 	allImages: Image[] | null
@@ -27,13 +29,30 @@ export class Preloader extends Scene {
 				.sort((a, b) => b.index - a.index)
 
 			this.allImages.forEach(image => {
+				// console.log(`LOG..image.url`, image.url)
 				this.load.image(`${image.id}`, image.url)
+
+				downloadAndStoreImage({ ...image }).catch(err => console.error(`LOG..err`, err))
 			})
+
 
 			this.registry.set('allImages', this.allImages)
 
 			this.fbResult()
 		})
+
+		// const storage = getStorage()
+		// const imgRef = ref(storage, '/viewers/zjaWkJBzHaMydPkXk42nGJfftWv2/Br0Nzu8.png')
+
+		// getBlob(imgRef).then((blob) => {
+		// 	this.load.image(`temporary`, blob)
+		// 	const iggle = this.textures.get("temporary").getSourceImage().src
+		// 	console.log(`LOG..iggle`, iggle)
+		// 	this.fbResult()
+		// })
+
+
+
 
 		//  A simple progress bar. This is the outline of the bar.
 		this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff)

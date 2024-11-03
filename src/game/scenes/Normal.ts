@@ -34,11 +34,12 @@ export class Normal extends Scene {
 		//     this.add.image(this.game.config.width / 2, this.game.config.width / 2, image.id)
 		// })
 
-		this.add.image(720, 480, all[0].id)
+		this.add.image(480, 480, "temporary")
 		// this.add.image(512, 384, all[0].id)
 		// this.textures.addImage(all[0].id, all[0].url)
-		const iggle = this.textures.get(all[0].id).getSourceImage().src
-		this.textures.addBase64(all[0].id, iggle)
+		// const iggle = this.textures.get("temporary").getSourceImage().src
+		// console.log(`LOG..iggle`, iggle)
+		// this.textures.addBase64(all[0].id, iggle)
 	}
 
 
