@@ -31,7 +31,7 @@ export class Normal extends Scene {
 
 
 		const user = get(dbUser)
-		const storageRef = ref(storage, `viewers/zjaWkJBzHaMydPkXk42nGJfftWv2/EzDqiP8.jpg`)
+		const storageRef = ref(storage, `viewers/zjaWkJBzHaMydPkXk42nGJfftWv2/ej7mOuW.png`)
 		getBlob(storageRef).then((blob) => {
 			const reader = new FileReader()
 			reader.onloadend = () => {
