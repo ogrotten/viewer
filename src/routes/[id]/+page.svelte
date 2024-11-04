@@ -23,7 +23,7 @@
 	import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 	import type { UserWithMeta, Image, UserPref } from '$lib/types'
-	import FileUpload from '../_components/FileUpload.svelte'
+	import FileUpload from './FileUpload.svelte'
 
 	const debug = false
 	let setupLink = `${$page.url.origin}/show/`
@@ -452,7 +452,7 @@
 				upPct = Math.ceil(((count + 1) / files.length) * 100)
 				count++
 			})
-			addOne({
+			const one = {
 				url: await getDownloadURL(imgRef),
 				carousel: false,
 				gallery: false,
@@ -461,7 +461,8 @@
 				id: '',
 				index: Date.now(),
 				added: Date.now(),
-			})
+			}
+			addOne(one)
 		})
 	}
 
