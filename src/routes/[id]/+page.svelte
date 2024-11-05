@@ -453,14 +453,15 @@
 				count++
 			})
 			addOne({
-				url: await getDownloadURL(imgRef),
+				added: Date.now(),
 				carousel: false,
+				filename: f.name,
 				gallery: false,
-				now: false,
-				title: '',
 				id: '',
 				index: Date.now(),
-				added: Date.now(),
+				now: false,
+				title: '',
+				url: await getDownloadURL(imgRef),
 			})
 		})
 	}
@@ -761,11 +762,6 @@
 
 		<!-- BODY -->
 		<div class="flex flex-col gap-10 shrink">
-			<!--  -->
-			<!--  -->
-			<PhaserGame bind:phaserRef currentActiveScene={currentScene} />
-			<!--  -->
-			<!--  -->
 			<div class="hidden shadow-xl card bg-neutral">
 				<div class="card-body">
 					<div class="flex items-center justify-start gap-8">

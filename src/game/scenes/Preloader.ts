@@ -1,3 +1,5 @@
+import { get } from 'svelte/store'
+import { page } from '$app/stores'
 import { db } from '$lib/firebase'
 import { type DocumentData, onSnapshot, doc, query, collection, where } from 'firebase/firestore'
 import { Scene } from 'phaser'
@@ -19,8 +21,8 @@ export class Preloader extends Scene {
 	}
 
 	init() {
+		const uid = get(page).params.id
 		//  We loaded this image in our Boot Scene, so we can display it here
-		const uid = 'zjaWkJBzHaMydPkXk42nGJfftWv2'
 		onSnapshot(query(collection(db, 'viewers', uid, 'images'), where('id', '!=', "")), snap => {
 			this.allImages = [...snap.docs]
 				.map(doc => ({ ...doc.data(), id: doc.id } as Image))

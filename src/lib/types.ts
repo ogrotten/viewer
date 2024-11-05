@@ -16,6 +16,7 @@ export interface Viewer {
 export interface Image {
 	added?: number
 	carousel: boolean
+	filename: string
 	gallery: boolean
 	id?: string
 	index: number
