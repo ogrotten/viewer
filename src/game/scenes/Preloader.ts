@@ -28,28 +28,9 @@ export class Preloader extends Scene {
 				.map(doc => ({ ...doc.data(), id: doc.id } as Image))
 				.sort((a, b) => b.index - a.index)
 
-			this.allImages.forEach(image => {
-				this.load.image(`${image.id}`, image.url)
-				console.log(`LOG..Preloader: image.id`, image.id)
-			})
-
 			this.registry.set('allImages', this.allImages)
 
 			this.fbResult()
-		})
-
-		//  A simple progress bar. This is the outline of the bar.
-		this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff)
-
-		//  This is the progress bar itself. It will increase in size from the left based on the % of progress.
-		const bar = this.add.rectangle(512 - 230, 384, 4, 28, 0xffffff)
-
-		//  Use the 'progress' event emitted by the LoaderPlugin to update the loading bar
-		this.load.on('progress', (progress: number) => {
-
-			//  Update the progress bar (our bar is 464px wide, so 100% = 464px)
-			bar.width = 4 + (460 * progress)
-
 		})
 	}
 
@@ -66,7 +47,7 @@ export class Preloader extends Scene {
 
 		this.loaderCompleted = true
 		if (this.fireBaseCompleted) {
-			this.scene.start('Normal')
+			this.scene.start('Carousel')
 		}
 	}
 
@@ -81,7 +62,7 @@ export class Preloader extends Scene {
 	fbResult() {
 		this.fireBaseCompleted = true
 		if (this.loaderCompleted) {
-			this.scene.start('Normal')
+			this.scene.start('Carousel')
 		}
 	}
 
