@@ -16,8 +16,10 @@
 		query,
 		onSnapshot,
 	} from 'firebase/firestore'
+	import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 	import type { UserWithMeta, Image, UserPref } from '$lib/types'
+	import FileUpload from '../_components/FileUpload.svelte'
 
 	const debug = false
 	let setupLink = `${$page.url.origin}/show/`
@@ -421,6 +423,45 @@
 	$: if (images?.length > 0) console.timeEnd('load')
 
 	$: console.log(`LOG..+page: `, pref.sortType)
+
+	/**
+	 *
+	 *  storage uploading
+	 *
+	 */
+
+	const storage = getStorage()
+	let showUpload = true
+	let upPct = 0
+	let doReset = false
+
+	const upImages = files => {
+		showUpload = false
+		console.log(`LOG..+page: files`, files)
+		const vRef = ref(storage, `viewers/${$dbUser?.uid}`)
+		let count = 0
+
+		files.forEach(async (f, idx) => {
+			const imgRef = ref(vRef, f.name)
+			uploadBytes(imgRef, f).then(snapshot => {
+				console.log('Uploaded file ' + idx)
+				upPct = Math.ceil(((count + 1) / files.length) * 100)
+				count++
+			})
+			addOne({
+				url: await getDownloadURL(imgRef),
+				carousel: false,
+				gallery: false,
+				now: false,
+				title: '',
+				id: '',
+				index: Date.now(),
+				added: Date.now(),
+			})
+		})
+	}
+
+	$: console.log(`LOG..+page: showUpload`, showUpload)
 </script>
 
 <svelte:window
@@ -564,7 +605,7 @@
 						</button>
 					</div>
 				</div>
-				<div id="add-images" class="mb-8">
+				<!-- <div id="add-images" class="mb-8">
 					<div class="flex items-center justify-between p-4 rounded-lg bg-neutral-focus">
 						<div class="flex flex-row items-center justify-start w-full gap-8">
 							<button
@@ -587,7 +628,6 @@
 											{item}
 										</a>
 									</div>
-									<!-- <a class="tab" class:active={tab === 2} on:click={() => (tab = 2)} href={''}> from Google Drive </a> -->
 								{/each}
 							{/if}
 						</div>
@@ -648,7 +688,7 @@
 										</button>
 									</div>
 								{:else if tab === 2}
-									<!--  -->
+									nothin
 								{/if}
 								<p class="pt-10">
 									<span class="font-bold">Image URL</span> should have a file extension
@@ -658,14 +698,46 @@
 							</div>
 						</div>
 					{/if}
-				</div>
+				</div> -->
 				<div id="reset" class="flex items-center gap-2">
 					<button class="btn btn-error btn-outline btn-xs" on:click={resetShowStates}>
 						wtf...
 					</button>
 					<p class="text-xs">
-						Click to reset if it's being stupid. Won't reset image selections below.
+						Click to reset if it's being stupid. Won't reset image selections.
 					</p>
+				</div>
+
+				<div class="min-h-max">
+					{#if showUpload}
+						<FileUpload
+							on:change={() => console.log('Files changed')}
+							maxFiles={100}
+							callback={data => upImages(data)}
+							fixed={false}
+							doneText="Complete!"
+							bind:reset={doReset}
+						/>
+					{:else}
+						<div class="flex items-center justify-between">
+							<progress
+								class="w-4/5 progress progress-primary"
+								value={upPct}
+								max="100"
+							/>
+							<button
+								class="btn btn-success btn-outline btn-xs"
+								disabled={upPct !== 100}
+								on:click={() => {
+									showUpload = true
+									doReset = true
+									upPct = 0
+								}}
+							>
+								OK
+							</button>
+						</div>
+					{/if}
 				</div>
 			</div>
 		</div>
