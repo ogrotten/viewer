@@ -1100,7 +1100,7 @@
 							<!-- svelte-ignore a11y-mouse-events-have-key-events -->
 							<ul
 								id="list-list"
-								class="flex flex-wrap justify-start gap-0 divide-stone-700"
+								class="flex flex-wrap justify-start gap-1 divide-stone-700"
 							>
 								{#each viewerImages as image, idx (image.id)}
 									{@const url = debug ? 'https://dummyimage.com/32' : image.url}
