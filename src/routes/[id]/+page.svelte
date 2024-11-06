@@ -605,7 +605,7 @@
 						</button>
 					</div>
 				</div>
-				<div id="add-images" class="mb-8">
+				<!-- <div id="add-images" class="mb-8">
 					<div class="flex items-center justify-between p-4 rounded-lg bg-neutral-focus">
 						<div class="flex flex-row items-center justify-start w-full gap-8">
 							<button
@@ -628,7 +628,6 @@
 											{item}
 										</a>
 									</div>
-									<!-- <a class="tab" class:active={tab === 2} on:click={() => (tab = 2)} href={''}> from Google Drive </a> -->
 								{/each}
 							{/if}
 						</div>
@@ -689,7 +688,7 @@
 										</button>
 									</div>
 								{:else if tab === 2}
-									<!--  -->
+									nothin
 								{/if}
 								<p class="pt-10">
 									<span class="font-bold">Image URL</span> should have a file extension
@@ -699,7 +698,7 @@
 							</div>
 						</div>
 					{/if}
-				</div>
+				</div> -->
 				<div id="reset" class="flex items-center gap-2">
 					<button class="btn btn-error btn-outline btn-xs" on:click={resetShowStates}>
 						wtf...

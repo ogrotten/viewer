@@ -5,13 +5,14 @@
 -->
 
 <script>
+	import { fly } from 'svelte/transition'
 	// @ts-nocheck
 
 	import icons from './fileUploadIcons.js'
 	//look at all these beautiful options
 	// Buttons text, set any to "" to remove that button
 	export let buttonText = 'Upload'
-	export let doneButtonText = 'Done'
+	export let doneButtonText = 'Save'
 	export let doneText = 'Successfully uploaded'
 	export let descriptionText = 'Drag or click to upload'
 	// The file upload input element
@@ -120,6 +121,16 @@
 		)
 	}
 	function inputChanged() {
+		const count = inputFiles.length
+		inputFiles = [...inputFiles.filter(f => f.size < bytes)]
+
+		if (inputFiles.length < count) {
+			descriptionText = `${inputFiles.length} files. ${
+				count - inputFiles.length
+			} files were too large (max ${formatBytes(bytes)})`
+		} else {
+			descriptionText = `${count + 1} files`
+		}
 		inputFiles = [...inputFiles, ...input.files]
 	}
 	function del(file) {
@@ -161,28 +172,48 @@
 	on:drop={drop}
 	on:dragenter={dragenter}
 	on:dragleave={dragleave}
-	class={`${fixed ? 'fixed' : ''} fileUploader dragzone`}
+	class={`${fixed ? 'fixed' : ''} dragzone ring-2 ring-neutral-700`}
 >
 	{#if files.length !== maxFiles}
-		{#if descriptionText}<span class="italic primary">{descriptionText}</span>{/if}
-		<div class="flex items-center justify-center gap-8">
-			<button on:click={trigger} class="btn btn-neutral">
-				{buttonText}
-			</button>
-			{#if doneButtonText && files.length}
-				<button class="btn btn-success" on:click={() => (doneCallback(), callback(files))}>
-					{doneButtonText}
+		<div class="flex flex-col items-start w-full gap-4 mb-8">
+			{#if descriptionText}<span class="italic primary">{descriptionText}</span>{/if}
+			<div class="flex items-center justify-center gap-4">
+				<button on:click={trigger} class="btn btn-success btn-xs">
+					{buttonText}
 				</button>
-			{/if}
+				{#if doneButtonText && files.length}
+					<button
+						transition:fly={{ x: -50, duration: 300 }}
+						class="btn btn-primary btn-xs"
+						on:click={() => (doneCallback(), callback(files))}
+					>
+						{doneButtonText}
+					</button>
+				{/if}
+				{#if files.length}
+					<button
+						transition:fly={{ x: -125, duration: 300 }}
+						class="btn btn-danger btn-xs"
+						on:click={() => {
+							files = []
+							inputFiles = []
+							dragZoneFiles = []
+							descriptionText = 'Drag or click to upload'
+						}}
+					>
+						Cancel
+					</button>
+				{/if}
+			</div>
 		</div>
 		{#if listFiles}
 			<ul class="w-full">
 				{#each files.slice(0, maxFiles) as file}
-					<li on:click={() => openFile(file)}>
-						<span class="icon">
-							<span class="fileicon">{@html getIcon(file.name)}</span>
-							<span class="deleteicon" on:click|stopPropagation={() => del(file)}
-								><svg
+					<li on:click={() => openFile(file)} class="flex w-full">
+						<div class="-ml-2">
+							<div class="fileicon">{@html getIcon(file.name)}</div>
+							<div class="deleteicon" on:click|stopPropagation={() => del(file)}>
+								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									xmlns:xlink="http://www.w3.org/1999/xlink"
 									aria-hidden="true"
@@ -198,10 +229,10 @@
 										d="M216 48h-40v-8a24.1 24.1 0 0 0-24-24h-48a24.1 24.1 0 0 0-24 24v8H40a8 8 0 0 0 0 16h8v144a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16V64h8a8 8 0 0 0 0-16ZM96 40a8 8 0 0 1 8-8h48a8 8 0 0 1 8 8v8H96Zm96 168H64V64h128Zm-80-104v64a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0Zm48 0v64a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0Z"
 									/>
 								</svg>
-							</span>
-						</span>
-						<span class="filename">{file.name}</span>
-						<span class="filesize">{formatBytes(file.size)}</span>
+							</div>
+						</div>
+						<div class="mx-4 overflow-hidden w-28 overflow-ellipsis">{file.name}</div>
+						<div class="w-24 text-right">{formatBytes(file.size)}</div>
 					</li>
 				{/each}
 			</ul>
@@ -264,7 +295,6 @@
 		transition: background-color 0.3s ease;
 	}
 	.dragzone ul {
-		width: 60%;
 		display: flex;
 		flex-direction: column;
 	}
