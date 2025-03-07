@@ -1,33 +1,34 @@
 import type { User } from 'firebase/auth'
 
 export interface UserWithMeta extends User {
-	role: string;
-	name: string;
-	id: string;
+	role: string
+	name: string
+	id: string
 }
 
 interface Viewer {
-	id: string;
-	images: string[];
-	portraits: number[];
-	single: boolean;
+	id: string
+	images: string[]
+	portraits: number[]
+	single: boolean
 }
 
 export interface Image {
 	added: number
-	carousel: boolean;
-	gallery: boolean;
-	id?: string;
-	index: number;
-	now: boolean;
-	title: string;
-	url: string;
+	carousel: boolean
+	filename: string
+	gallery: boolean
+	id?: string
+	index: number
+	now: boolean
+	title: string
+	url: string
 
-	height?: number;
-	width?: number;
+	height?: number
+	width?: number
 
-	taller?: boolean;
-	wider?: boolean;
+	taller?: boolean
+	wider?: boolean
 }
 
 interface Changed {

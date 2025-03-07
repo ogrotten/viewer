@@ -439,6 +439,17 @@
 	let upPct = 0
 	let doReset = false
 
+	const getImageDimensions = file => {
+		return new Promise((resolve, reject) => {
+			const img = new Image()
+			img.onload = () => {
+				resolve({ width: img.width, height: img.height })
+			}
+			img.onerror = reject
+			img.src = URL.createObjectURL(file)
+		})
+	}
+
 	const upImages = files => {
 		showUpload = false
 		console.log(`LOG..+page: files`, files)
@@ -448,7 +459,9 @@
 		files.forEach(async (f, idx) => {
 			// const imgRef = ref(vRef, f.name)
 			const imgRef = ref(storage, `viewers/${$dbUser?.uid}/${f.name}`)
-			console.log(`LOG..+page: imgRef`, imgRef)
+
+			console.log(`LOG..+page: f`, f)
+
 			uploadBytes(imgRef, f)
 				.then(snapshot => {
 					console.log(`LOG..+page: snapshot`, snapshot)
@@ -456,16 +469,25 @@
 					count++
 					return getDownloadURL(imgRef)
 				})
-				.then(url => {
+				.then(async url => {
+					const dimensions = (await getImageDimensions(f)) as HTMLImageElement
+					return { url, dimensions }
+				})
+				.then(incoming => {
+					const { url, dimensions } = incoming
+					console.log(`Image dimensions:`, dimensions)
 					return addOne({
 						url,
 						carousel: false,
+						filename: f.name,
 						gallery: false,
 						now: false,
 						title: '',
 						id: '',
 						index: Date.now(),
 						added: Date.now(),
+						width: dimensions.width,
+						height: dimensions.height,
 					})
 				})
 				.catch(e => {

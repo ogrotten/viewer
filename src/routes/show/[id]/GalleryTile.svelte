@@ -46,9 +46,9 @@
 		diff: 0,
 	}
 
-	const setupNode = incoming => {
+	const setupNode = (incoming: Image) => {
 		// debugger
-		const img = imgBase.cloneNode() as HTMLDivElement
+		const img = imgBase.cloneNode() as HTMLImageElement
 		const inner = itemContentDiv.cloneNode() as HTMLDivElement
 		const outer = itemDiv.cloneNode() as HTMLDivElement
 
@@ -101,11 +101,10 @@
 		return outer
 	}
 
-	const setOrient = (incoming, outer, img) => {
+	const setOrient = (incoming: Image, outer, img: HTMLImageElement) => {
 		const w: number = incoming.width as number
 		const h: number = incoming.height as number
-		const ratio = w / h
-
+		const ratio: number = +(w / h).toFixed(3)
 		let dimensions = { width: w, height: h }
 
 		const wider = incoming.wider ? 1 : 0
@@ -186,7 +185,7 @@
 		const el = images.filter(i => i.getAttribute('data-muuri-id') === changed.id)
 		const item = mu?.getItem(el[0])
 
-		item.getElement().classList.repl
+		item?.getElement().classList.repl
 
 		if (changed.added) mu?.show([item])
 		else if (changed.removed) {
