@@ -149,8 +149,12 @@
 
 	const addOne = async (incoming: Image) => {
 		// Add a new document with a generated id.
-		const docRef = await addDoc(collection(db, `viewers/${$dbUser?.uid}/images`), incoming)
-		getImages()
+		// const docRef =
+		await addDoc(collection(db, `viewers/${$dbUser?.uid}/images`), incoming).then(docRef => {
+			console.log(`LOG..+page: Document written with ID: ${docRef.id}`)
+			getImages()
+		})
+		// getImages()
 	}
 
 	const addMany = () => {
@@ -263,7 +267,7 @@
 	$: {
 		manyFiltered = many
 			.split('\n')
-			.filter(item => item.length > 0)
+			.filter(item => item?.length > 0)
 			.map(item => {
 				const [url, title] = item.split(',')
 				return {
@@ -438,26 +442,35 @@
 	const upImages = files => {
 		showUpload = false
 		console.log(`LOG..+page: files`, files)
-		const vRef = ref(storage, `viewers/${$dbUser?.uid}`)
+		// const vRef = ref(storage, `viewers/${$dbUser?.uid}`)
 		let count = 0
 
 		files.forEach(async (f, idx) => {
-			const imgRef = ref(vRef, f.name)
-			uploadBytes(imgRef, f).then(snapshot => {
-				console.log('Uploaded file ' + idx)
-				upPct = Math.ceil(((count + 1) / files.length) * 100)
-				count++
-			})
-			addOne({
-				url: await getDownloadURL(imgRef),
-				carousel: false,
-				gallery: false,
-				now: false,
-				title: '',
-				id: '',
-				index: Date.now(),
-				added: Date.now(),
-			})
+			// const imgRef = ref(vRef, f.name)
+			const imgRef = ref(storage, `viewers/${$dbUser?.uid}/${f.name}`)
+			console.log(`LOG..+page: imgRef`, imgRef)
+			uploadBytes(imgRef, f)
+				.then(snapshot => {
+					console.log(`LOG..+page: snapshot`, snapshot)
+					upPct = Math.ceil(((count + 1) / files.length) * 100)
+					count++
+					return getDownloadURL(imgRef)
+				})
+				.then(url => {
+					return addOne({
+						url,
+						carousel: false,
+						gallery: false,
+						now: false,
+						title: '',
+						id: '',
+						index: Date.now(),
+						added: Date.now(),
+					})
+				})
+				.catch(e => {
+					console.error(`LOG..+page: e`, e)
+				})
 		})
 	}
 
@@ -817,7 +830,7 @@
 								{option.name}
 							</a>
 						{/each}
-						{viewerImages.length} / {images.length}
+						{viewerImages?.length} / {images?.length}
 					</div>
 					{#if viewerTab !== 0 && viewerTab !== 99}
 						<button
@@ -856,7 +869,7 @@
 								on:change={filterByName}
 								placeholder="Type partial match, press enter"
 							/>
-							{#if nameFilter.length}
+							{#if nameFilter?.length}
 								<button
 									class="-ml-6"
 									on:click={() => {
