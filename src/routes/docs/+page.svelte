@@ -68,17 +68,13 @@
 	</div>
 	<p class="mt-4 text-lg font-bold">Load some images</p>
 	<ul>
-		<li class="italic">Left sidebar > Add Images</li>
+		<li class="italic">Left sidebar > "Drag or click to upload"</li>
 		<li>
-			Images need to be hosted somewhere and have a direct link to the image. Imgur works
-			flawlessly.
+			This will upload images to the char.show server. The images will then appear on your
+			management page.
 		</li>
-		<li>
-			For now, the image url must be formatted as url and file with extension:
-			<span class="font-mono text-sm"> https://i.imgur.com/bUIMpp4.jpg </span>
-		</li>
-		<li>char.show does not host the images..</li>
-		<li class="">You can add a title to the image, but it's optional.</li>
+		<li class="">You can upload multiple images at once.</li>
+		<li class="">Once uploaded, you can add a title to the image, but it's optional.</li>
 	</ul>
 
 	<br />
@@ -133,7 +129,7 @@
 	<br />
 
 	<br />
-	<p class="mt-4 text-lg font-bold">Demo Images</p>
+	<!-- <p class="mt-4 text-lg font-bold">Demo Images</p>
 	<ul>
 		<li class="">
 			You can use these urls to test the site if you don't have your own images or it's a pita
@@ -145,7 +141,7 @@
 				{link}<br />
 			{/each}
 		</li>
-	</ul>
+	</ul> -->
 </span>
 
 <style lang="postcss">
