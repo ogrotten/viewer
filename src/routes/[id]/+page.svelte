@@ -16,7 +16,7 @@
 		query,
 		onSnapshot,
 	} from 'firebase/firestore'
-	import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+	import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 
 	import type { UserWithMeta, Image, UserPref } from '$lib/types'
 	import FileUpload from '../_components/FileUpload.svelte'
@@ -167,9 +167,34 @@
 	}
 
 	async function imageDelete<T>(image, idx) {
-		await deleteDoc(doc(db, 'viewers', $dbUser?.uid, 'images', image.id)).then(() => {
-			getImages()
-		})
+		const delRef = ref(storage, `viewers/${$dbUser?.uid}/${image.filename}`)
+
+		await Promise.all([
+			// delete from storage
+			deleteObject(delRef)
+				.then(() => {
+					console.log(`LOG..+page: delete from storage`)
+				})
+				.catch(error => {
+					console.error(`LOG..+page: error`, error)
+				}),
+
+			// delete from firestore
+			deleteDoc(doc(db, 'viewers', $dbUser?.uid, 'images', image.id))
+				.then(() => {
+					console.log(`LOG..+page: delete from firestore`)
+				})
+				.catch(error => {
+					console.error(`LOG..+page: error`, error)
+				}),
+		])
+			.then(() => {
+				console.log(`LOG..+page: image deleted`)
+				getImages()
+			})
+			.catch(error => {
+				console.error(`LOG..+page: error`, error)
+			})
 	}
 
 	let showTitleEdit = -1
