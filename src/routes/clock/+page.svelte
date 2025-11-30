@@ -15,8 +15,10 @@
 
 	let options = {
 		seconds: true,
-		color: '#330000',
+		color: '#440000',
 		leadingZero: false,
+		ampm: true,
+		twelve: true,
 	}
 
 	$: if (browser) {
@@ -41,13 +43,15 @@
 		return () => clearInterval(interval)
 	})
 
-	// $: hh = showtime[0]
+	$: ampm = time.hour >= 12 ? 'pm' : 'am'
+	$: twelvehour = time.hour > 12 ? time.hour - 12 : time.hour === 0 ? 12 : time.hour
+
+	// $: hh = options.leadingZero ? showtime[0] : String(Number(showtime[0]))
 	$: hh = options.leadingZero ? showtime[0] : String(Number(showtime[0]))
 	$: mm = showtime[1]
-	// $: ss = Math.floor(+showtime[2]).toString()
 	$: ss = showtime[2]
 
-	$: console.warn(`LOG..+page: WATCH`, { H, W })
+	$: options.twelve ? null : (options.ampm = false)
 </script>
 
 <!-- <div class="relative w-screen h-screen centering" id="SVG-CONTAINER">
@@ -62,10 +66,20 @@
 <div class="w-screen h-screen centering bg-black flex-col">
 	<div class="flex items-center" style={`color: ${options.color};`}>
 		<p class={`m-auto`} style={`font-size: 25vw;`}>
-			{hh}:{mm}
+			{options.twelve ? twelvehour : hh}:{mm}
 		</p>
-		{#if options.seconds}
-			<span style="font-size: 8vw">{ss}</span>
+		{#if options.seconds || options.ampm}
+			<div style="font-size: 8vw" class="flex flex-col ml-2 mt-[1vh]">
+				{#if options.seconds}
+					<span class="">{ss}</span>
+				{/if}
+				{#if options.ampm && options.seconds}
+					<div class="h-8" />
+				{/if}
+				{#if options.ampm}
+					<span class="text-[6vw]">{ampm}</span>
+				{/if}
+			</div>
 		{/if}
 	</div>
 	<button
@@ -81,13 +95,27 @@
 		<h3 class="font-bold text-lg">Clock Options</h3>
 		<ul class="n">
 			<li>
+				12 hr: <input
+					class="toggle toggle-xs"
+					type="checkbox"
+					bind:checked={options.twelve}
+				/>
+			</li>
+			<li>
+				Show am/pm: <input
+					class="toggle toggle-xs"
+					type="checkbox"
+					disabled={!options.twelve}
+					bind:checked={options.ampm}
+				/>
+			</li>
+			<li>
 				Show seconds: <input
 					class="toggle toggle-xs"
 					type="checkbox"
 					bind:checked={options.seconds}
 				/>
 			</li>
-			<li>HTML color: <input type="color" bind:value={options.color} /></li>
 			<li>
 				Hours leading zero: <input
 					class="toggle toggle-xs"
@@ -95,6 +123,8 @@
 					bind:checked={options.leadingZero}
 				/>
 			</li>
+			<br />
+			<li>HTML color: <input type="color" bind:value={options.color} /></li>
 		</ul>
 		<div class="my-6 h-0 w-full border-b border-b-[#888]" />
 		<!-- if there is a button in form, it will close the modal -->
