@@ -23,6 +23,7 @@ const config = {
 		// })
 
 		adapter: adapter({
+			runtime: 'nodejs20.x'
 			// pages: './.firebase/public',
 			// assets: './.firebase/public',
 			// fallback: 'index.html',
