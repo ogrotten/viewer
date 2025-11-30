@@ -14,7 +14,7 @@
 	let time: Temporal.PlainTime = Temporal.Now.plainTimeISO()
 
 	let options = {
-		seconds: true,
+		seconds: false,
 		color: '#440000',
 		leadingZero: false,
 		ampm: true,
@@ -54,17 +54,17 @@
 	$: options.twelve ? null : (options.ampm = false)
 </script>
 
-<!-- <div class="relative w-screen h-screen centering" id="SVG-CONTAINER">
-	<svg class="relative centering" xmlns="http://www.w3.org/2000/svg" version="1.1" id="SVG">
-		<text x={`${W / 2}`} y={`${H / 2}`} fill="red" class="scale-150">
-		<text x="0" y="0" fill="red" class="fixed origin-center scale-150">
-			{hh}:{mm}
-			{ss}
-		</text>
-	</svg>
-</div> -->
 <div class="w-screen h-screen centering bg-black flex-col">
-	<div class="flex items-center" style={`color: ${options.color};`}>
+	<div
+		class="flex items-center cursor-pointer"
+		style={`color: ${options.color};`}
+		role="button"
+		tabindex="0"
+		on:click={() => {
+			optionsModal.showModal()
+		}}
+		on:keydown={e => {}}
+	>
 		<p class={`m-auto`} style={`font-size: 25vw;`}>
 			{options.twelve ? twelvehour : hh}:{mm}
 		</p>
@@ -82,12 +82,6 @@
 			</div>
 		{/if}
 	</div>
-	<button
-		class="btn"
-		on:click={() => {
-			optionsModal.showModal()
-		}}>&nbsp;</button
-	>
 </div>
 
 <dialog id="optionsModal" class="modal" bind:this={optionsModal}>
@@ -116,13 +110,13 @@
 					bind:checked={options.seconds}
 				/>
 			</li>
-			<li>
+			<!-- <li>
 				Hours leading zero: <input
 					class="toggle toggle-xs"
 					type="checkbox"
 					bind:checked={options.leadingZero}
 				/>
-			</li>
+			</li> -->
 			<br />
 			<li>HTML color: <input type="color" bind:value={options.color} /></li>
 		</ul>
