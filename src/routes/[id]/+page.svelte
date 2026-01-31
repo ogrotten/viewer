@@ -845,7 +845,7 @@
 				</div>
 			</div>
 
-			{#if isAdmin}
+			<!-- {#if isAdmin}
 				<div class="w-full p-6 border-2 card border-warning">
 					<div class="flex items-center justify-start gap-4">
 						<div class="btn btn-primary btn-outline btn-xs">Admin</div>
@@ -863,7 +863,7 @@
 						</div>
 					</div>
 				</div>
-			{/if}
+			{/if} -->
 			<section id="image-list" class="flex flex-col flex-1 min-h-0">
 				<div class="flex items-center justify-between">
 					<div role="tablist" class="gap-4 tabs tabs-lifted tabs-xs">
@@ -894,13 +894,13 @@
 				</div>
 				{#if viewerImages}
 					<!-- {@const viewerImages = getViewerImages(viewerTab)} -->
-					<div
-						id="list-container"
-						class="flex-1 w-full p-4 border border-secondary min-h-0 overflow-y-auto"
-						transition:fly
-					>
-						<!-- {/if} -->
 
+					<!-- {/if} -->
+
+					<div
+						id="listtop"
+						class=" sticky top-0 p-4 bg-neutral z-10 rounded-lg rounded-tl-none mb-4"
+					>
 						<div class="flex items-center justify-start min-w-fit">
 							<label
 								class="items-center gap-2 cursor-pointer label min-w-fit"
@@ -927,31 +927,31 @@
 								</button>
 							{/if}
 							<!-- <label class="items-center gap-2 cursor-pointer label">
-								<input
-									type="checkbox"
-									class="toggle toggle-xs bg-primary"
-									on:change={e => {
-										e.target.checked)
-									}}
-								/>
-								bind:checked={pref.tiles}
-								<span class="label-text"> Show Named Only </span>
-							</label> -->
+									<input
+										type="checkbox"
+										class="toggle toggle-xs bg-primary"
+										on:change={e => {
+											e.target.checked)
+										}}
+									/>
+									bind:checked={pref.tiles}
+									<span class="label-text"> Show Named Only </span>
+								</label> -->
 						</div>
 						<div class="flex items-center justify-start gap-8">
 							<div class="cursor-pointer w">
 								<label class="items-center gap-2 cursor-pointer label">
 									<!-- <input
-										type="checkbox"
-										class="toggle toggle-xs bg-primary"
-										bind:checked={pref.sort}
-										on:change={updatePrefs}
-									/> -->
+											type="checkbox"
+											class="toggle toggle-xs bg-primary"
+											bind:checked={pref.sort}
+											on:change={updatePrefs}
+										/> -->
 									<span class="label-text">
 										Sort by: &nbsp;
 										<!-- <span class="font-bold">
-											{pref.sort ? 'Added' : 'Recent'}
-										</span> -->
+												{pref.sort ? 'Added' : 'Recent'}
+											</span> -->
 										<select
 											class="select select-bordered select-sm select-neutral"
 											on:change={e => {
@@ -991,6 +991,12 @@
 								<!-- </div> -->
 							</div>
 						</div>
+					</div>
+					<div
+						id="list-container"
+						class="flex-1 w-full p-4 border border-secondary min-h-0 overflow-y-auto"
+						transition:fly
+					>
 						{#if pref.tiles}
 							<div
 								id="list-cont"
@@ -1002,8 +1008,15 @@
 									<!-- svelte-ignore a11y-img-redundant-alt -->
 									<span
 										id="list-tiles"
-										class="flex flex-col p-4 border bg-stone-800 border-stone-600"
+										class="flex flex-col p-4 border bg-stone-800 border-stone-600 max-w-[175px]"
 									>
+										{#if showHover === idx}
+											<img
+												src={url}
+												alt="image"
+												class="absolute z-10 object-cover object-top w-96 h-96 left-24 top-28 rounded-2xl ring-8 ring-black shadow-2xl shadow-black"
+											/>
+										{/if}
 										<!-- transition:fly|local={{ x: -20 }} -->
 										<div class="flex justify-between">
 											<button
@@ -1043,12 +1056,23 @@
 												</svg>
 											</button>
 										</div>
-										<img
-											src={url}
-											alt="image"
-											class="z-0 object-cover object-top w-48 h-36 rounded-2xl"
-											on:load={e => updateImage({ e, idx })}
-										/>
+										<!-- svelte-ignore a11y-img-redundant-alt -->
+										<!-- svelte-ignore a11y-mouse-events-have-key-events -->
+										<a href={image.url} class="" target="_blank">
+											<img
+												src={url}
+												alt="image"
+												class="z-0 object-cover object-top w-48 h-36 rounded-2xl"
+												on:mouseenter={() => {
+													showHover = idx
+												}}
+												on:mouseout={() => {
+													showHover = -1
+												}}
+												on:load={e => updateImage({ e, idx })}
+											/>
+										</a>
+
 										<div class="flex items-center justify-start gap-2 py-4">
 											<button
 												class="p-1 transition-all hover:bg-blue-600"
@@ -1080,7 +1104,7 @@
 										</div>
 										<div class="flex flex-row justify-between gap-2">
 											<button
-												class="font-normal text-gray-800 capitalize btn btn-xs font-xs"
+												class="text-gray-800 btn btn-xs font-xs mx-1 w-6"
 												class:unselected={!image.carousel}
 												class:btn-primary={image.carousel}
 												on:click={() =>
@@ -1089,24 +1113,24 @@
 														carousel: !image.carousel,
 													})}
 											>
-												<span class="label-text">Carousel</span>
+												<span class="label-text">C</span>
 											</button>
 											<button
-												class="font-normal text-gray-800 capitalize btn btn-xs font-xs"
+												class="text-gray-800 btn btn-xs font-xs mx-1 w-6"
 												class:unselected={!image.gallery}
 												class:btn-secondary={image.gallery}
 												on:click={() => setGalleryItem(image)}
 											>
-												<span class="label-text">Gallery</span>
+												<span class="label-text">G</span>
 											</button>
 											<button
-												class="font-normal text-gray-800 capitalize btn btn-xs font-xs"
+												class="text-gray-800 btn btn-xs font-xs mx-1 w-6"
 												class:unselected={!image.now}
 												class:btn-accent={image.now}
 												on:click={() =>
 													parameter({ ...image, now: !image.now })}
 											>
-												<span class="label-text">Now</span>
+												<span class="label-text">N</span>
 											</button>
 										</div>
 										<div class="flex flex-row justify-between mt-4">
@@ -1165,7 +1189,7 @@
 								{#each viewerImages as image, idx (image.id)}
 									{@const url = debug ? 'https://dummyimage.com/32' : image.url}
 									<li
-										class="relative flex flex-row items-center w-[540px] gap-4 p-2 border border-stone-700"
+										class="flex flex-row items-center w-[420px] gap-4 p-2 border border-stone-700"
 									>
 										<button
 											class="relative"
@@ -1249,12 +1273,12 @@
 											<img
 												src={url}
 												alt="image"
-												class="absolute z-10 object-cover object-top w-48 h-48 left-28 rounded-2xl"
+												class="absolute z-10 object-cover object-top w-96 h-96 left-24 top-28 rounded-2xl ring-8 ring-black shadow-2xl shadow-black"
 											/>
 										{/if}
 										<span title={image.id}>
 											<button
-												class="text-gray-800 btn btn-xs font-xs"
+												class="text-gray-800 btn btn-xs font-xs mx-1 w-6"
 												class:unselected={!image.carousel}
 												class:btn-primary={image.carousel}
 												on:click={() =>
@@ -1263,24 +1287,24 @@
 														carousel: !image.carousel,
 													})}
 											>
-												<span class="label-text">Carousel</span>
+												<span class="label-text">C</span>
 											</button>
 											<button
-												class="text-gray-800 btn btn-xs font-xs"
+												class="text-gray-800 btn btn-xs font-xs mx-1 w-6"
 												class:unselected={!image.gallery}
 												class:btn-secondary={image.gallery}
 												on:click={() => setGalleryItem(image)}
 											>
-												<span class="label-text">Gallery</span>
+												<span class="label-text">G</span>
 											</button>
 											<button
-												class="text-gray-800 btn btn-xs font-xs"
+												class="text-gray-800 btn btn-xs font-xs mx-1 w-6"
 												class:unselected={!image.now}
 												class:btn-accent={image.now}
 												on:click={() =>
 													parameter({ ...image, now: !image.now })}
 											>
-												<span class="label-text">Now</span>
+												<span class="label-text">N</span>
 											</button>
 										</span>
 										<!-- </div> -->
