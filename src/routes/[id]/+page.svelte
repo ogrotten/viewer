@@ -535,9 +535,9 @@
 		<div class="m-auto loading loading-bars loading-lg" />
 	</div>
 {:else}
-	<div transition:fade class="flex flex-row gap-10">
+	<div transition:fade class="flex flex-row gap-10 h-full">
 		<!-- SIDE PANEL -->
-		<div class="space-y-8 min-w-[300px]">
+		<div class="space-y-8 min-w-[300px] overflow-auto">
 			<div class="space-y-8">
 				<div class="m-auto">
 					<button
@@ -803,7 +803,7 @@
 		</div>
 
 		<!-- BODY -->
-		<div class="flex flex-col gap-10 shrink">
+		<div class="flex flex-col flex-1 gap-10 min-h-0 shrink">
 			<div class="hidden shadow-xl card bg-neutral">
 				<div class="card-body">
 					<div class="flex items-center justify-start gap-8">
@@ -864,7 +864,7 @@
 					</div>
 				</div>
 			{/if}
-			<section id="image-list" class="">
+			<section id="image-list" class="flex flex-col flex-1 min-h-0">
 				<div class="flex items-center justify-between">
 					<div role="tablist" class="gap-4 tabs tabs-lifted tabs-xs">
 						{#each viewerTabOptions as option}
@@ -896,7 +896,7 @@
 					<!-- {@const viewerImages = getViewerImages(viewerTab)} -->
 					<div
 						id="list-container"
-						class="w-full p-4 border border-secondary"
+						class="flex-1 w-full p-4 border border-secondary min-h-0 overflow-y-auto"
 						transition:fly
 					>
 						<!-- {/if} -->

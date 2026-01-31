@@ -14,7 +14,7 @@
 	export let buttonText = 'Upload'
 	export let doneButtonText = 'Save'
 	export let doneText = 'Successfully uploaded'
-	export let descriptionText = 'Drag or click to upload'
+	export let descriptionText = 'Drag or click to upload.'
 	// The file upload input element
 	export let input = null
 	//Fixed uploader position?
@@ -172,7 +172,7 @@
 	on:drop={drop}
 	on:dragenter={dragenter}
 	on:dragleave={dragleave}
-	class={`${fixed ? 'fixed' : ''} dragzone ring-2 ring-neutral-700`}
+	class={`${fixed ? 'fixed' : ''} dragzone ring-2 ring-neutral-700 m-4`}
 >
 	{#if files.length !== maxFiles}
 		<div class="flex flex-col items-start w-full gap-4 mb-8">

@@ -21,6 +21,6 @@
 	<TopNav />
 {/if}
 
-<div class="relative w-full h-screen overflow-hidden" class:bg-red-800={debug} class:p-10={!show}>
+<div class="relative w-full h-[calc(100vh-4rem)] overflow-hidden" class:bg-red-800={debug} class:p-10={!show}>
 	<slot />
 </div>
